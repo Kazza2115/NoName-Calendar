@@ -488,6 +488,41 @@
   .jr-now::before { content: ""; position: absolute; left: -5px; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--danger); }
   .jr-list .jr-item { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 10px; border-left: 5px solid var(--rc); background: color-mix(in srgb, var(--rc) 12%, var(--card)); margin-bottom: 6px; cursor: pointer; flex-wrap: wrap; }
   .jr-list .jr-item small { color: var(--muted); font-size: 13px; margin-left: auto; }
+  /* Grille horaire (semaine / journée) */
+  .bc-grid.semaine { display: block; min-width: 820px; }
+  .wk { display: grid; grid-template-columns: 62px repeat(var(--n), minmax(0, 1fr)); user-select: none; }
+  .wk-corner, .wk-head { position: sticky; top: 0; z-index: 6; background: var(--card); border-bottom: 1px solid var(--line); }
+  .wk-head { padding: 8px 4px; text-align: center; font-size: 15px; color: var(--muted); cursor: pointer; text-transform: capitalize; border-left: 1px solid var(--line); }
+  .wk-head b { font-size: 20px; color: var(--text); margin-left: 2px; }
+  .wk-head.today b { background: var(--accent); color: var(--accent-text); border-radius: 999px; padding: 0 8px; }
+  .wk-head:hover { background: var(--soft); }
+  .wk-allday-l { font-size: 12px; color: var(--muted); padding: 6px 4px; text-align: right; border-bottom: 2px solid var(--line); line-height: 1.2; }
+  .wk-allday { border-left: 1px solid var(--line); border-bottom: 2px solid var(--line); padding: 4px; min-height: 38px; display: flex; flex-direction: column; gap: 3px; }
+  .wk-allday.today, .wk-col.today { background-color: color-mix(in srgb, var(--accent) 5%, transparent); }
+  .wk-chip { font-size: 13px; font-weight: 600; padding: 3px 7px; border-radius: 7px; border-left: 4px solid var(--rc); background: color-mix(in srgb, var(--rc) 20%, var(--card)); cursor: grab; touch-action: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .wk-chip.contact { --rc: var(--info); background: transparent; border: 1.5px dotted var(--info); border-left-width: 4px; color: var(--info); cursor: pointer; touch-action: auto; }
+  .wk-chip.fin { --rc: var(--ok); background: transparent; border: 1.5px dashed var(--ok); border-left-width: 4px; color: var(--ok); cursor: pointer; touch-action: auto; }
+  .wk-time { position: relative; }
+  .wk-hl { height: var(--hh); font-size: 13px; color: var(--muted); text-align: right; padding: 0 8px 0 0; position: relative; top: -9px; font-variant-numeric: tabular-nums; }
+  .wk-hl:first-child { top: 0; }
+  .wk-col { position: relative; border-left: 1px solid var(--line); cursor: copy;
+    background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(color-mix(in srgb, var(--line) 55%, transparent) 1px, transparent 1px);
+    background-size: 100% var(--hh), 100% calc(var(--hh) / 2); }
+  .wk-col.pulse { animation: bcflash 1.8s ease-out; }
+  .wk-ev { position: absolute; z-index: 2; border-radius: 8px; padding: 3px 7px; overflow: hidden; cursor: grab; touch-action: none; font-size: 13px; line-height: 1.25;
+    background: color-mix(in srgb, var(--rc) 24%, var(--card)); border-left: 4px solid var(--rc); box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .wk-ev:hover { z-index: 3; box-shadow: 0 3px 10px rgba(0,0,0,.15); }
+  .wk-ev .wk-t { font-weight: 800; color: var(--rc); }
+  .wk-ev b { font-size: 14px; }
+  .wk-ev small { display: block; color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .wk-ev.closed { opacity: .55; }
+  .wk-ev.flash { animation: flash 1.8s ease-out; }
+  .wk-ev.dragging, .wk-chip.dragging { opacity: .35; }
+  .wk-ghost { position: absolute; left: 2px; right: 2px; z-index: 5; border: 2px dashed var(--accent); border-radius: 8px; background: color-mix(in srgb, var(--accent) 14%, transparent); pointer-events: none; font-size: 13px; font-weight: 800; color: var(--accent); padding: 2px 6px; }
+  .wk-now { position: absolute; left: 0; right: 0; height: 2px; background: var(--danger); z-index: 4; pointer-events: none; }
+  .wk-now::before { content: ""; position: absolute; left: -5px; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--danger); }
+  body.glisse, body.glisse * { cursor: grabbing !important; }
+  #jr-body .wk { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
   .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 16px; z-index: 70; box-shadow: 0 6px 20px rgba(0,0,0,.2); max-width: calc(100% - 32px); }
 
   @media (max-width: 960px) {
@@ -644,7 +679,7 @@
       <button class="btn" id="bc-today">Aujourd'hui</button>
       <button class="btn" id="bc-next" aria-label="Mois suivant">›</button>
       <div class="bc-opts">
-        <span class="langsw" id="bc-vue" style="margin:0"><button type="button" data-vue="mois" class="on">Mois</button><button type="button" data-vue="tout">Tout</button></span>
+        <span class="langsw" id="bc-vue" style="margin:0"><button type="button" data-vue="semaine">Semaine</button><button type="button" data-vue="mois">Mois</button><button type="button" data-vue="tout">Tout</button></span>
         <label><input type="checkbox" id="bc-contacts"> Contacts</label>
         <label><input type="checkbox" id="bc-fins"> Fins</label>
       </div>
@@ -792,7 +827,7 @@ const EN = {
   "Enregistrement studio": "Studio recording", "Mix / master": "Mix / master", "Production / beat": "Production / beat", "Co-production label": "Label co-production", "Booking / live": "Booking / live", "Promo / com": "Promo / PR", "Admin / contrat": "Admin / contract", "Autre": "Other",
   "Cliquer pour modifier la date": "Click to change the date", "Retirer cette date": "Remove this date", "Fermer": "Close", "✕ Fermer": "✕ Close", "Mois précédent": "Previous month", "Mois suivant": "Next month", "Aujourd'hui": "Today", "Grand calendrier": "Big calendar", "+ session": "+ session", "Aucune session ce mois-ci.": "No sessions this month.",
   "Copier son récap": "Copy their summary", "+ Nouvelle demande": "+ New request", "Total facturé": "Total invoiced", "Déjà payé": "Already paid", "Reste à payer": "Amount due", "Tout est payé": "All paid", "Aucune session.": "No sessions.",
-  "jj/mm/aaaa": "dd/mm/yyyy", "🕐 Voir la journée": "🕐 See the day", "Journée": "Day", "Jour précédent": "Previous day", "Jour suivant": "Next day", "Aussi ce jour-là": "Also that day", "✓ Terminée": "✓ Finished", "☎ Contact": "☎ Contact", "🕐 détail": "🕐 details", "☀️ Clair": "☀️ Light", "🌙 Sombre": "🌙 Dark", "Thème": "Theme", "Catégorie": "Category", "Cliquer pour afficher / masquer": "Click to show / hide", "🕐 de": "🕐 from", "à": "to", "(facultatif, appliqué à la date ajoutée)": "(optional, applied to the date you add)", "Heure de début": "Start time", "Heure de fin": "End time", "Modifier l'horaire": "Change the time",
+  "jj/mm/aaaa": "dd/mm/yyyy", "Semaine": "Week", "Sans horaire": "No time", "🕐 Voir la journée": "🕐 See the day", "Journée": "Day", "Jour précédent": "Previous day", "Jour suivant": "Next day", "Aussi ce jour-là": "Also that day", "✓ Terminée": "✓ Finished", "☎ Contact": "☎ Contact", "🕐 détail": "🕐 details", "☀️ Clair": "☀️ Light", "🌙 Sombre": "🌙 Dark", "Thème": "Theme", "Catégorie": "Category", "Cliquer pour afficher / masquer": "Click to show / hide", "🕐 de": "🕐 from", "à": "to", "(facultatif, appliqué à la date ajoutée)": "(optional, applied to the date you add)", "Heure de début": "Start time", "Heure de fin": "End time", "Modifier l'horaire": "Change the time",
   "Ton profil": "Your profile", "🛡️ Admin": "🛡️ Admin", "🛡️ Panel admin": "🛡️ Admin panel", "Panel admin": "Admin panel", "⬇ Exporter (CSV)": "⬇ Export (CSV)", "Connectés maintenant": "Online now", "Demandes actives / total": "Active / total requests",
   "Par responsable": "By owner", "Actives": "Active", "Encaissé": "Collected", "Activité récente": "Recent activity", "Total": "Total", "Choisir ton profil…": "Choose your profile…", "Invité": "Guest", "➕ Nouveau profil…": "➕ New profile…", "Écris le nom de ton profil": "Type your profile name", "Écris le nom de ton profil.": "Type your profile name.", "Choisis ton profil.": "Choose your profile.", "Autres profils": "Other profiles", "Aucun profil créé pour l'instant.": "No profiles created yet.", "Supprimer ce profil": "Delete this profile", "Supprimer ce profil de la liste ?": "Remove this profile from the list?", "Profil supprimé": "Profile deleted", "en ligne": "online", "Personne": "Nobody", "+ Ajouter": "+ Add", "Mois": "Month", "Tout": "All", "Tous les événements": "All events", "Aucun événement pour l'instant.": "No events yet.",
   "Rien ce mois-ci.": "Nothing this month.",
@@ -1289,7 +1324,9 @@ function renderCalendrier() {
       : `<div class="none" style="font-size:14px">Aucune session ce mois-ci.</div>`);
 }
 
-let bcVue = "mois";
+let bcVue = (() => { try { return localStorage.getItem("noname-bcvue") || "semaine"; } catch { return "semaine"; } })();
+const lundiDe = (d) => { const x = parse(d); x.setDate(x.getDate() - (x.getDay() + 6) % 7); return isoDay(x); };
+let semaine = lundiDe(today());
 function evenementsParJour() {
   const voirContacts = $("bc-contacts").checked, voirFins = $("bc-fins").checked;
   const parJour = {};
@@ -1337,6 +1374,7 @@ function renderBigCal() {
   if ($("bigcal").classList.contains("hidden")) return;
   renderAlerteSansDate();
   $("bc-grid").classList.toggle("agenda", bcVue === "tout");
+  $("bc-grid").classList.toggle("semaine", bcVue === "semaine");
   document.querySelectorAll("#bc-vue button").forEach((b) => b.classList.toggle("on", b.dataset.vue === bcVue));
   ["bc-prev", "bc-today", "bc-next"].forEach((id) => $(id).classList.toggle("hidden", bcVue === "tout"));
   if (bcVue === "tout") {
@@ -1344,7 +1382,17 @@ function renderBigCal() {
     $("bc-legend").innerHTML = RESPS.map((r) => `<span><i style="--rc:${r.c}"></i>${r.v}</span>`).join("") + `<span><i style="--rc:var(--danger)"></i>À assigner</span>`;
     return renderAgenda();
   }
+  if (bcVue === "semaine") {
+    const jours = [...Array(7)].map((_, n) => { const x = parse(semaine); x.setDate(x.getDate() + n); return isoDay(x); });
+    const f = (d, o) => parse(d).toLocaleDateString(LOC(), o);
+    $("bc-title").style.textTransform = "none";
+    $("bc-title").textContent = `${LANG === "en" ? "Week of" : "Semaine du"} ${f(jours[0], { day: "numeric", month: "short" })} – ${f(jours[6], { day: "numeric", month: "short", year: "numeric" })}`;
+    $("bc-legend").innerHTML = RESPS.map((r) => `<span><i style="--rc:${r.c}"></i>${r.v}</span>`).join("") + `<span><i style="--rc:var(--danger)"></i>À assigner</span>`;
+    $("bc-grid").innerHTML = grilleHoraire(jours, true);
+    return;
+  }
   const y = mois.getFullYear(), m = mois.getMonth();
+  $("bc-title").style.textTransform = "";
   $("bc-title").textContent = mois.toLocaleDateString(LOC(), { month: "long", year: "numeric" });
   $("bc-legend").innerHTML = RESPS.map((r) => `<span><i style="--rc:${r.c}"></i>${r.v}</span>`).join("")
     + `<span><i style="--rc:var(--danger)"></i>À assigner</span>`;
@@ -1373,45 +1421,118 @@ function ouvrirJour(d) { jourOuvert = d; $("daybox").classList.remove("hidden");
 function fermerJour() { $("daybox").classList.add("hidden"); jourOuvert = null; }
 function renderJour() {
   if (!jourOuvert || $("daybox").classList.contains("hidden")) return;
-  const d = jourOuvert, t = today();
-  $("jr-title").textContent = parse(d).toLocaleDateString(LOC(), { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-  const sess = items.filter((i) => i.statut !== "annulee" && sessionsDe(i).includes(d)).map((i) => {
-    const h = horaireDe(i, d) || {};
-    let a = minutes(h.d), b = minutes(h.f);
-    if (a !== null && b === null) b = a + 60;           // début seulement : 1 h affichée
-    if (a === null && b !== null) a = b - 60;           // fin seulement
-    if (a !== null && b <= a) b += 24 * 60;             // session qui passe minuit
-    return { i, a, b };
+  $("jr-title").textContent = parse(jourOuvert).toLocaleDateString(LOC(), { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  $("jr-body").innerHTML = grilleHoraire([jourOuvert], false);
+  setTimeout(() => { const el = $("jr-body").querySelector(".wk-ev"); el && el.scrollIntoView({ block: "center" }); }, 0);
+}
+
+// ---------- Grille horaire (semaine ou journée) : sessions calées par crans de 30 min ----------
+const HH = 52; // hauteur d'une heure (px)
+const hm = (m) => `${String(Math.floor(m / 60) % 24).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+function bornes(i, d) {
+  const h = horaireDe(i, d) || {};
+  let a = minutes(h.d), b = minutes(h.f);
+  if (a !== null && b === null) b = a + 60;   // début seulement : 1 h
+  if (a === null && b !== null) a = b - 60;   // fin seulement
+  if (a !== null && b <= a) b += 24 * 60;     // passe minuit
+  return { a, b };
+}
+function grilleHoraire(jours, entetes) {
+  const t = today();
+  const donnees = jours.map((d) => {
+    const sess = items.filter((i) => i.statut !== "annulee" && sessionsDe(i).includes(d)).map((i) => ({ i, d, ...bornes(i, d) }));
+    const avec = sess.filter((x) => x.a !== null).sort((x, y) => x.a - y.a || y.b - x.b);
+    // sessions qui se chevauchent : côte à côte
+    const finsCol = [];
+    for (const x of avec) { let c = finsCol.findIndex((f) => f <= x.a); if (c < 0) { c = finsCol.length; finsCol.push(0); } finsCol[c] = x.b; x.col = c; }
+    return { d, avec, nCol: Math.max(1, finsCol.length), sans: sess.filter((x) => x.a === null),
+      autres: items.filter((i) => (calF.contacts && i.date_contact === d) || (calF.fins && i.date_fin === d)) };
   });
-  const avecHeure = sess.filter((x) => x.a !== null).sort((x, y) => x.a - y.a);
-  const sansHeure = sess.filter((x) => x.a === null);
-  // plage affichée : 8h–22h au minimum, élargie selon les sessions
-  const h0 = Math.min(8, ...avecHeure.map((x) => Math.floor(x.a / 60)));
-  const h1 = Math.max(22, ...avecHeure.map((x) => Math.ceil(x.b / 60)));
-  const HH = 56; // hauteur d'une heure en pixels
-  // colonnes pour les sessions qui se chevauchent
-  const fins = [];
-  for (const x of avecHeure) { let c = fins.findIndex((f) => f <= x.a); if (c < 0) { c = fins.length; fins.push(0); } fins[c] = x.b; x.col = c; }
-  const nCol = Math.max(1, fins.length);
-  const ligne = (x) => `${esc(x.i.titre && x.i.titre !== x.i.client ? x.i.titre : "")}${x.i.titre && x.i.titre !== x.i.client ? " · " : ""}${esc(respConnu(x.i.resp) ? x.i.resp : "à assigner")} · ${statutLabel(x.i.statut)}`;
-  let heures = "", cases = "";
-  for (let h = h0; h < h1; h++) { heures += `<div class="jr-h">${fmtH(String(h % 24).padStart(2, "0") + ":00")}</div>`; cases += `<div class="jr-c"></div>`; }
-  const evs = avecHeure.map((x) => `<div class="jr-ev" data-id="${x.i.id}" style="--rc:${respCouleur(x.i.resp)};top:${(x.a / 60 - h0) * HH + 2}px;height:${Math.max(44, (x.b - x.a) / 60 * HH - 4)}px;left:calc(${(100 / nCol) * x.col}% + 4px);width:calc(${100 / nCol}% - 8px)">
-      <span class="jr-t">${plageDe(x.i, d)}</span><b translate="no">${esc(x.i.client || x.i.titre)}</b><small>${ligne(x)}</small><small>${placeeTexte(x.i, d)}</small></div>`).join("");
+  const tous = donnees.flatMap((j) => j.avec);
+  const h0 = Math.min(8, ...tous.map((x) => Math.floor(x.a / 60)));
+  const h1 = Math.min(30, Math.max(22, ...tous.map((x) => Math.ceil(x.b / 60))));
   const now = new Date(), mNow = now.getHours() * 60 + now.getMinutes();
-  const barre = d === t && mNow >= h0 * 60 && mNow <= h1 * 60 ? `<div class="jr-now" style="top:${(mNow / 60 - h0) * HH}px"></div>` : "";
-  const autres = items.filter((i) => (calF.contacts && i.date_contact === d) || (calF.fins && i.date_fin === d));
-  $("jr-body").innerHTML = `
-    ${sansHeure.length ? `<div class="jr-list"><p class="section-title">Sessions sans horaire (${sansHeure.length})</p>${sansHeure.map((x) => `<div class="jr-item" data-id="${x.i.id}" style="--rc:${respCouleur(x.i.resp)}"><b translate="no">${esc(x.i.client || x.i.titre)}</b><span>${ligne(x)}</span><small>${placeeTexte(x.i, d)}</small></div>`).join("")}</div>` : ""}
-    ${avecHeure.length || !sansHeure.length ? `<div><p class="section-title">Planning (${avecHeure.length})</p>
-      <div class="jr-wrap" style="--hh:${HH}px"><div>${heures}</div><div class="jr-col"><div>${cases}</div>${evs}${barre}</div></div></div>` : ""}
-    ${autres.length ? `<div class="jr-list"><p class="section-title">Aussi ce jour-là</p>${autres.map((i) => `<div class="jr-item" data-id="${i.id}" style="--rc:${i.date_fin === d ? "var(--ok)" : "var(--info)"}"><b translate="no">${esc(i.client || i.titre)}</b><span>${i.date_fin === d ? "✓ Terminée" : "☎ Contact"}</span></div>`).join("")}</div>` : ""}`;
-  // faire défiler jusqu'à la première session
-  if (avecHeure.length) setTimeout(() => { const el = $("jr-body").querySelector(".jr-ev"); el && el.scrollIntoView({ block: "center" }); }, 0);
+  const qui = (i) => esc(respConnu(i.resp) ? i.resp : "à assigner");
+  const titre = (i) => i.titre && i.titre !== i.client ? esc(i.titre) : "";
+  let html = `<div class="wk" style="--n:${jours.length};--hh:${HH}px">`;
+  if (entetes) html += `<div class="wk-corner"></div>` + jours.map((d) => `<div class="wk-head ${d === t ? "today" : ""}" data-jour-ouvrir="${d}" title="🕐 Voir la journée">${parse(d).toLocaleDateString(LOC(), { weekday: "short" }).replace(".", "")} <b>${parse(d).getDate()}</b></div>`).join("");
+  html += `<div class="wk-allday-l">Sans horaire</div>` + donnees.map((j) => `<div class="wk-allday ${j.d === t ? "today" : ""}" data-jour="${j.d}">`
+    + j.sans.map((x) => `<div class="wk-chip" data-drag="${x.i.id}" data-jour="${j.d}" data-duree="60" style="--rc:${respCouleur(x.i.resp)}" title="${titre(x.i)} · ${qui(x.i)} · ${placeeTexte(x.i, j.d)}"><span translate="no">${esc(x.i.client || x.i.titre)}</span></div>`).join("")
+    + j.autres.map((i) => `<div class="wk-chip ${i.date_fin === j.d ? "fin" : "contact"}" data-id="${i.id}"><span translate="no">${i.date_fin === j.d ? "✓" : "☎"} ${esc(i.client || i.titre)}</span></div>`).join("")
+    + `</div>`).join("");
+  let lignes = ""; for (let h = h0; h < h1; h++) lignes += `<div class="wk-hl">${fmtH(hm(h * 60))}</div>`;
+  html += `<div class="wk-time">${lignes}</div>`;
+  html += donnees.map((j) => `<div class="wk-col ${j.d === t ? "today" : ""} ${flash.days.has(j.d) ? "pulse" : ""}" data-jour="${j.d}" data-h0="${h0}" data-h1="${h1}" style="height:${(h1 - h0) * HH}px">`
+    + j.avec.map((x) => `<div class="wk-ev ${estClos(x.i) ? "closed" : ""} ${flash.ids.has(x.i.id) ? "flash" : ""}" data-drag="${x.i.id}" data-jour="${j.d}" data-duree="${x.b - x.a}"
+        style="--rc:${respCouleur(x.i.resp)};top:${(x.a / 60 - h0) * HH + 1}px;height:${Math.max(22, (x.b - x.a) / 60 * HH - 2)}px;left:calc(${(100 / j.nCol) * x.col}% + 2px);width:calc(${100 / j.nCol}% - 4px)"
+        title="${plageDe(x.i, j.d)} · ${esc(x.i.client || "")} ${titre(x.i) ? "— " + titre(x.i) : ""} · ${qui(x.i)} · ${statutLabel(x.i.statut)} · ${placeeTexte(x.i, j.d)}">
+        <span class="wk-t">${plageDe(x.i, j.d)}</span> <b translate="no">${esc(x.i.client || x.i.titre)}</b><small>${titre(x.i)}${titre(x.i) ? " · " : ""}${qui(x.i)}</small><small class="wk-pl">${placeeTexte(x.i, j.d)}</small></div>`).join("")
+    + (j.d === t && mNow >= h0 * 60 && mNow <= h1 * 60 ? `<div class="wk-now" style="top:${(mNow / 60 - h0) * HH}px"></div>` : "")
+    + `</div>`).join("");
+  return html + `</div>`;
+}
+// Minute (arrondie au cran de 30 min) sous le pointeur dans une colonne
+function minuteDans(col, y) {
+  const h0 = +col.dataset.h0, r = col.getBoundingClientRect();
+  return Math.max(h0 * 60, h0 * 60 + Math.floor(((y - r.top) / HH * 60) / 30) * 30);
+}
+// Déplacer une session (autre jour et/ou autre horaire) en gardant sa durée
+async function deplacerSession(id, ancien, nouveau, m, duree) {
+  const i = items.find((x) => x.id === id); if (!i) return;
+  const hor = JSON.parse(JSON.stringify(i.horaires || {}));
+  const entree = hor[ancien] || { le: new Date().toISOString(), par: userEmail || "" };
+  delete hor[ancien];
+  hor[nouveau] = { ...entree, d: hm(m), f: hm(m + duree) };
+  const sess = [...sessionsDe(i).filter((x) => x !== ancien), nouveau];
+  if (await modifier(id, sessionsPayload(sess, hor))) toast(`${i.client || i.titre} → ${jourSemaine(nouveau)} ${fmtDate(nouveau)} · ${plage(hor[nouveau])}`);
+}
+// Glisser-déposer : une session se cale au créneau de 30 min le plus proche
+let glisse = null, ignorerClic = false;
+document.addEventListener("pointerdown", (e) => {
+  const el = e.target.closest("[data-drag]"); if (!el || e.button !== 0) return;
+  const r = el.getBoundingClientRect();
+  glisse = { el, id: el.dataset.drag, jour: el.dataset.jour, duree: +el.dataset.duree || 60, x: e.clientX, y: e.clientY,
+    offY: el.classList.contains("wk-ev") ? e.clientY - r.top : 0, actif: false, fantome: null, cible: null };
+});
+window.addEventListener("pointermove", (e) => {
+  const g = glisse; if (!g) return;
+  if (!g.actif && Math.hypot(e.clientX - g.x, e.clientY - g.y) < 6) return;
+  if (!g.actif) { g.actif = true; g.el.classList.add("dragging"); document.body.classList.add("glisse"); }
+  e.preventDefault();
+  const col = document.elementsFromPoint(e.clientX, e.clientY).find((n) => n.classList && n.classList.contains("wk-col"));
+  if (!col) { g.fantome?.remove(); g.fantome = null; g.cible = null; return; }
+  const m = minuteDans(col, e.clientY - g.offY + 2), h0 = +col.dataset.h0;
+  if (!g.fantome || g.fantome.parentNode !== col) { g.fantome?.remove(); g.fantome = document.createElement("div"); g.fantome.className = "wk-ghost"; col.appendChild(g.fantome); }
+  g.fantome.style.top = (m / 60 - h0) * HH + "px";
+  g.fantome.style.height = g.duree / 60 * HH + "px";
+  g.fantome.textContent = plage({ d: hm(m), f: hm(m + g.duree) });
+  g.cible = { jour: col.dataset.jour, m };
+}, { passive: false });
+window.addEventListener("pointerup", () => {
+  const g = glisse; if (!g) return; glisse = null;
+  g.el.classList.remove("dragging"); document.body.classList.remove("glisse"); g.fantome?.remove();
+  if (!g.actif) { ignorerClic = true; setTimeout(() => (ignorerClic = false), 0); return ouvrir(g.id); }
+  ignorerClic = true; setTimeout(() => (ignorerClic = false), 0);
+  if (g.cible) deplacerSession(g.id, g.jour, g.cible.jour, g.cible.m, g.duree);
+});
+window.addEventListener("pointercancel", () => { if (glisse) { glisse.el.classList.remove("dragging"); glisse.fantome?.remove(); glisse = null; document.body.classList.remove("glisse"); } });
+// Clic dans la grille : créneau vide → nouvelle session à ce jour / cette heure ; en-tête → journée
+function clicGrille(e) {
+  if (ignorerClic || e.target.closest("[data-drag]")) return true;
+  const h = e.target.closest("[data-jour-ouvrir]"); if (h) { ouvrirJour(h.dataset.jourOuvrir); return true; }
+  const autre = e.target.closest(".wk-chip[data-id]"); if (autre) { ouvrir(autre.dataset.id); return true; }
+  const col = e.target.closest(".wk-col");
+  if (col) {
+    const m = minuteDans(col, e.clientY), d = col.dataset.jour;
+    ouvrir(null, { sessions: [d], horaires: { [d]: { d: hm(m), f: hm(m + 60), le: new Date().toISOString(), par: userEmail || "" } } });
+    return true;
+  }
+  return !!e.target.closest(".wk");
 }
 $("jr-close").onclick = fermerJour;
 $("daybox").addEventListener("click", (e) => {
   if (e.target.id === "daybox") return fermerJour();
+  if (clicGrille(e)) return;
   const ev = e.target.closest("[data-id]"); if (ev) ouvrir(ev.dataset.id);
 });
 const decalerJour = (n) => { const x = parse(jourOuvert); x.setDate(x.getDate() + n); jourOuvert = isoDay(x); renderJour(); };
@@ -1936,20 +2057,24 @@ $("mois-liste").addEventListener("click", (e) => { const r = e.target.closest("[
 $("cal-open2").onclick = ouvrirBigCal;
 $("bc-close").onclick = fermerBigCal;
 $("bigcal").addEventListener("click", (e) => { if (e.target.id === "bigcal") fermerBigCal(); });
-$("bc-prev").onclick = () => { mois.setMonth(mois.getMonth() - 1); render(); };
-$("bc-next").onclick = () => { mois.setMonth(mois.getMonth() + 1); render(); };
-$("bc-today").onclick = () => { mois = new Date(); mois.setDate(1); render(); };
+const decalerSemaine = (n) => { const x = parse(semaine); x.setDate(x.getDate() + 7 * n); semaine = isoDay(x); mois = new Date(x.getFullYear(), x.getMonth(), 1); render(); };
+$("bc-prev").onclick = () => { if (bcVue === "semaine") return decalerSemaine(-1); mois.setMonth(mois.getMonth() - 1); render(); };
+$("bc-next").onclick = () => { if (bcVue === "semaine") return decalerSemaine(1); mois.setMonth(mois.getMonth() + 1); render(); };
+$("bc-today").onclick = () => { semaine = lundiDe(today()); mois = new Date(); mois.setDate(1); render(); };
 $("bc-contacts").checked = calF.contacts; $("bc-fins").checked = calF.fins;
 $("bc-contacts").onchange = (e) => majCalF("contacts", e.target.checked);
 $("cal-filtre").addEventListener("click", (e) => { const b = e.target.closest("[data-calf]"); if (b) majCalF(b.dataset.calf, !calF[b.dataset.calf]); });
 $("bc-vue").addEventListener("click", (e) => {
   const b = e.target.closest("[data-vue]"); if (!b) return;
-  bcVue = b.dataset.vue; renderBigCal();
+  bcVue = b.dataset.vue; try { localStorage.setItem("noname-bcvue", bcVue); } catch {}
+  if (bcVue === "semaine" && !semaine.startsWith(isoDay(mois).slice(0, 7))) semaine = lundiDe(isoDay(mois) < today() && today().startsWith(isoDay(mois).slice(0, 7)) ? today() : isoDay(mois));
+  renderBigCal();
   if (bcVue === "tout") setTimeout(() => $("bc-next-day")?.scrollIntoView({ block: "start" }), 0);
 });
 $("bc-alert").addEventListener("click", (e) => { const b = e.target.closest("[data-id]"); if (b) ouvrir(b.dataset.id); });
 $("bc-fins").onchange = (e) => majCalF("fins", e.target.checked);
 $("bc-grid").addEventListener("click", (e) => {
+  if (clicGrille(e)) return;
   const ev = e.target.closest(".bc-ev"); if (ev) return ouvrir(ev.dataset.id);
   const day = e.target.closest(".bc-day"); if (day) ouvrirJour(day.dataset.day);
 });
