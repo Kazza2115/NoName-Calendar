@@ -108,16 +108,18 @@ Sans ça, le lien de connexion reçu par e-mail ne ramènera pas sur le site.
 
 ---
 
-## Partager avec l'équipe
+## Partager avec l'équipe (un seul mot de passe)
 
-1. Dans Supabase → **Authentication** → **Users** → **Invite user**, saisis l'e-mail de la personne.
-2. Envoie-lui le lien du site.
-3. Sur le site, elle entre son e-mail puis clique **« Première connexion ou mot de passe oublié ? »** : elle reçoit un lien, et le site lui demande de choisir son mot de passe.
-4. Ensuite, elle se connecte simplement avec **e-mail + mot de passe**. Le bouton **Mot de passe** (en haut) permet de le changer, et le lien e-mail sert aussi en cas d'oubli.
+Le site demande uniquement **un mot de passe commun** à toute l'équipe (pas d'e-mail à saisir).
+En coulisses, il se connecte à un compte Supabase partagé : `equipe@noname-calendar.app` (défini par `EQUIPE_EMAIL` dans `index.html`).
 
-Pour retirer l'accès à quelqu'un : **Authentication** → **Users** → supprime l'utilisateur.
+**Créer le compte équipe (une seule fois) :**
+1. Supabase → **Authentication** → **Users** → **Add user** → **Create new user**.
+2. E-mail : `equipe@noname-calendar.app` · Mot de passe : celui de l'équipe · coche **Auto Confirm User**.
 
-Tous les membres connectés peuvent ajouter, modifier et supprimer des demandes. Les changements apparaissent chez tout le monde en direct.
+Envoie ensuite le lien du site et le mot de passe à l'équipe. Chacun peut indiquer son prénom à la connexion : il signe ses updates (mémorisé sur son appareil).
+
+**Changer le mot de passe** (ex. quelqu'un quitte l'équipe) : **Authentication** → **Users** → clic sur `equipe@noname-calendar.app` → **Reset password** / changer le mot de passe. Les sessions déjà ouvertes restent actives jusqu'à déconnexion ; pour éjecter tout le monde, supprime l'utilisateur et recrée-le.
 
 ---
 
@@ -153,7 +155,7 @@ Pour ajouter un champ (ex. « lieu ») :
 | Problème | Solution |
 |---|---|
 | Bandeau « Configuration manquante » | Les clés Supabase ne sont pas remplies dans `index.html` |
-| « Adresse non autorisée » à la connexion | La personne n'a pas été invitée (étape Partager) |
+| « Mot de passe incorrect » alors qu'il est bon | Le compte `equipe@noname-calendar.app` n'existe pas ou n'est pas confirmé (étape Partager) |
 | Le lien e-mail ouvre une page vide ou localhost | Vérifie la **Site URL** et les **Redirect URLs** (étape 5) |
 | « Liste indisponible » | Le projet Supabase est en pause → relance-le depuis le tableau de bord |
 | Les autres ne voient pas les changements en direct | Relance la ligne `alter publication supabase_realtime add table public.demandes;` |

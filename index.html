@@ -203,7 +203,6 @@
     </div>
     <div class="user hidden" id="userbox">
       <span id="useremail"></span>
-      <button class="btn small" id="change-pwd">Mot de passe</button>
       <button class="btn small" id="logout">Déconnexion</button>
     </div>
   </header>
@@ -216,28 +215,14 @@
 
   <!-- Connexion -->
   <div class="card login hidden" id="login">
-    <h2>Connexion</h2>
-    <p>Réservé aux membres de l'équipe NONAME.</p>
+    <h2>Accès équipe</h2>
+    <p>Entre le mot de passe de l'équipe NONAME.</p>
     <form id="login-form">
-      <div><label for="login-email">E-mail</label><input type="email" id="login-email" placeholder="ton@email.ch" required autocomplete="email"></div>
       <div><label for="login-pwd">Mot de passe</label><input type="password" id="login-pwd" required autocomplete="current-password"></div>
-      <button class="btn primary" type="submit" id="login-btn">Se connecter</button>
+      <div><label for="login-nom">Ton prénom (pour signer tes updates)</label><input type="text" id="login-nom" autocomplete="given-name" placeholder="Facultatif"></div>
+      <button class="btn primary" type="submit" id="login-btn">Entrer</button>
     </form>
     <div class="msg" id="login-msg"></div>
-    <p style="margin:16px 0 0"><button type="button" class="link" id="login-link">Première connexion ou mot de passe oublié ? Recevoir un lien par e-mail</button></p>
-  </div>
-
-  <!-- Choix / changement du mot de passe -->
-  <div class="card login hidden" id="pwd">
-    <h2>Choisis ton mot de passe</h2>
-    <p>Tu l'utiliseras avec ton e-mail pour te connecter. 8 caractères minimum.</p>
-    <form id="pwd-form">
-      <div><label for="pwd-1">Nouveau mot de passe</label><input type="password" id="pwd-1" required minlength="8" autocomplete="new-password"></div>
-      <div><label for="pwd-2">Confirme le mot de passe</label><input type="password" id="pwd-2" required minlength="8" autocomplete="new-password"></div>
-      <button class="btn primary" type="submit" id="pwd-btn">Enregistrer le mot de passe</button>
-      <button class="btn" type="button" id="pwd-later">Plus tard</button>
-    </form>
-    <div class="msg" id="pwd-msg"></div>
   </div>
 
   <!-- Application -->
@@ -334,6 +319,9 @@
 // ====== CONFIGURATION ======
 const SUPABASE_URL = "https://cmcgdvkobkielgkocmgc.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtY2dkdmtvYmtpZWxna29jbWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NDMzMjEsImV4cCI6MjEwNzExOTMyMX0.rx1NEylSZXfnk_ozY0-_vgwd_hmV0WulwBuDZ5PNW9U";
+
+// Compte partagé de l'équipe (créé dans Supabase → Authentication → Users → Add user)
+const EQUIPE_EMAIL = "equipe@noname-calendar.app";
 
 const TYPES = [
   "Enregistrement studio", "Mix / master", "Production / beat", "Co-production label",
@@ -659,7 +647,7 @@ function ajouterUpdate() {
   const txt = $("e-update").value.trim();
   if (!txt) return;
   const d = new Date();
-  const qui = userEmail ? " · " + userEmail.split("@")[0] : "";
+  const qui = userEmail ? " · " + userEmail : "";
   const ligne = `[${pad(d.getDate())}.${pad(d.getMonth() + 1)} ${pad(d.getHours())}:${pad(d.getMinutes())}${qui}] ${txt}`;
   const notes = $("e-notes").value;
   $("e-notes").value = ligne + (notes ? "\n" + notes : "");
@@ -775,18 +763,22 @@ $("recap").onclick = () => copier(recap());
 setInterval(() => { if (vue === "activite") renderActivite(); }, 60000);
 
 // ---------- Connexion ----------
+// Un seul compte partagé par toute l'équipe : seul le mot de passe est demandé.
+const NOM_KEY = "noname-prenom";
+try { $("login-nom").value = localStorage.getItem(NOM_KEY) || ""; } catch {}
+
 $("login-form").onsubmit = async (e) => {
   e.preventDefault();
   const msg = $("login-msg");
+  const nom = $("login-nom").value.trim();
+  try { localStorage.setItem(NOM_KEY, nom); } catch {}
   $("login-btn").disabled = true; msg.className = "msg"; msg.textContent = "Connexion…";
-  const { error } = await sb.auth.signInWithPassword({
-    email: $("login-email").value.trim(), password: $("login-pwd").value
-  });
+  const { error } = await sb.auth.signInWithPassword({ email: EQUIPE_EMAIL, password: $("login-pwd").value });
   $("login-btn").disabled = false;
   if (error) {
     msg.className = "msg ko";
     msg.textContent = /invalid login credentials/i.test(error.message)
-      ? "E-mail ou mot de passe incorrect. Première connexion ? Utilise le lien ci-dessous."
+      ? "Mot de passe incorrect."
       : /rate|too many/i.test(error.message)
         ? "Trop de tentatives. Réessaie dans quelques minutes."
         : "Erreur : " + error.message;
@@ -796,68 +788,14 @@ $("login-form").onsubmit = async (e) => {
   }
 };
 
-$("login-link").onclick = async () => {
-  const email = $("login-email").value.trim();
-  const msg = $("login-msg");
-  if (!email || !$("login-email").checkValidity()) {
-    msg.className = "msg ko"; msg.textContent = "Entre d'abord ton e-mail ci-dessus."; $("login-email").focus(); return;
-  }
-  msg.className = "msg"; msg.textContent = "Envoi…";
-  const { error } = await sb.auth.signInWithOtp({
-    email, options: { shouldCreateUser: false, emailRedirectTo: location.href.split("#")[0].split("?")[0] }
-  });
-  if (error) {
-    msg.className = "msg ko";
-    msg.textContent = /sign ?ups?|not allowed|not found|otp_disabled/i.test(error.message)
-      ? "Adresse non autorisée : demande une invitation à l'équipe."
-      : /rate|seconds/i.test(error.message)
-        ? "Trop de demandes de lien. Réessaie dans quelques minutes."
-        : "Erreur : " + error.message;
-  } else {
-    msg.className = "msg ok";
-    msg.textContent = "Lien envoyé ! Ouvre l'e-mail reçu : tu pourras ensuite choisir ton mot de passe.";
-  }
-};
+function prenom() { try { return localStorage.getItem(NOM_KEY) || ""; } catch { return ""; } }
 
-// Écran « choisir mon mot de passe »
-function afficherPwd(premiere) {
-  $("pwd").querySelector("h2").textContent = premiere ? "Choisis ton mot de passe" : "Changer de mot de passe";
-  $("pwd-1").value = ""; $("pwd-2").value = ""; $("pwd-msg").textContent = "";
-  $("app").classList.add("hidden");
-  $("pwd").classList.remove("hidden");
-  setTimeout(() => $("pwd-1").focus(), 30);
-}
-function masquerPwd() {
-  $("pwd").classList.add("hidden");
-  $("app").classList.remove("hidden");
-}
-$("pwd-form").onsubmit = async (e) => {
-  e.preventDefault();
-  const msg = $("pwd-msg");
-  if ($("pwd-1").value !== $("pwd-2").value) { msg.className = "msg ko"; msg.textContent = "Les deux mots de passe ne correspondent pas."; return; }
-  $("pwd-btn").disabled = true; msg.className = "msg"; msg.textContent = "Enregistrement…";
-  const { error } = await sb.auth.updateUser({ password: $("pwd-1").value, data: { mdp_defini: true } });
-  $("pwd-btn").disabled = false;
-  if (error) {
-    msg.className = "msg ko";
-    msg.textContent = /same|different/i.test(error.message) ? "Choisis un mot de passe différent de l'actuel."
-      : /weak|short|least/i.test(error.message) ? "Mot de passe trop faible : 8 caractères minimum."
-      : /reauth|recent/i.test(error.message) ? "Par sécurité, reconnecte-toi avec un lien e-mail puis réessaie."
-      : "Erreur : " + error.message;
-    return;
-  }
-  masquerPwd();
-  toast("Mot de passe enregistré");
-};
-$("pwd-later").onclick = masquerPwd;
-$("change-pwd").onclick = () => afficherPwd(false);
-
-function afficherApp(email) {
-  userEmail = email || "";
+function afficherApp(connecte) {
+  userEmail = connecte ? prenom() : "";
   $("login").classList.add("hidden");
   $("app").classList.remove("hidden");
-  $("userbox").classList.toggle("hidden", !email);
-  $("useremail").textContent = email || "";
+  $("userbox").classList.toggle("hidden", !connecte);
+  $("useremail").textContent = userEmail ? "Connecté·e : " + userEmail : "";
 }
 
 let sessionUserId = null;
@@ -866,18 +804,17 @@ function setSession(session) {
     const nouvelle = session.user.id !== sessionUserId;
     sessionUserId = session.user.id;
     if (!nouvelle) return; // simple rafraîchissement du jeton
-    afficherApp(session.user.email);
+    afficherApp(true);
     charger();
     abonnerTempsReel();
-    if (!session.user.user_metadata?.mdp_defini) afficherPwd(true);
   } else {
     sessionUserId = null;
     if (channel) { sb.removeChannel(channel); channel = null; }
     items = [];
     $("app").classList.add("hidden");
-    $("pwd").classList.add("hidden");
     $("userbox").classList.add("hidden");
     $("login").classList.remove("hidden");
+    setTimeout(() => $("login-pwd").focus(), 30);
   }
 }
 
