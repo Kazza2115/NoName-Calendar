@@ -225,6 +225,7 @@
   .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
   .legend .lr { background: color-mix(in srgb, var(--accent) 30%, transparent); }
   .legend .lc { background: var(--info); border-radius: 50%; width: 6px; height: 6px; }
+  .legend .la { background: repeating-linear-gradient(45deg, var(--danger) 0 2px, transparent 2px 4px); border-radius: 3px; width: 10px; height: 10px; }
   .legend .lm { background: var(--warn); border-radius: 50%; width: 6px; height: 6px; }
   .legend .lf { background: var(--ok); border-radius: 50%; width: 6px; height: 6px; }
   /* Liste des sessions du mois affiché, sous le mini calendrier */
@@ -374,7 +375,12 @@
   .bc-ev small { display: block; font-size: 13px; font-weight: 500; color: var(--muted); overflow: hidden; text-overflow: ellipsis; }
   .bc-ev:hover { transform: translateX(2px); }
   .bc-ev.closed { opacity: .55; }
-  .bc-ev.annulee { text-decoration: line-through; opacity: .45; }
+  .bc-ev.annulee, .wk-ev.annulee, .wk-chip.annulee {
+    --rc: var(--danger); opacity: 1 !important; color: var(--muted);
+    background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--danger) 14%, var(--card)) 0 6px, var(--card) 6px 12px);
+    border-left-color: var(--danger); }
+  .bc-ev.annulee b, .wk-ev.annulee b, .wk-chip.annulee span[translate], .bc-ev.annulee .hh, .wk-ev.annulee .wk-t { text-decoration: line-through; }
+  .tag-ann { display: inline-block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: #fff; background: var(--danger); border-radius: 5px; padding: 0 5px; text-decoration: none !important; vertical-align: 1px; }
   .bc-ev.fin { background: transparent; border: 1.5px dashed var(--ok); border-left-width: 4px; color: var(--ok); }
   .bc-ev.contact { background: transparent; border: 1.5px dotted var(--info); border-left-width: 4px; color: var(--info); font-weight: 500; }
   .bc-add { margin-top: auto; align-self: flex-end; font-size: 14px; color: var(--muted); opacity: 0; }
@@ -672,6 +678,7 @@
             <button type="button" data-calf="contacts"><i class="lc"></i>Contact</button>
             <button type="button" data-calf="fins"><i class="lf"></i>Terminée</button>
             <button type="button" data-calf="modifs"><i class="lm"></i>Modifié ce jour</button>
+            <button type="button" data-calf="annulees"><i class="la"></i>Annulée</button>
           </div>
           <div class="mois-liste" id="mois-liste"></div>
           <button class="btn" id="cal-open" style="width:100%;margin-top:12px">⤢ Ouvrir le grand calendrier</button>
@@ -709,6 +716,7 @@
         <span class="langsw" id="bc-vue" style="margin:0"><button type="button" data-vue="semaine">Semaine</button><button type="button" data-vue="mois">Mois</button><button type="button" data-vue="tout">Tout</button></span>
         <label><input type="checkbox" id="bc-contacts"> Contacts</label>
         <label><input type="checkbox" id="bc-fins"> Fins</label>
+        <label><input type="checkbox" id="bc-annulees"> Annulées</label>
       </div>
       <div class="bc-legend" id="bc-legend"></div>
       <button class="btn" id="bc-close" aria-label="Fermer">✕ Fermer</button>
@@ -838,7 +846,7 @@ const EN = {
   "Contact": "Contact", "Statut": "Status", "Responsable *": "Owner *", "Responsable": "Owner", "Choisir…": "Choose…", "Choisir un responsable…": "Choose an owner…", "Ajouter": "Add",
   "Demandes actives": "Active requests", "Sessions sous 7 jours": "Sessions within 7 days", "Reste à encaisser": "Left to collect",
   "Toutes": "All", "Actives": "Active", "💰 À encaisser": "💰 To collect",
-  "Nouvelle": "New", "En cours": "In progress", "En attente": "On hold", "Confirmée": "Confirmed", "Terminée": "Finished", "Annulée": "Cancelled",
+  "Nouvelle": "New", "En cours": "In progress", "En attente": "On hold", "Confirmée": "Confirmed", "Terminée": "Finished", "Annulée": "Cancelled", "Annulées": "Cancelled",
   "Rechercher un client, une demande…": "Search a client, a request…", "Tous les responsables": "All owners", "⚠ Non assignées": "⚠ Unassigned", "⚠ À assigner": "⚠ Unassigned", "À assigner": "Unassigned", "à assigner": "unassigned",
   "Tri : prochaine session": "Sort: next session", "Tri : dernière modification": "Sort: last change", "Tri : dernier contact": "Sort: last contact", "Tri : client A → Z": "Sort: client A → Z", "Tri : reste à payer": "Sort: amount due", "Tri : date de fin (récentes d'abord)": "Sort: end date (newest first)",
   "Trier": "Sort", "Filtrer par responsable": "Filter by owner",
@@ -856,7 +864,7 @@ const EN = {
   "Enregistrement studio": "Studio recording", "Mix / master": "Mix / master", "Production / beat": "Production / beat", "Co-production label": "Label co-production", "Booking / live": "Booking / live", "Promo / com": "Promo / PR", "Admin / contrat": "Admin / contract", "Autre": "Other",
   "Cliquer pour modifier la date": "Click to change the date", "Retirer cette date": "Remove this date", "Fermer": "Close", "✕ Fermer": "✕ Close", "Mois précédent": "Previous month", "Mois suivant": "Next month", "Aujourd'hui": "Today", "Grand calendrier": "Big calendar", "+ session": "+ session", "Aucune session ce mois-ci.": "No sessions this month.",
   "Copier son récap": "Copy their summary", "+ Nouvelle demande": "+ New request", "Total facturé": "Total invoiced", "Déjà payé": "Already paid", "Reste à payer": "Amount due", "Tout est payé": "All paid", "Aucune session.": "No sessions.",
-  "jj/mm/aaaa": "dd/mm/yyyy", "Vue d'ensemble": "Overview", "📜 Logs": "📜 Logs", "🔐 Connexions & comptes": "🔐 Logins & accounts", "Actualiser": "Refresh", "Actualisé": "Refreshed", "Tous les profils": "All profiles", "Toutes les actions": "All actions", "7 derniers jours": "Last 7 days", "30 derniers jours": "Last 30 days", "Rechercher (client, profil…)": "Search (client, profile…)", "⬇ Logs (CSV)": "⬇ Logs (CSV)", "Création": "Created", "Modification": "Changed", "Suppression": "Deleted", "Connexion": "Login", "↩ Restaurer": "↩ Restore", "Restaurer cette demande supprimée ?": "Restore this deleted request?", "Demande restaurée": "Request restored", "Chargement…": "Loading…", "Aucune entrée pour ces filtres.": "No entries for these filters.", "Comptes Supabase": "Supabase accounts", "Compte": "Account", "Rôle": "Role", "Dernière connexion": "Last login", "Équipe": "Team", "Admin": "Admin", "🔒 Sécurité": "🔒 Security", "Aucune connexion enregistrée pour l'instant.": "No logins recorded yet.", "Aucune": "None", "Semaine": "Week", "Sans horaire": "No time", "🕐 Voir la journée": "🕐 See the day", "Journée": "Day", "Jour précédent": "Previous day", "Jour suivant": "Next day", "Aussi ce jour-là": "Also that day", "✓ Terminée": "✓ Finished", "☎ Contact": "☎ Contact", "🕐 détail": "🕐 details", "☀️ Clair": "☀️ Light", "🌙 Sombre": "🌙 Dark", "Thème": "Theme", "Catégorie": "Category", "Cliquer pour afficher / masquer": "Click to show / hide", "🕐 de": "🕐 from", "à": "to", "(facultatif, appliqué à la date ajoutée)": "(optional, applied to the date you add)", "Heure de début": "Start time", "Heure de fin": "End time", "Modifier l'horaire": "Change the time",
+  "jj/mm/aaaa": "dd/mm/yyyy", "Annulée": "Cancelled", "Vue d'ensemble": "Overview", "📜 Logs": "📜 Logs", "🔐 Connexions & comptes": "🔐 Logins & accounts", "Actualiser": "Refresh", "Actualisé": "Refreshed", "Tous les profils": "All profiles", "Toutes les actions": "All actions", "7 derniers jours": "Last 7 days", "30 derniers jours": "Last 30 days", "Rechercher (client, profil…)": "Search (client, profile…)", "⬇ Logs (CSV)": "⬇ Logs (CSV)", "Création": "Created", "Modification": "Changed", "Suppression": "Deleted", "Connexion": "Login", "↩ Restaurer": "↩ Restore", "Restaurer cette demande supprimée ?": "Restore this deleted request?", "Demande restaurée": "Request restored", "Chargement…": "Loading…", "Aucune entrée pour ces filtres.": "No entries for these filters.", "Comptes Supabase": "Supabase accounts", "Compte": "Account", "Rôle": "Role", "Dernière connexion": "Last login", "Équipe": "Team", "Admin": "Admin", "🔒 Sécurité": "🔒 Security", "Aucune connexion enregistrée pour l'instant.": "No logins recorded yet.", "Aucune": "None", "Semaine": "Week", "Sans horaire": "No time", "🕐 Voir la journée": "🕐 See the day", "Journée": "Day", "Jour précédent": "Previous day", "Jour suivant": "Next day", "Aussi ce jour-là": "Also that day", "✓ Terminée": "✓ Finished", "☎ Contact": "☎ Contact", "🕐 détail": "🕐 details", "☀️ Clair": "☀️ Light", "🌙 Sombre": "🌙 Dark", "Thème": "Theme", "Catégorie": "Category", "Cliquer pour afficher / masquer": "Click to show / hide", "🕐 de": "🕐 from", "à": "to", "(facultatif, appliqué à la date ajoutée)": "(optional, applied to the date you add)", "Heure de début": "Start time", "Heure de fin": "End time", "Modifier l'horaire": "Change the time",
   "Ton profil": "Your profile", "🛡️ Admin": "🛡️ Admin", "🛡️ Panel admin": "🛡️ Admin panel", "Panel admin": "Admin panel", "⬇ Exporter (CSV)": "⬇ Export (CSV)", "Connectés maintenant": "Online now", "Demandes actives / total": "Active / total requests",
   "Par responsable": "By owner", "Actives": "Active", "Encaissé": "Collected", "Activité récente": "Recent activity", "Total": "Total", "Choisir ton profil…": "Choose your profile…", "Invité": "Guest", "➕ Nouveau profil…": "➕ New profile…", "Écris le nom de ton profil": "Type your profile name", "Écris le nom de ton profil.": "Type your profile name.", "Choisis ton profil.": "Choose your profile.", "Autres profils": "Other profiles", "Aucun profil créé pour l'instant.": "No profiles created yet.", "Supprimer ce profil": "Delete this profile", "Supprimer ce profil de la liste ?": "Remove this profile from the list?", "Profil supprimé": "Profile deleted", "en ligne": "online", "Personne": "Nobody", "+ Ajouter": "+ Add", "Mois": "Month", "Tout": "All", "Tous les événements": "All events", "Aucun événement pour l'instant.": "No events yet.",
   "Rien ce mois-ci.": "Nothing this month.",
@@ -1299,13 +1307,13 @@ function renderListe() {
 
 // Ce qui est affiché sur les calendriers (mémorisé sur l'appareil)
 const CALF_KEY = "noname-cal-filtres";
-let calF = { sessions: true, contacts: false, fins: true, modifs: true };
+let calF = { sessions: true, contacts: false, fins: true, modifs: true, annulees: true };
 try { Object.assign(calF, JSON.parse(localStorage.getItem(CALF_KEY)) || {}); } catch {}
 function majCalF(k, v) {
   calF[k] = v;
   try { localStorage.setItem(CALF_KEY, JSON.stringify(calF)); } catch {}
-  $("bc-contacts").checked = calF.contacts; $("bc-fins").checked = calF.fins;
-  renderCalendrier(); renderBigCal();
+  $("bc-contacts").checked = calF.contacts; $("bc-fins").checked = calF.fins; $("bc-annulees").checked = calF.annulees;
+  renderCalendrier(); renderBigCal(); renderJour();
 }
 function renderCalendrier() {
   const y = mois.getFullYear(), m = mois.getMonth();
@@ -1363,7 +1371,7 @@ function evenementsParJour() {
   const parJour = {};
   const push = (d, e) => (parJour[d] ||= []).push(e);
   for (const i of items) {
-    for (const d of sessionsDe(i)) push(d, { i, k: "session", d });
+    if (i.statut !== "annulee" || calF.annulees) for (const d of sessionsDe(i)) push(d, { i, k: "session", d });
     if (voirFins && i.date_fin) push(i.date_fin, { i, k: "fin" });
     if (voirContacts && i.date_contact) push(i.date_contact, { i, k: "contact" });
   }
@@ -1378,7 +1386,7 @@ function evHtml({ i, k, d }) {
   const qui = respConnu(i.resp) ? i.resp : "à assigner";
   if (k === "fin") return `<div class="bc-ev fin" data-id="${i.id}" title="Terminée : ${nom}">✓ ${nom}</div>`;
   if (k === "contact") return `<div class="bc-ev contact" data-id="${i.id}" title="Contact : ${nom}">☎ ${nom}</div>`;
-  return `<div class="bc-ev ${estClos(i) ? "closed" : ""} ${i.statut === "annulee" ? "annulee" : ""}" style="--rc:${respCouleur(i.resp)}" data-id="${i.id}" title="${pl ? pl + " · " : ""}${nom}${detail ? " — " + detail : ""} · ${esc(qui)} · ${statutLabel(i.statut)}">${pl ? `<span class="hh">${pl}</span>` : ""}${nom}<small>${detail ? detail + " · " : ""}${esc(qui)}</small></div>`;
+  return `<div class="bc-ev ${estClos(i) ? "closed" : ""} ${i.statut === "annulee" ? "annulee" : ""}" style="--rc:${respCouleur(i.resp)}" data-id="${i.id}" title="${pl ? pl + " · " : ""}${nom}${detail ? " — " + detail : ""} · ${esc(qui)} · ${statutLabel(i.statut)}">${i.statut === "annulee" ? `<span class="tag-ann">Annulée</span> ` : ""}${pl ? `<span class="hh">${pl}</span>` : ""}${nom}<small>${detail ? detail + " · " : ""}${esc(qui)}</small></div>`;
 }
 function renderAlerteSansDate() {
   const sans = items.filter((i) => !estClos(i) && !sessionsDe(i).length);
@@ -1471,7 +1479,7 @@ function bornes(i, d) {
 function grilleHoraire(jours, entetes) {
   const t = today();
   const donnees = jours.map((d) => {
-    const sess = items.filter((i) => i.statut !== "annulee" && sessionsDe(i).includes(d)).map((i) => ({ i, d, ...bornes(i, d) }));
+    const sess = items.filter((i) => (i.statut !== "annulee" || calF.annulees) && sessionsDe(i).includes(d)).map((i) => ({ i, d, ...bornes(i, d) }));
     const avec = sess.filter((x) => x.a !== null).sort((x, y) => x.a - y.a || y.b - x.b);
     // sessions qui se chevauchent : côte à côte
     const finsCol = [];
@@ -1488,16 +1496,16 @@ function grilleHoraire(jours, entetes) {
   let html = `<div class="wk" style="--n:${jours.length};--hh:${HH}px">`;
   if (entetes) html += `<div class="wk-corner"></div>` + jours.map((d) => `<div class="wk-head ${d === t ? "today" : ""}" data-jour-ouvrir="${d}" title="🕐 Voir la journée">${parse(d).toLocaleDateString(LOC(), { weekday: "short" }).replace(".", "")} <b>${parse(d).getDate()}</b></div>`).join("");
   html += `<div class="wk-allday-l">Sans horaire</div>` + donnees.map((j) => `<div class="wk-allday ${j.d === t ? "today" : ""}" data-jour="${j.d}">`
-    + j.sans.map((x) => `<div class="wk-chip" data-drag="${x.i.id}" data-jour="${j.d}" data-duree="60" style="--rc:${respCouleur(x.i.resp)}" title="${titre(x.i)} · ${qui(x.i)} · ${placeeTexte(x.i, j.d)}"><span translate="no">${esc(x.i.client || x.i.titre)}</span></div>`).join("")
+    + j.sans.map((x) => `<div class="wk-chip ${x.i.statut === "annulee" ? "annulee" : ""}" data-drag="${x.i.id}" data-jour="${j.d}" data-duree="60" style="--rc:${respCouleur(x.i.resp)}" title="${titre(x.i)} · ${qui(x.i)} · ${placeeTexte(x.i, j.d)}"><span translate="no">${esc(x.i.client || x.i.titre)}</span>${x.i.statut === "annulee" ? ` <span class="tag-ann">Annulée</span>` : ""}</div>`).join("")
     + j.autres.map((i) => `<div class="wk-chip ${i.date_fin === j.d ? "fin" : "contact"}" data-id="${i.id}"><span translate="no">${i.date_fin === j.d ? "✓" : "☎"} ${esc(i.client || i.titre)}</span></div>`).join("")
     + `</div>`).join("");
   let lignes = ""; for (let h = h0; h < h1; h++) lignes += `<div class="wk-hl">${fmtH(hm(h * 60))}</div>`;
   html += `<div class="wk-time">${lignes}</div>`;
   html += donnees.map((j) => `<div class="wk-col ${j.d === t ? "today" : ""} ${flash.days.has(j.d) ? "pulse" : ""}" data-jour="${j.d}" data-h0="${h0}" data-h1="${h1}" style="height:${(h1 - h0) * HH}px">`
-    + j.avec.map((x) => `<div class="wk-ev ${estClos(x.i) ? "closed" : ""} ${flash.ids.has(x.i.id) ? "flash" : ""}" data-drag="${x.i.id}" data-jour="${j.d}" data-duree="${x.b - x.a}"
+    + j.avec.map((x) => `<div class="wk-ev ${estClos(x.i) ? "closed" : ""} ${x.i.statut === "annulee" ? "annulee" : ""} ${flash.ids.has(x.i.id) ? "flash" : ""}" data-drag="${x.i.id}" data-jour="${j.d}" data-duree="${x.b - x.a}"
         style="--rc:${respCouleur(x.i.resp)};top:${(x.a / 60 - h0) * HH + 1}px;height:${Math.max(22, (x.b - x.a) / 60 * HH - 2)}px;left:calc(${(100 / j.nCol) * x.col}% + 2px);width:calc(${100 / j.nCol}% - 4px)"
         title="${plageDe(x.i, j.d)} · ${esc(x.i.client || "")} ${titre(x.i) ? "— " + titre(x.i) : ""} · ${qui(x.i)} · ${statutLabel(x.i.statut)} · ${placeeTexte(x.i, j.d)}">
-        <span class="wk-t">${plageDe(x.i, j.d)}</span> <b translate="no">${esc(x.i.client || x.i.titre)}</b><small>${titre(x.i)}${titre(x.i) ? " · " : ""}${qui(x.i)}</small><small class="wk-pl">${placeeTexte(x.i, j.d)}</small></div>`).join("")
+        ${x.i.statut === "annulee" ? `<span class="tag-ann">Annulée</span> ` : ""}<span class="wk-t">${plageDe(x.i, j.d)}</span> <b translate="no">${esc(x.i.client || x.i.titre)}</b><small>${titre(x.i)}${titre(x.i) ? " · " : ""}${qui(x.i)}</small><small class="wk-pl">${placeeTexte(x.i, j.d)}</small></div>`).join("")
     + (j.d === t && mNow >= h0 * 60 && mNow <= h1 * 60 ? `<div class="wk-now" style="top:${(mNow / 60 - h0) * HH}px"></div>` : "")
     + `</div>`).join("");
   return html + `</div>`;
@@ -2117,7 +2125,8 @@ const decalerSemaine = (n) => { const x = parse(semaine); x.setDate(x.getDate() 
 $("bc-prev").onclick = () => { if (bcVue === "semaine") return decalerSemaine(-1); mois.setMonth(mois.getMonth() - 1); render(); };
 $("bc-next").onclick = () => { if (bcVue === "semaine") return decalerSemaine(1); mois.setMonth(mois.getMonth() + 1); render(); };
 $("bc-today").onclick = () => { semaine = lundiDe(today()); mois = new Date(); mois.setDate(1); render(); };
-$("bc-contacts").checked = calF.contacts; $("bc-fins").checked = calF.fins;
+$("bc-contacts").checked = calF.contacts; $("bc-fins").checked = calF.fins; $("bc-annulees").checked = calF.annulees;
+$("bc-annulees").onchange = (e) => majCalF("annulees", e.target.checked);
 $("bc-contacts").onchange = (e) => majCalF("contacts", e.target.checked);
 $("cal-filtre").addEventListener("click", (e) => { const b = e.target.closest("[data-calf]"); if (b) majCalF(b.dataset.calf, !calF[b.dataset.calf]); });
 $("bc-vue").addEventListener("click", (e) => {
