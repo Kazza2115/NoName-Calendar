@@ -94,7 +94,19 @@
   /* Nouvelle réservation */
   .quick { padding: 14px; margin-bottom: 14px; }
   .quick-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; align-items: end; }
-  .quick-grid .q-client, .quick-grid .q-titre { grid-column: span 2; }
+  .quick-grid .q-client, .quick-grid .q-titre, .quick-grid .q-sessions { grid-column: span 2; }
+  .quick-grid button[type=submit] { grid-column: 4; }
+
+  /* Sélecteur de sessions (plusieurs dates) */
+  .date-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; min-height: 24px; align-items: center; }
+  .date-chips .hint { font-size: 12px; color: var(--muted); }
+  .dchip { display: inline-flex; align-items: center; gap: 2px; font-size: 12px; font-weight: 600; padding: 3px 3px 3px 9px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); font-variant-numeric: tabular-nums; animation: pop .25s ease-out; }
+  .dchip.past { opacity: .55; }
+  .dchip button { border: none; background: transparent; color: inherit; cursor: pointer; padding: 0 5px; font-size: 14px; line-height: 1; border-radius: 999px; }
+  .dchip button:hover { background: color-mix(in srgb, var(--accent) 22%, transparent); }
+  @keyframes pop { from { transform: scale(.6); opacity: 0; } }
+  .date-chips input.dedit { width: auto; padding: 2px 8px; font-size: 12px; border-radius: 999px; border-color: var(--accent); }
+  .nb { display: inline-block; font-size: 11px; font-weight: 700; padding: 0 6px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); margin-left: 4px; vertical-align: 1px; }
 
   /* Indicateurs */
   .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
@@ -248,7 +260,7 @@
     .side .side-list { display: none; }
     .kpis { grid-template-columns: repeat(2, 1fr); }
     .quick-grid { grid-template-columns: 1fr 1fr; }
-    .quick-grid button { grid-column: span 2; }
+    .quick-grid button[type=submit] { grid-column: span 2; }
     .thead { display: none; }
     .row { grid-template-columns: 1fr 1fr; grid-template-areas: "cl st" "rs ct"; row-gap: 8px; }
     .row .c-cl { grid-area: cl; } .row .c-st { grid-area: st; justify-self: end; }
@@ -300,7 +312,7 @@
           <div class="quick-grid">
             <div class="q-client"><label for="q-client">Nom du client *</label><input type="text" id="q-client" required autocomplete="off" placeholder="Artiste, label…"></div>
             <div class="q-titre"><label for="q-titre">Demande</label><input type="text" id="q-titre" autocomplete="off" placeholder="Ex. : session voix 2 titres"></div>
-            <div><label for="q-resa">Réservation</label><input type="date" id="q-resa"></div>
+            <div class="q-sessions"><label for="q-date-add">Sessions studio (une ou plusieurs dates)</label><input type="date" id="q-date-add"><div class="date-chips" id="q-chips"></div></div>
             <div><label for="q-contact">Contact</label><input type="date" id="q-contact"></div>
             <div><label for="q-statut">Statut</label><select id="q-statut"></select></div>
             <button class="btn primary" type="submit">Ajouter</button>
@@ -315,14 +327,14 @@
         <div class="toolbar">
           <input type="search" class="grow" id="search" placeholder="Rechercher un client, une demande…">
           <select id="sort" aria-label="Trier">
-            <option value="resa">Tri : réservation la plus proche</option>
+            <option value="resa">Tri : prochaine session</option>
             <option value="modif">Tri : dernière modification</option>
             <option value="contact">Tri : dernier contact</option>
             <option value="client">Tri : client A → Z</option>
           </select>
         </div>
 
-        <div class="thead"><span>Client</span><span>Réservation</span><span>Contact</span><span>Statut</span><span style="text-align:right">Modifié</span></div>
+        <div class="thead"><span>Client</span><span>Sessions</span><span>Contact</span><span>Statut</span><span style="text-align:right">Modifié</span></div>
         <div class="rows" id="rows"></div>
       </div>
 
@@ -336,7 +348,7 @@
           </div>
           <div class="mini-grid" id="cal"></div>
           <div class="legend">
-            <span><i class="lr"></i>Réservation</span>
+            <span><i class="lr"></i>Session studio</span>
             <span><i class="lc"></i>Contact</span>
             <span><i class="lm"></i>Modifié ce jour</span>
           </div>
@@ -344,7 +356,7 @@
         </div>
 
         <div class="card side-list">
-          <p class="section-title">Prochaines réservations</p>
+          <p class="section-title">Prochaines sessions</p>
           <div id="upcoming"></div>
         </div>
 
@@ -366,8 +378,8 @@
   </div>
   <div class="field"><label for="e-client">Nom du client *</label><input type="text" id="e-client"></div>
   <div class="field"><label for="e-titre">Demande</label><input type="text" id="e-titre"></div>
+  <div class="field"><label for="e-date-add">Sessions studio — ajoute autant de dates que nécessaire</label><input type="date" id="e-date-add"><div class="date-chips" id="e-chips"></div></div>
   <div class="grid2">
-    <div class="field"><label for="e-resa">Date de réservation</label><input type="date" id="e-resa"></div>
     <div class="field"><label for="e-contact-date">Date de contact</label><input type="date" id="e-contact-date"></div>
     <div class="field"><label for="e-statut">Statut</label><select id="e-statut"></select></div>
     <div class="field"><label for="e-type">Type</label><select id="e-type"></select></div>
@@ -453,6 +465,11 @@ function relTime(iso) {
   return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${String(d.getFullYear()).slice(2)}`;
 }
 const jourModif = (i) => i.maj_le ? isoDay(new Date(i.maj_le)) : null;
+// Toutes les dates de session d'une demande (triées, sans doublon)
+const sessionsDe = (i) => [...new Set(i.sessions?.length ? i.sessions : (i.date_reservation ? [i.date_reservation] : []))].sort();
+// Prochaine session à venir (sinon la dernière passée)
+const prochaine = (i) => { const s = sessionsDe(i), t = today(); return s.find((d) => d >= t) || s[s.length - 1] || null; };
+const sessionsPayload = (arr) => { const s = [...new Set(arr)].sort(); return { sessions: s, date_reservation: s[0] || null }; };
 
 // ---------- Interface utilitaire ----------
 let toastTimer;
@@ -472,7 +489,7 @@ const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString
 function marquer(row, ancien) {
   if (!row) return;
   flash.ids.add(row.id);
-  [row.date_reservation, row.date_contact, ancien?.date_reservation, jourModif(row)].filter(Boolean).forEach((d) => flash.days.add(d));
+  [...sessionsDe(row), row.date_contact, ...(ancien ? sessionsDe(ancien) : []), jourModif(row)].filter(Boolean).forEach((d) => flash.days.add(d));
   clearTimeout(marquer.t);
   marquer.t = setTimeout(() => { flash.ids.clear(); flash.days.clear(); }, 1900);
 }
@@ -486,11 +503,11 @@ function demoSeed() {
   const ago = (h) => new Date(Date.now() - h * 3600000).toISOString();
   const base = { contact: "", resp: "", budget: "", notes: "", priorite: "normale", type: "Autre" };
   return [
-    { ...base, id: uid(), client: "Artiste A", titre: "Session voix — 2 titres", type: "Enregistrement studio", statut: "confirmee", date_reservation: plus(3), date_contact: plus(-2), cree_le: ago(60), maj_le: ago(2) },
-    { ...base, id: uid(), client: "Artiste B", titre: "Master EP 5 titres", type: "Mix / master", statut: "nouvelle", date_reservation: plus(1), date_contact: plus(0), cree_le: ago(5), maj_le: ago(5) },
-    { ...base, id: uid(), client: "Label X", titre: "Co-prod single", type: "Co-production label", statut: "en-attente", date_reservation: plus(9), date_contact: plus(-6), cree_le: ago(200), maj_le: ago(30) },
-    { ...base, id: uid(), client: "Artiste C", titre: "Beat + topline", type: "Production / beat", statut: "en-cours", date_reservation: plus(3), date_contact: plus(-1), cree_le: ago(48), maj_le: ago(20) },
-    { ...base, id: uid(), client: "Artiste D", titre: "Showcase", type: "Booking / live", statut: "terminee", date_reservation: plus(-4), date_contact: plus(-12), cree_le: ago(400), maj_le: ago(90) },
+    { ...base, id: uid(), client: "Artiste A", titre: "Session voix — 2 titres", type: "Enregistrement studio", statut: "confirmee", sessions: [plus(3), plus(4), plus(10)], date_contact: plus(-2), cree_le: ago(60), maj_le: ago(2) },
+    { ...base, id: uid(), client: "Artiste B", titre: "Master EP 5 titres", type: "Mix / master", statut: "nouvelle", sessions: [plus(1)], date_contact: plus(0), cree_le: ago(5), maj_le: ago(5) },
+    { ...base, id: uid(), client: "Label X", titre: "Co-prod single", type: "Co-production label", statut: "en-attente", sessions: [plus(9)], date_contact: plus(-6), cree_le: ago(200), maj_le: ago(30) },
+    { ...base, id: uid(), client: "Artiste C", titre: "Beat + topline", type: "Production / beat", statut: "en-cours", sessions: [plus(3), plus(17)], date_contact: plus(-1), cree_le: ago(48), maj_le: ago(20) },
+    { ...base, id: uid(), client: "Artiste D", titre: "Showcase", type: "Booking / live", statut: "terminee", sessions: [plus(-4)], date_contact: plus(-12), cree_le: ago(400), maj_le: ago(90) },
   ];
 }
 
@@ -521,11 +538,11 @@ async function ajouter(obj) {
     row = data;
   } else {
     row = { id: uid(), titre: "", client: "", type: "Autre", priorite: "normale", statut: "nouvelle",
-      date_reservation: null, date_contact: null, contact: "", notes: "", resp: "", budget: "", ...obj, cree_le: now, maj_le: now };
+      sessions: [], date_reservation: null, date_contact: null, contact: "", notes: "", resp: "", budget: "", ...obj, cree_le: now, maj_le: now };
   }
   upsertLocal(row);
   if (!sb) demoSave();
-  if (row.date_reservation) allerAuMois(row.date_reservation);
+  if (prochaine(row)) allerAuMois(prochaine(row));
   marquer(row);
   render(true);
   return true;
@@ -579,7 +596,7 @@ function abonnerTempsReel() {
 function correspond(i) {
   const q = recherche.trim().toLowerCase();
   if (q && ![i.client, i.titre, i.type, i.notes, i.contact, i.resp].join(" ").toLowerCase().includes(q)) return false;
-  if (jourSel && i.date_reservation !== jourSel && i.date_contact !== jourSel) return false;
+  if (jourSel && !sessionsDe(i).includes(jourSel) && i.date_contact !== jourSel) return false;
   if (filtre === "actives") return !estClos(i);
   if (filtre === "toutes") return true;
   return i.statut === filtre;
@@ -587,12 +604,23 @@ function correspond(i) {
 
 function trier(rows) {
   const cmp = {
-    resa: (a, b) => estClos(a) - estClos(b) || (a.date_reservation || "9999").localeCompare(b.date_reservation || "9999"),
+    resa: (a, b) => estClos(a) - estClos(b) || (prochaine(a) || "9999").localeCompare(prochaine(b) || "9999"),
     modif: (a, b) => (b.maj_le || "").localeCompare(a.maj_le || ""),
     contact: (a, b) => (b.date_contact || "").localeCompare(a.date_contact || ""),
     client: (a, b) => (a.client || a.titre || "").localeCompare(b.client || b.titre || "", "fr"),
   }[tri] || ((a, b) => 0);
   return rows.sort(cmp);
+}
+
+function cellSessions(i) {
+  const all = sessionsDe(i), p = prochaine(i);
+  if (!p) return `<span class="none">—</span>`;
+  const n = daysUntil(p);
+  const cls = n === 0 ? "today" : n > 0 && n <= 7 ? "soon" : "";
+  const autres = all.length - 1;
+  const restant = all.filter((d) => d >= today()).length;
+  return `<div class="date" title="${esc(all.map((d) => jourSemaine(d) + " " + fmtDate(d)).join("\n"))}">${jourSemaine(p)} ${fmtShort(p)}${autres ? `<span class="nb">+${autres}</span>` : ""}</div>`
+    + `<div class="date-rel ${cls}">${relJour(p)}${all.length > 1 ? ` · ${restant}/${all.length} à venir` : ""}</div>`;
 }
 
 function cellDate(s, kind) {
@@ -608,8 +636,8 @@ function renderKpis(anim) {
   const m = isoDay(mois).slice(0, 7);
   const vals = [
     { v: items.filter((i) => !estClos(i)).length, l: "Demandes actives" },
-    { v: items.filter((i) => i.date_reservation && i.date_reservation >= t && daysUntil(i.date_reservation) <= 7 && !estClos(i)).length, l: "Réservations sous 7 jours" },
-    { v: items.filter((i) => (i.date_reservation || "").startsWith(m) && i.statut !== "annulee").length, l: "Réservations · " + mois.toLocaleDateString("fr-CH", { month: "long" }) },
+    { v: items.filter((i) => !estClos(i)).flatMap(sessionsDe).filter((d) => d >= t && daysUntil(d) <= 7).length, l: "Sessions sous 7 jours" },
+    { v: items.filter((i) => i.statut !== "annulee").flatMap(sessionsDe).filter((d) => d.startsWith(m)).length, l: "Sessions · " + mois.toLocaleDateString("fr-CH", { month: "long" }) },
     { v: items.filter((i) => i.statut === "en-attente").length, l: "En attente" },
   ];
   const prev = renderKpis.prev || [];
@@ -634,7 +662,7 @@ function renderListe() {
         <div class="cl-name">${esc(i.client || i.titre)}</div>
         <div class="cl-sub">${esc([i.client && i.titre !== i.client ? i.titre : "", i.type && i.type !== "Autre" ? i.type : ""].filter(Boolean).join(" · ") || "—")}</div>
       </div>
-      <div class="c-rs"><span class="lbl">Réservation</span>${cellDate(i.date_reservation, "resa")}</div>
+      <div class="c-rs"><span class="lbl">Sessions</span>${cellSessions(i)}</div>
       <div class="c-ct"><span class="lbl">Contact</span>${cellDate(i.date_contact, "contact")}</div>
       <div class="c-st">
         <select class="statut s-${i.statut}" data-id="${i.id}" aria-label="Statut">
@@ -655,7 +683,7 @@ function renderCalendrier() {
 
   const resa = {}, contact = {}, modif = {};
   for (const i of items) {
-    if (i.date_reservation && i.statut !== "annulee") (resa[i.date_reservation] ||= []).push(i);
+    if (i.statut !== "annulee") for (const d of sessionsDe(i)) (resa[d] ||= []).push(i);
     if (i.date_contact) (contact[i.date_contact] ||= []).push(i);
     const dm = jourModif(i); if (dm) (modif[dm] ||= []).push(i);
   }
@@ -670,7 +698,7 @@ function renderCalendrier() {
       d.getMonth() !== m && "out", key === t && "today", r && "resa", r === 2 && "r2", r >= 3 && "r3",
       key === jourSel && "sel", flash.days.has(key) && "pulse"].filter(Boolean).join(" ");
     const tip = [
-      r && `Réservations : ${resa[key].map((i) => i.client || i.titre).join(", ")}`,
+      r && `Sessions : ${resa[key].map((i) => i.client || i.titre).join(", ")}`,
       c && `Contacts : ${contact[key].map((i) => i.client || i.titre).join(", ")}`,
       md && `${md} modification(s)`,
     ].filter(Boolean).join("\n");
@@ -687,27 +715,27 @@ function renderDetailJour(resa, contact, modif) {
   const box = $("day-detail");
   if (!jourSel) { box.classList.add("hidden"); return; }
   const lignes = [
-    ...(resa[jourSel] || []).map((i) => ({ i, t: "r", l: "Résa" })),
+    ...(resa[jourSel] || []).map((i) => ({ i, t: "r", l: "Session" })),
     ...(contact[jourSel] || []).map((i) => ({ i, t: "c", l: "Contact" })),
     ...(modif[jourSel] || []).map((i) => ({ i, t: "m", l: "Modif" })),
   ];
   box.innerHTML = `<div class="dd-title">${parse(jourSel).toLocaleDateString("fr-CH", { weekday: "long", day: "numeric", month: "long" })}</div>`
     + (lignes.length ? lignes.map(({ i, t, l }) => `<div class="dd-item s-${i.statut}" data-id="${i.id}"><span class="tag ${t}">${l}</span><span class="dot"></span><span class="dd-name">${esc(i.client || i.titre)}</span></div>`).join("")
       : `<div class="none">Rien ce jour-là.</div>`)
-    + `<div style="margin-top:8px"><button class="btn small" id="dd-new">+ Réservation ce jour</button></div>`;
+    + `<div style="margin-top:8px"><button class="btn small" id="dd-new">+ Session ce jour</button></div>`;
   box.classList.remove("hidden");
 }
 
 function renderSide() {
   const t = today();
-  const up = items.filter((i) => i.date_reservation && i.date_reservation >= t && !estClos(i))
-    .sort((a, b) => a.date_reservation.localeCompare(b.date_reservation)).slice(0, 5);
-  $("upcoming").innerHTML = up.length ? up.map((i) => `
+  const up = items.filter((i) => !estClos(i)).flatMap((i) => sessionsDe(i).filter((d) => d >= t).map((d) => ({ i, d })))
+    .sort((a, b) => a.d.localeCompare(b.d)).slice(0, 6);
+  $("upcoming").innerHTML = up.length ? up.map(({ i, d }) => `
     <div class="si s-${i.statut}" data-id="${i.id}">
-      <div class="si-date"><small>${jourSemaine(i.date_reservation)}</small><b>${parse(i.date_reservation).getDate()}</b></div>
-      <div class="si-main"><div class="si-name">${esc(i.client || i.titre)}</div><div class="si-sub">${relJour(i.date_reservation)}${i.titre && i.client && i.titre !== i.client ? " · " + esc(i.titre) : ""}</div></div>
+      <div class="si-date"><small>${jourSemaine(d)}</small><b>${parse(d).getDate()}</b></div>
+      <div class="si-main"><div class="si-name">${esc(i.client || i.titre)}</div><div class="si-sub">${relJour(d)}${i.titre && i.client && i.titre !== i.client ? " · " + esc(i.titre) : ""}</div></div>
       <span class="dot" title="${statutLabel(i.statut)}"></span>
-    </div>`).join("") : `<div class="none" style="font-size:13px">Aucune réservation à venir.</div>`;
+    </div>`).join("") : `<div class="none" style="font-size:13px">Aucune session à venir.</div>`;
 
   const rec = [...items].sort((a, b) => (b.maj_le || "").localeCompare(a.maj_le || "")).slice(0, 6);
   $("recent").innerHTML = rec.length ? rec.map((i) => `
@@ -733,13 +761,13 @@ function infoLine(i) {
 }
 function ouvrir(id, preset = {}) {
   const i = id ? items.find((x) => x.id === id)
-    : { client: "", titre: "", type: "Autre", statut: "nouvelle", date_reservation: "", date_contact: today(), contact: "", resp: "", budget: "", notes: "", ...preset };
+    : { client: "", titre: "", type: "Autre", statut: "nouvelle", sessions: [], date_contact: today(), contact: "", resp: "", budget: "", notes: "", ...preset };
   if (!i) return;
   editId = id || null;
   $("d-title").textContent = id ? (i.client || "Fiche demande") : "Nouvelle demande";
   $("e-client").value = i.client || "";
   $("e-titre").value = i.titre && i.titre !== i.client ? i.titre : "";
-  $("e-resa").value = i.date_reservation || "";
+  dates.e = sessionsDe(i); renderChips("e");
   $("e-contact-date").value = i.date_contact || "";
   $("e-statut").value = i.statut || "nouvelle";
   $("e-type").value = TYPES.includes(i.type) ? i.type : "Autre";
@@ -760,7 +788,7 @@ function lireTiroir() {
   return {
     client,
     titre: $("e-titre").value.trim() || client,
-    date_reservation: $("e-resa").value || null,
+    ...sessionsPayload(dates.e),
     date_contact: $("e-contact-date").value || null,
     statut: $("e-statut").value,
     type: $("e-type").value,
@@ -796,13 +824,13 @@ function recap() {
   const nom = (i) => (i.client || i.titre) + (i.client && i.titre && i.titre !== i.client ? " (" + i.titre + ")" : "");
   let txt = `📋 Réservations NONAME — ${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}\n`;
   const actives = items.filter((i) => !estClos(i));
-  const avenir = actives.filter((i) => i.date_reservation && i.date_reservation >= today())
-    .sort((a, b) => a.date_reservation.localeCompare(b.date_reservation));
+  const avenir = actives.flatMap((i) => sessionsDe(i).filter((d) => d >= today()).map((d) => ({ i, d })))
+    .sort((a, b) => a.d.localeCompare(b.d));
   if (avenir.length) {
-    txt += `\n*📅 À venir* (${avenir.length})\n`;
-    for (const i of avenir) txt += `• ${jourSemaine(i.date_reservation)} ${fmtShort(i.date_reservation)} — ${nom(i)} · ${statutLabel(i.statut)}\n`;
+    txt += `\n*🎙️ Sessions à venir* (${avenir.length})\n`;
+    for (const { i, d } of avenir) txt += `• ${jourSemaine(d)} ${fmtShort(d)} — ${nom(i)} · ${statutLabel(i.statut)}\n`;
   }
-  const aPlanifier = actives.filter((i) => !i.date_reservation || i.date_reservation < today());
+  const aPlanifier = actives.filter((i) => !sessionsDe(i).some((d) => d >= today()));
   if (aPlanifier.length) {
     txt += `\n*🗂️ À planifier / à relancer* (${aPlanifier.length})\n`;
     for (const i of aPlanifier) txt += `• ${nom(i)} · ${statutLabel(i.statut)}${i.date_contact ? " · contact " + fmtShort(i.date_contact) : ""}\n`;
@@ -819,6 +847,36 @@ async function copier(txt) {
   toast("Récap copié — colle-le dans WhatsApp ou un mail");
 }
 
+// ---------- Sessions : plusieurs dates par demande ----------
+const dates = { q: [], e: [] };
+function renderChips(k) {
+  const t = today();
+  $(k + "-chips").innerHTML = dates[k].length
+    ? dates[k].map((d, n) => `<span class="dchip ${d < t ? "past" : ""}" data-n="${n}"><span class="dlabel" title="Cliquer pour modifier la date" style="cursor:pointer">${jourSemaine(d)} ${fmtDate(d)}</span><button type="button" data-del="${n}" aria-label="Retirer cette date">×</button></span>`).join("")
+    : `<span class="hint">Aucune date — choisis-en une ci-dessus (tu peux en ajouter plusieurs)</span>`;
+}
+function setDates(k, arr) { dates[k] = [...new Set(arr.filter(Boolean))].sort(); renderChips(k); }
+for (const k of ["q", "e"]) {
+  $(k + "-date-add").addEventListener("change", (e) => { if (e.target.value) setDates(k, [...dates[k], e.target.value]); e.target.value = ""; });
+  $(k + "-chips").addEventListener("click", (e) => {
+    const del = e.target.closest("[data-del]");
+    if (del) { dates[k].splice(+del.dataset.del, 1); renderChips(k); return; }
+    const lab = e.target.closest(".dlabel"); if (!lab) return;
+    // Modifier une date : la pastille devient un sélecteur de date
+    const chip = lab.closest(".dchip"), n = +chip.dataset.n;
+    const inp = document.createElement("input");
+    inp.type = "date"; inp.value = dates[k][n]; inp.className = "dedit";
+    chip.replaceWith(inp); inp.focus();
+    try { inp.showPicker(); } catch {}
+    let fini = false;
+    const valider = () => { if (fini) return; fini = true; const v = inp.value; const copie = [...dates[k]]; if (v) copie[n] = v; setDates(k, copie); };
+    inp.addEventListener("change", valider);
+    inp.addEventListener("keydown", (ev) => { if (ev.key === "Enter") { ev.preventDefault(); valider(); } if (ev.key === "Escape") { ev.stopPropagation(); fini = true; renderChips(k); } });
+    inp.addEventListener("blur", () => setTimeout(valider, 120));
+  });
+}
+renderChips("q");
+
 // ---------- Événements ----------
 fillSelect($("q-statut"), STATUTS); fillSelect($("e-statut"), STATUTS);
 fillSelect($("e-type"), TYPES);
@@ -830,11 +888,11 @@ $("quick").onsubmit = async (e) => {
   if (!client) return;
   const ok = await ajouter({
     client, titre: $("q-titre").value.trim() || client,
-    date_reservation: $("q-resa").value || null, date_contact: $("q-contact").value || null,
+    ...sessionsPayload(dates.q), date_contact: $("q-contact").value || null,
     statut: $("q-statut").value,
   });
   if (ok) {
-    $("q-client").value = ""; $("q-titre").value = ""; $("q-resa").value = "";
+    $("q-client").value = ""; $("q-titre").value = ""; dates.q = []; renderChips("q");
     $("q-contact").value = today(); $("q-statut").value = "nouvelle";
     $("q-client").focus();
     toast("Demande ajoutée");
@@ -864,7 +922,7 @@ $("cal").addEventListener("click", (e) => {
   render();
 });
 $("day-detail").addEventListener("click", (e) => {
-  if (e.target.id === "dd-new") return ouvrir(null, { date_reservation: jourSel });
+  if (e.target.id === "dd-new") return ouvrir(null, { sessions: [jourSel] });
   const it = e.target.closest(".dd-item"); if (it) ouvrir(it.dataset.id);
 });
 $("upcoming").addEventListener("click", (e) => { const s = e.target.closest(".si"); if (s) ouvrir(s.dataset.id); });
