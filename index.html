@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demandes NONAME</title>
+<meta name="color-scheme" content="light dark">
+<style>
+  :root {
+    --bg: #f6f5f2;
+    --card: #ffffff;
+    --text: #17171a;
+    --muted: #6b6b73;
+    --line: #e4e2dc;
+    --soft: #efede8;
+    --accent: #5b3df5;
+    --accent-text: #ffffff;
+    --danger: #d23b3b;
+    --warn: #c77a0a;
+    --ok: #1f9d5a;
+    --info: #2a6fdb;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(0,0,0,.05), 0 4px 16px rgba(0,0,0,.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111114;
+      --card: #1b1b20;
+      --text: #ececf0;
+      --muted: #9a9aa5;
+      --line: #2c2c33;
+      --soft: #24242a;
+      --accent: #8b74ff;
+      --accent-text: #0f0f12;
+      --danger: #ff6b6b;
+      --warn: #f0a640;
+      --ok: #4cd18a;
+      --info: #6aa3ff;
+      --shadow: none;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 20px 16px 80px; }
+  .hidden { display: none !important; }
+
+  /* En-tête */
+  header { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  h1 { margin: 0; font-size: 26px; letter-spacing: -.02em; }
+  h1 span { color: var(--accent); }
+  .sub { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+  .user { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+
+  .banner { background: color-mix(in srgb, var(--warn) 14%, var(--card)); border: 1px solid color-mix(in srgb, var(--warn) 40%, transparent); padding: 10px 14px; border-radius: var(--radius); margin-bottom: 16px; font-size: 14px; }
+  .banner b { color: var(--warn); }
+  .error { background: color-mix(in srgb, var(--danger) 12%, var(--card)); border-color: color-mix(in srgb, var(--danger) 40%, transparent); }
+  .error b { color: var(--danger); }
+
+  /* Boutons & champs */
+  .btn { border: 1px solid var(--line); background: var(--card); padding: 8px 14px; border-radius: 10px; cursor: pointer; white-space: nowrap; }
+  .btn:hover { border-color: var(--muted); }
+  .btn.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 600; }
+  .btn.danger { color: var(--danger); }
+  .btn.small { padding: 5px 10px; font-size: 13px; }
+  .btn.ghost { border-color: transparent; background: transparent; }
+  input[type=text], input[type=email], input[type=date], input[type=search], select, textarea {
+    width: 100%; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; outline: none;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent); }
+  label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; font-weight: 500; }
+
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+
+  /* Connexion */
+  .login { max-width: 400px; margin: 60px auto; padding: 24px; }
+  .login h2 { margin: 0 0 6px; font-size: 20px; }
+  .login p { color: var(--muted); margin: 0 0 16px; font-size: 14px; }
+  .login form { display: grid; gap: 10px; }
+  .msg { font-size: 14px; margin-top: 10px; }
+  .msg.ok { color: var(--ok); } .msg.ko { color: var(--danger); }
+
+  /* Saisie rapide */
+  .quick { padding: 12px; margin-bottom: 14px; }
+  .quick-row { display: flex; gap: 8px; }
+  .quick-row input { flex: 1; font-size: 16px; }
+  .quick-opts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+  .quick-hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  .link { background: none; border: none; color: var(--accent); cursor: pointer; padding: 0; font-size: 12px; }
+
+  /* Onglets */
+  .tabs { display: flex; gap: 4px; background: var(--soft); padding: 4px; border-radius: 12px; width: fit-content; margin-bottom: 14px; }
+  .tab { border: none; background: transparent; padding: 7px 14px; border-radius: 9px; cursor: pointer; color: var(--muted); font-weight: 500; }
+  .tab.active { background: var(--card); color: var(--text); box-shadow: var(--shadow); }
+
+  /* Barre d'outils liste */
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { border: 1px solid var(--line); background: var(--card); padding: 5px 11px; border-radius: 999px; cursor: pointer; font-size: 13px; }
+  .chip .n { color: var(--muted); margin-left: 4px; font-variant-numeric: tabular-nums; }
+  .chip.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .chip.active .n { color: inherit; opacity: .7; }
+  .toolbar .grow { flex: 1; min-width: 160px; }
+  .stats { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .stat { font-size: 13px; padding: 4px 10px; border-radius: 8px; background: var(--soft); color: var(--muted); }
+  .stat b { font-variant-numeric: tabular-nums; }
+  .stat.hot { background: color-mix(in srgb, var(--danger) 14%, transparent); color: var(--danger); }
+  .stat.late { background: color-mix(in srgb, var(--warn) 16%, transparent); color: var(--warn); }
+
+  /* Liste */
+  .list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; border-left: 4px solid transparent; }
+  .item:hover { border-color: var(--line); }
+  .item.p-urgente { border-left-color: var(--danger); }
+  .item.p-haute { border-left-color: var(--warn); }
+  .item.p-basse { border-left-color: var(--line); }
+  .item.done .titre { text-decoration: line-through; color: var(--muted); }
+  .item-main { flex: 1; min-width: 0; }
+  .titre { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .meta { font-size: 13px; color: var(--muted); display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-top: 2px; }
+  .badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--soft); color: var(--muted); white-space: nowrap; text-transform: uppercase; letter-spacing: .03em; }
+  .badge.urgente { background: color-mix(in srgb, var(--danger) 15%, transparent); color: var(--danger); }
+  .badge.haute { background: color-mix(in srgb, var(--warn) 16%, transparent); color: var(--warn); }
+  .due { font-variant-numeric: tabular-nums; }
+  .due.late { color: var(--danger); font-weight: 600; }
+  .due.soon { color: var(--warn); font-weight: 600; }
+  select.statut { width: auto; padding: 5px 8px; font-size: 13px; border-radius: 8px; }
+  select.statut.s-nouvelle { color: var(--info); }
+  select.statut.s-en-cours { color: var(--accent); }
+  select.statut.s-en-attente { color: var(--warn); }
+  select.statut.s-terminee { color: var(--ok); }
+  .empty { text-align: center; color: var(--muted); padding: 40px 16px; }
+
+  /* Calendrier */
+  .cal-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .cal-head h2 { margin: 0; font-size: 18px; flex: 1; text-transform: capitalize; }
+  .cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); overflow: hidden; }
+  .cal-dow { padding: 8px; font-size: 12px; color: var(--muted); font-weight: 600; text-align: center; border-bottom: 1px solid var(--line); }
+  .cal-day { min-height: 96px; padding: 6px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); cursor: pointer; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .cal-day:nth-child(7n) { border-right: none; }
+  .cal-day:hover { background: var(--soft); }
+  .cal-day.out { color: var(--muted); background: color-mix(in srgb, var(--soft) 50%, transparent); }
+  .cal-day.out .cal-ev { opacity: .6; }
+  .cal-num { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .cal-day.today .cal-num { background: var(--accent); color: var(--accent-text); border-radius: 999px; width: 22px; height: 22px; display: grid; place-items: center; }
+  .cal-ev { font-size: 12px; padding: 2px 6px; border-radius: 6px; background: color-mix(in srgb, var(--accent) 14%, transparent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cal-ev.p-urgente { background: color-mix(in srgb, var(--danger) 18%, transparent); }
+  .cal-ev.p-haute { background: color-mix(in srgb, var(--warn) 20%, transparent); }
+  .cal-ev.done { text-decoration: line-through; opacity: .55; }
+  .cal-more { font-size: 11px; color: var(--muted); }
+  .cal-note { font-size: 13px; color: var(--muted); margin-top: 10px; }
+
+  /* Activité */
+  .feed h3 { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin: 18px 0 8px; }
+  .feed h3:first-child { margin-top: 0; }
+  .ev { display: flex; gap: 12px; padding: 10px 12px; cursor: pointer; align-items: flex-start; }
+  .ev + .ev { margin-top: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 6px; flex: none; background: var(--info); }
+  .dot.s-en-cours { background: var(--accent); } .dot.s-en-attente { background: var(--warn); } .dot.s-terminee { background: var(--ok); }
+  .ev-body { flex: 1; min-width: 0; }
+  .ev-last { font-size: 13px; color: var(--muted); margin-top: 3px; white-space: pre-wrap; word-break: break-word; }
+  .ev-time { font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+  /* Tiroir */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 20; }
+  .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(460px, 100%); background: var(--card); z-index: 21; overflow-y: auto; padding: 18px 18px 24px; border-left: 1px solid var(--line); box-shadow: -10px 0 30px rgba(0,0,0,.12); }
+  .drawer h2 { margin: 0; font-size: 18px; flex: 1; }
+  .d-head { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .field { margin-bottom: 10px; }
+  .drawer textarea { min-height: 140px; resize: vertical; }
+  .update-row { display: flex; gap: 8px; }
+  .d-info { font-size: 12px; color: var(--muted); margin: 6px 0 14px; }
+  .d-actions { display: flex; gap: 8px; justify-content: space-between; margin-top: 14px; }
+
+  .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; z-index: 40; box-shadow: 0 6px 20px rgba(0,0,0,.2); max-width: calc(100% - 32px); }
+
+  @media (max-width: 680px) {
+    h1 { font-size: 22px; }
+    .quick-opts { grid-template-columns: 1fr 1fr; }
+    .item { flex-wrap: wrap; }
+    .item-main { flex-basis: 100%; }
+    .cal-day { min-height: 62px; padding: 4px; }
+    .cal-ev { font-size: 0; padding: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; }
+    .cal-ev.p-urgente { background: var(--danger); } .cal-ev.p-haute { background: var(--warn); }
+    .cal-evs { display: flex; flex-wrap: wrap; gap: 3px; }
+    .cal-more { display: none; }
+    .grid2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Demandes <span>NONAME</span></h1>
+      <p class="sub">Studio · Label · Services artistes — notes, calendrier et suivi</p>
+    </div>
+    <div class="user hidden" id="userbox">
+      <span id="useremail"></span>
+      <button class="btn small" id="logout">Déconnexion</button>
+    </div>
+  </header>
+
+  <div class="banner hidden" id="banner-config">
+    <b>Configuration manquante.</b> Les clés Supabase ne sont pas remplies dans <code>index.html</code>.
+    Le site tourne en <b>mode démo</b> : les données restent uniquement dans ce navigateur.
+  </div>
+  <div class="banner error hidden" id="banner-error"></div>
+
+  <!-- Connexion -->
+  <div class="card login hidden" id="login">
+    <h2>Connexion</h2>
+    <p>Entre ton e-mail : tu recevras un lien de connexion. Seuls les membres invités ont accès.</p>
+    <form id="login-form">
+      <input type="email" id="login-email" placeholder="ton@email.ch" required autocomplete="email">
+      <button class="btn primary" type="submit" id="login-btn">Recevoir le lien</button>
+    </form>
+    <div class="msg" id="login-msg"></div>
+  </div>
+
+  <!-- Application -->
+  <main class="hidden" id="app">
+    <form class="card quick" id="quick">
+      <div class="quick-row">
+        <input type="text" id="q-titre" placeholder="Nouvelle demande… (Entrée pour ajouter)" autocomplete="off">
+        <button class="btn primary" type="submit">Ajouter</button>
+      </div>
+      <div class="quick-opts hidden" id="quick-opts">
+        <div><label for="q-client">Artiste / client</label><input type="text" id="q-client" autocomplete="off"></div>
+        <div><label for="q-type">Type</label><select id="q-type"></select></div>
+        <div><label for="q-prio">Priorité</label><select id="q-prio"></select></div>
+        <div><label for="q-date">Échéance</label><input type="date" id="q-date"></div>
+      </div>
+      <div class="quick-hint"><button type="button" class="link" id="toggle-opts">+ Options (artiste, type, priorité, échéance)</button></div>
+    </form>
+
+    <div class="toolbar" style="justify-content: space-between;">
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-vue="liste">Liste</button>
+        <button class="tab" data-vue="calendrier">Calendrier</button>
+        <button class="tab" data-vue="activite">Updates</button>
+      </div>
+      <button class="btn small" id="recap">Copier le récap</button>
+    </div>
+
+    <!-- Vue liste -->
+    <section id="vue-liste">
+      <div class="toolbar">
+        <div class="chips" id="chips"></div>
+        <input type="search" class="grow" id="search" placeholder="Rechercher…">
+      </div>
+      <div class="stats" id="stats"></div>
+      <ul class="list" id="list"></ul>
+    </section>
+
+    <!-- Vue calendrier -->
+    <section id="vue-calendrier" class="hidden">
+      <div class="cal-head">
+        <h2 id="cal-title"></h2>
+        <button class="btn small" id="cal-prev" aria-label="Mois précédent">‹</button>
+        <button class="btn small" id="cal-today">Aujourd'hui</button>
+        <button class="btn small" id="cal-next" aria-label="Mois suivant">›</button>
+      </div>
+      <div class="card cal" id="cal"></div>
+      <p class="cal-note" id="cal-note"></p>
+    </section>
+
+    <!-- Vue activité -->
+    <section id="vue-activite" class="hidden">
+      <div class="feed" id="feed"></div>
+    </section>
+  </main>
+</div>
+
+<!-- Tiroir d'édition -->
+<div class="overlay hidden" id="overlay"></div>
+<aside class="drawer hidden" id="drawer" aria-label="Fiche demande">
+  <div class="d-head">
+    <h2 id="d-title">Fiche</h2>
+    <button class="btn small ghost" id="d-close" aria-label="Fermer">✕</button>
+  </div>
+  <div class="field"><label for="e-titre">Titre</label><input type="text" id="e-titre"></div>
+  <div class="grid2">
+    <div class="field"><label for="e-client">Artiste / client</label><input type="text" id="e-client"></div>
+    <div class="field"><label for="e-type">Type</label><select id="e-type"></select></div>
+    <div class="field"><label for="e-priorite">Priorité</label><select id="e-priorite"></select></div>
+    <div class="field"><label for="e-statut">Statut</label><select id="e-statut"></select></div>
+    <div class="field"><label for="e-echeance">Échéance</label><input type="date" id="e-echeance"></div>
+    <div class="field"><label for="e-budget">Budget (CHF)</label><input type="text" id="e-budget" inputmode="decimal"></div>
+    <div class="field"><label for="e-contact">Contact</label><input type="text" id="e-contact" placeholder="tél, e-mail, @insta…"></div>
+    <div class="field"><label for="e-resp">Responsable</label><input type="text" id="e-resp"></div>
+  </div>
+  <div class="field">
+    <label for="e-update">Ajouter une update</label>
+    <div class="update-row">
+      <input type="text" id="e-update" placeholder="Ex. : session calée, en attente des stems…">
+      <button class="btn small" id="e-update-btn" type="button">Ajouter</button>
+    </div>
+  </div>
+  <div class="field"><label for="e-notes">Notes & journal</label><textarea id="e-notes"></textarea></div>
+  <div class="d-info" id="d-info"></div>
+  <div class="d-actions">
+    <button class="btn danger" id="d-delete">Supprimer</button>
+    <button class="btn primary" id="d-save">Enregistrer</button>
+  </div>
+</aside>
+
+<div class="toast hidden" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+// ====== CONFIGURATION ======
+const SUPABASE_URL = "https://VOTRE-PROJET.supabase.co";
+const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON_PUBLIQUE";
+
+const TYPES = [
+  "Enregistrement studio", "Mix / master", "Production / beat", "Co-production label",
+  "Booking / live", "Promo / com", "Admin / contrat", "Autre"
+];
+const PRIOS = [
+  { v: "basse", l: "Basse" }, { v: "normale", l: "Normale" },
+  { v: "haute", l: "Haute" }, { v: "urgente", l: "Urgente" }
+];
+const STATUTS = [
+  { v: "nouvelle", l: "Nouvelle" }, { v: "en-cours", l: "En cours" },
+  { v: "en-attente", l: "En attente" }, { v: "terminee", l: "Terminée" }
+];
+// ===========================
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const prioLabel = (v) => (PRIOS.find((p) => p.v === v) || PRIOS[1]).l;
+const statutLabel = (v) => (STATUTS.find((s) => s.v === v) || STATUTS[0]).l;
+const PRIO_RANK = { urgente: 0, haute: 1, normale: 2, basse: 3 };
+
+const configured = !SUPABASE_URL.includes("VOTRE-PROJET") && !SUPABASE_ANON_KEY.includes("VOTRE_CLE");
+let sb = null, channel = null, userEmail = "";
+let items = [];
+let filtre = "toutes", recherche = "", vue = "liste";
+let mois = new Date(); mois.setDate(1);
+let editId = null; // null = nouvelle demande dans le tiroir
+
+// ---------- Dates ----------
+const pad = (n) => String(n).padStart(2, "0");
+const isoDay = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const today = () => isoDay(new Date());
+const fmtDate = (s) => { if (!s) return ""; const [y, m, d] = s.split("-"); return `${d}.${m}.${y}`; };
+const fmtShort = (s) => { if (!s) return ""; const [, m, d] = s.split("-"); return `${d}.${m}`; };
+const daysUntil = (s) => Math.round((new Date(s + "T00:00:00") - new Date(today() + "T00:00:00")) / 86400000);
+function relTime(iso) {
+  const diff = (Date.now() - new Date(iso)) / 1000;
+  if (diff < 60) return "à l'instant";
+  if (diff < 3600) return `il y a ${Math.floor(diff / 60)} min`;
+  if (diff < 86400) return `il y a ${Math.floor(diff / 3600)} h`;
+  const d = new Date(iso);
+  return `${pad(d.getDate())}.${pad(d.getMonth() + 1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function dueHtml(i) {
+  if (!i.echeance) return "";
+  let cls = "";
+  if (i.statut !== "terminee") {
+    const n = daysUntil(i.echeance);
+    if (n < 0) cls = "late"; else if (n <= 2) cls = "soon";
+  }
+  return `<span class="due ${cls}">📅 ${fmtDate(i.echeance)}</span>`;
+}
+const isLate = (i) => i.statut !== "terminee" && i.echeance && i.echeance < today();
+const isUrgent = (i) => i.statut !== "terminee" && i.priorite === "urgente";
+
+// ---------- Interface utilitaire ----------
+let toastTimer;
+function toast(msg) {
+  const t = $("toast"); t.textContent = msg; t.classList.remove("hidden");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.add("hidden"), 2600);
+}
+function showError(msg) { const b = $("banner-error"); b.innerHTML = msg; b.classList.toggle("hidden", !msg); }
+function fillSelect(el, opts) {
+  el.innerHTML = opts.map((o) => typeof o === "string"
+    ? `<option value="${esc(o)}">${esc(o)}</option>`
+    : `<option value="${o.v}">${esc(o.l)}</option>`).join("");
+}
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+
+// ---------- Données (Supabase ou démo locale) ----------
+const DEMO_KEY = "noname-demandes-demo";
+function demoLoad() { try { return JSON.parse(localStorage.getItem(DEMO_KEY)) || null; } catch { return null; } }
+function demoSave() { try { localStorage.setItem(DEMO_KEY, JSON.stringify(items)); } catch {} }
+function demoSeed() {
+  const now = new Date().toISOString();
+  const plus = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return isoDay(d); };
+  const base = { contact: "", resp: "", budget: "", notes: "", cree_le: now, maj_le: now };
+  return [
+    { ...base, id: uid(), titre: "Session voix — 2 titres", client: "Artiste A", type: "Enregistrement studio", priorite: "haute", statut: "en-cours", echeance: plus(3), resp: "Studio" },
+    { ...base, id: uid(), titre: "Master EP 5 titres", client: "Artiste B", type: "Mix / master", priorite: "urgente", statut: "nouvelle", echeance: plus(1), budget: "600" },
+    { ...base, id: uid(), titre: "Contrat de distribution", client: "Label X", type: "Admin / contrat", priorite: "normale", statut: "en-attente", echeance: plus(-2) },
+    { ...base, id: uid(), titre: "Visuels promo single", client: "Artiste A", type: "Promo / com", priorite: "basse", statut: "terminee", echeance: plus(-5) },
+  ];
+}
+
+function upsertLocal(row) {
+  const idx = items.findIndex((i) => i.id === row.id);
+  if (idx >= 0) items[idx] = row; else items.unshift(row);
+}
+
+async function charger() {
+  if (sb) {
+    const { data, error } = await sb.from("demandes").select("*").order("cree_le", { ascending: false });
+    if (error) { showError(`<b>Liste indisponible.</b> ${esc(error.message)} — le projet Supabase est peut-être en pause.`); return; }
+    showError("");
+    items = data || [];
+  } else {
+    items = demoLoad() || demoSeed();
+    demoSave();
+  }
+  render();
+}
+
+async function ajouter(obj) {
+  const now = new Date().toISOString();
+  if (sb) {
+    const { data, error } = await sb.from("demandes").insert(obj).select().single();
+    if (error) { toast("Erreur : " + error.message); return false; }
+    upsertLocal(data);
+  } else {
+    upsertLocal({
+      id: uid(), client: "", type: "Autre", priorite: "normale", statut: "nouvelle", echeance: null,
+      contact: "", notes: "", resp: "", budget: "", ...obj, cree_le: now, maj_le: now
+    });
+    demoSave();
+  }
+  render();
+  return true;
+}
+
+async function modifier(id, patch) {
+  patch = { ...patch, maj_le: new Date().toISOString() };
+  if (sb) {
+    const { data, error } = await sb.from("demandes").update(patch).eq("id", id).select().single();
+    if (error) { toast("Erreur : " + error.message); return false; }
+    upsertLocal(data);
+  } else {
+    const i = items.find((x) => x.id === id);
+    if (i) Object.assign(i, patch);
+    demoSave();
+  }
+  render();
+  return true;
+}
+
+async function supprimer(id) {
+  if (sb) {
+    const { error } = await sb.from("demandes").delete().eq("id", id);
+    if (error) { toast("Erreur : " + error.message); return false; }
+  }
+  items = items.filter((i) => i.id !== id);
+  if (!sb) demoSave();
+  render();
+  return true;
+}
+
+function abonnerTempsReel() {
+  if (!sb || channel) return;
+  channel = sb.channel("demandes-live")
+    .on("postgres_changes", { event: "*", schema: "public", table: "demandes" }, (p) => {
+      if (p.eventType === "DELETE") items = items.filter((i) => i.id !== p.old.id);
+      else upsertLocal(p.new);
+      render();
+      if (editId && p.new && p.new.id === editId && p.eventType === "UPDATE") $("d-info").textContent = infoLine(p.new) + " · modifiée par un membre";
+    })
+    .subscribe();
+}
+
+// ---------- Rendu ----------
+function filtrees() {
+  const q = recherche.trim().toLowerCase();
+  return items
+    .filter((i) => filtre === "toutes" || i.statut === filtre)
+    .filter((i) => !q || [i.titre, i.client, i.type, i.notes, i.contact, i.resp].join(" ").toLowerCase().includes(q))
+    .sort((a, b) =>
+      (a.statut === "terminee") - (b.statut === "terminee") ||
+      (PRIO_RANK[a.priorite] ?? 2) - (PRIO_RANK[b.priorite] ?? 2) ||
+      (a.echeance || "9999").localeCompare(b.echeance || "9999") ||
+      (b.cree_le || "").localeCompare(a.cree_le || ""));
+}
+
+function renderListe() {
+  const counts = Object.fromEntries(STATUTS.map((s) => [s.v, items.filter((i) => i.statut === s.v).length]));
+  $("chips").innerHTML = [{ v: "toutes", l: "Toutes", n: items.length }, ...STATUTS.map((s) => ({ ...s, n: counts[s.v] }))]
+    .map((c) => `<button class="chip ${filtre === c.v ? "active" : ""}" data-f="${c.v}">${esc(c.l)}<span class="n">${c.n}</span></button>`).join("");
+
+  const nUrg = items.filter(isUrgent).length, nLate = items.filter(isLate).length;
+  $("stats").innerHTML =
+    `<span class="stat ${nUrg ? "hot" : ""}">Urgentes : <b>${nUrg}</b></span>` +
+    `<span class="stat ${nLate ? "late" : ""}">En retard : <b>${nLate}</b></span>`;
+
+  const rows = filtrees();
+  $("list").innerHTML = rows.length ? rows.map((i) => `
+    <li class="card item p-${i.priorite} ${i.statut === "terminee" ? "done" : ""}" data-id="${i.id}">
+      <div class="item-main">
+        <div class="titre">${esc(i.titre)}</div>
+        <div class="meta">
+          ${i.client ? `<span>${esc(i.client)}</span><span>·</span>` : ""}
+          <span>${esc(i.type || "Autre")}</span>
+          ${i.echeance ? `<span>·</span>${dueHtml(i)}` : ""}
+          ${i.resp ? `<span>·</span><span>👤 ${esc(i.resp)}</span>` : ""}
+        </div>
+      </div>
+      ${i.priorite === "urgente" || i.priorite === "haute" ? `<span class="badge ${i.priorite}">${prioLabel(i.priorite)}</span>` : ""}
+      <select class="statut s-${i.statut}" data-id="${i.id}" aria-label="Statut">
+        ${STATUTS.map((s) => `<option value="${s.v}" ${s.v === i.statut ? "selected" : ""}>${s.l}</option>`).join("")}
+      </select>
+    </li>`).join("")
+    : `<li class="empty">${items.length ? "Aucune demande ne correspond." : "Aucune demande pour l'instant. Tape un titre ci-dessus et appuie sur Entrée."}</li>`;
+}
+
+function renderCalendrier() {
+  const y = mois.getFullYear(), m = mois.getMonth();
+  $("cal-title").textContent = mois.toLocaleDateString("fr-CH", { month: "long", year: "numeric" });
+  const first = new Date(y, m, 1);
+  const start = new Date(y, m, 1 - ((first.getDay() + 6) % 7)); // lundi
+  const lastDay = new Date(y, m + 1, 0);
+  const weeks = Math.ceil((((first.getDay() + 6) % 7) + lastDay.getDate()) / 7);
+
+  const parJour = {};
+  for (const i of items) if (i.echeance) (parJour[i.echeance] ||= []).push(i);
+  for (const k in parJour) parJour[k].sort((a, b) => (a.statut === "terminee") - (b.statut === "terminee") || (PRIO_RANK[a.priorite] ?? 2) - (PRIO_RANK[b.priorite] ?? 2));
+
+  let html = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((d) => `<div class="cal-dow">${d}</div>`).join("");
+  const t = today();
+  for (let k = 0; k < weeks * 7; k++) {
+    const d = new Date(start); d.setDate(start.getDate() + k);
+    const key = isoDay(d);
+    const evs = parJour[key] || [];
+    const shown = evs.slice(0, 3);
+    html += `<div class="cal-day ${d.getMonth() !== m ? "out" : ""} ${key === t ? "today" : ""}" data-day="${key}">
+      <span class="cal-num">${d.getDate()}</span>
+      <div class="cal-evs">${evs.map((i, n) => `<div class="cal-ev p-${i.priorite} ${i.statut === "terminee" ? "done" : ""}" data-id="${i.id}" title="${esc(i.titre)}${i.client ? " — " + esc(i.client) : ""}" ${n >= 3 ? 'style="display:none"' : ""}>${esc(i.titre)}</div>`).join("")}</div>
+      ${evs.length > shown.length ? `<span class="cal-more">+${evs.length - shown.length} autre(s)</span>` : ""}
+    </div>`;
+  }
+  $("cal").innerHTML = html;
+  const sans = items.filter((i) => !i.echeance && i.statut !== "terminee").length;
+  $("cal-note").textContent = `Clique sur un jour pour créer une demande à cette date.${sans ? ` ${sans} demande(s) en cours sans échéance.` : ""}`;
+}
+
+function derniereUpdate(notes) {
+  const line = (notes || "").split("\n").find((l) => l.trim());
+  return line ? line.trim() : "";
+}
+
+function renderActivite() {
+  const rows = [...items].sort((a, b) => (b.maj_le || "").localeCompare(a.maj_le || "")).slice(0, 60);
+  if (!rows.length) { $("feed").innerHTML = `<div class="empty">Aucune activité pour l'instant.</div>`; return; }
+  const hier = new Date(); hier.setDate(hier.getDate() - 1);
+  const groupe = (iso) => {
+    const k = isoDay(new Date(iso));
+    if (k === today()) return "Aujourd'hui";
+    if (k === isoDay(hier)) return "Hier";
+    return new Date(iso).toLocaleDateString("fr-CH", { weekday: "long", day: "numeric", month: "long" });
+  };
+  let html = "", cur = "";
+  for (const i of rows) {
+    const g = groupe(i.maj_le || i.cree_le);
+    if (g !== cur) { html += `<h3>${esc(g)}</h3>`; cur = g; }
+    const nouveau = Math.abs(new Date(i.maj_le) - new Date(i.cree_le)) < 3000;
+    const last = derniereUpdate(i.notes);
+    html += `<div class="card ev" data-id="${i.id}">
+      <span class="dot s-${i.statut}"></span>
+      <div class="ev-body">
+        <div><b>${esc(i.titre)}</b>${i.client ? ` <span style="color:var(--muted)">· ${esc(i.client)}</span>` : ""}</div>
+        <div class="meta"><span>${nouveau ? "Créée" : "Mise à jour"}</span><span>·</span><span>${statutLabel(i.statut)}</span>${i.echeance ? `<span>·</span>${dueHtml(i)}` : ""}</div>
+        ${last ? `<div class="ev-last">${esc(last)}</div>` : ""}
+      </div>
+      <span class="ev-time">${relTime(i.maj_le || i.cree_le)}</span>
+    </div>`;
+  }
+  $("feed").innerHTML = html;
+}
+
+function render() {
+  if (vue === "liste") renderListe();
+  else if (vue === "calendrier") renderCalendrier();
+  else renderActivite();
+}
+
+function setVue(v) {
+  vue = v;
+  document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("active", t.dataset.vue === v));
+  ["liste", "calendrier", "activite"].forEach((k) => $("vue-" + k).classList.toggle("hidden", k !== v));
+  try { localStorage.setItem("noname-vue", v); } catch {}
+  render();
+}
+
+// ---------- Tiroir ----------
+function infoLine(i) {
+  const f = (iso) => { const d = new Date(iso); return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+  return `Créée le ${f(i.cree_le)} · mise à jour ${relTime(i.maj_le)}`;
+}
+function ouvrir(id, preset = {}) {
+  const i = id ? items.find((x) => x.id === id) : { titre: "", client: "", type: "Autre", priorite: "normale", statut: "nouvelle", echeance: "", contact: "", resp: "", budget: "", notes: "", ...preset };
+  if (!i) return;
+  editId = id || null;
+  $("d-title").textContent = id ? "Fiche demande" : "Nouvelle demande";
+  $("e-titre").value = i.titre || "";
+  $("e-client").value = i.client || "";
+  $("e-type").value = TYPES.includes(i.type) ? i.type : "Autre";
+  $("e-priorite").value = i.priorite || "normale";
+  $("e-statut").value = i.statut || "nouvelle";
+  $("e-echeance").value = i.echeance || "";
+  $("e-contact").value = i.contact || "";
+  $("e-resp").value = i.resp || "";
+  $("e-budget").value = i.budget || "";
+  $("e-notes").value = i.notes || "";
+  $("e-update").value = "";
+  $("d-info").textContent = id ? infoLine(i) : "";
+  $("d-delete").classList.toggle("hidden", !id);
+  $("overlay").classList.remove("hidden");
+  $("drawer").classList.remove("hidden");
+  setTimeout(() => (id ? $("e-update") : $("e-titre")).focus(), 30);
+}
+function fermer() { $("overlay").classList.add("hidden"); $("drawer").classList.add("hidden"); editId = null; }
+function lireTiroir() {
+  return {
+    titre: $("e-titre").value.trim(),
+    client: $("e-client").value.trim(),
+    type: $("e-type").value,
+    priorite: $("e-priorite").value,
+    statut: $("e-statut").value,
+    echeance: $("e-echeance").value || null,
+    contact: $("e-contact").value.trim(),
+    resp: $("e-resp").value.trim(),
+    budget: $("e-budget").value.trim(),
+    notes: $("e-notes").value,
+  };
+}
+function ajouterUpdate() {
+  const txt = $("e-update").value.trim();
+  if (!txt) return;
+  const d = new Date();
+  const qui = userEmail ? " · " + userEmail.split("@")[0] : "";
+  const ligne = `[${pad(d.getDate())}.${pad(d.getMonth() + 1)} ${pad(d.getHours())}:${pad(d.getMinutes())}${qui}] ${txt}`;
+  const notes = $("e-notes").value;
+  $("e-notes").value = ligne + (notes ? "\n" + notes : "");
+  $("e-update").value = "";
+  if (editId) enregistrer(true);
+}
+async function enregistrer(garderOuvert = false) {
+  const data = lireTiroir();
+  if (!data.titre) { toast("Le titre est obligatoire."); $("e-titre").focus(); return; }
+  const ok = editId ? await modifier(editId, data) : await ajouter(data);
+  if (!ok) return;
+  if (garderOuvert && editId) { $("d-info").textContent = infoLine(items.find((x) => x.id === editId)); toast("Update ajoutée"); }
+  else { fermer(); toast("Enregistré"); }
+}
+
+// ---------- Récap ----------
+function recap() {
+  const d = new Date();
+  let txt = `📋 Demandes NONAME — ${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}\n`;
+  const nUrg = items.filter(isUrgent).length, nLate = items.filter(isLate).length;
+  if (nUrg || nLate) txt += `🔴 ${nUrg} urgente(s) · ⏰ ${nLate} en retard\n`;
+  for (const s of STATUTS.filter((s) => s.v !== "terminee")) {
+    const rows = items.filter((i) => i.statut === s.v).sort((a, b) => (PRIO_RANK[a.priorite] ?? 2) - (PRIO_RANK[b.priorite] ?? 2) || (a.echeance || "9999").localeCompare(b.echeance || "9999"));
+    if (!rows.length) continue;
+    txt += `\n*${s.l}* (${rows.length})\n`;
+    for (const i of rows) {
+      const bits = [i.client, i.type, i.echeance ? "éch. " + fmtShort(i.echeance) + (isLate(i) ? " ⚠️" : "") : "", i.priorite === "urgente" || i.priorite === "haute" ? prioLabel(i.priorite).toLowerCase() : ""].filter(Boolean);
+      txt += `• ${i.titre}${bits.length ? " — " + bits.join(" · ") : ""}\n`;
+    }
+  }
+  const nDone = items.filter((i) => i.statut === "terminee").length;
+  if (nDone) txt += `\n✅ ${nDone} terminée(s)\n`;
+  return txt;
+}
+async function copier(txt) {
+  try { await navigator.clipboard.writeText(txt); }
+  catch {
+    const ta = document.createElement("textarea"); ta.value = txt; document.body.appendChild(ta);
+    ta.select(); document.execCommand("copy"); ta.remove();
+  }
+  toast("Récap copié — colle-le dans WhatsApp ou un mail");
+}
+
+// ---------- Événements ----------
+fillSelect($("q-type"), TYPES); fillSelect($("e-type"), TYPES);
+fillSelect($("q-prio"), PRIOS); fillSelect($("e-priorite"), PRIOS);
+fillSelect($("e-statut"), STATUTS);
+$("q-type").value = "Autre"; $("q-prio").value = "normale";
+
+$("toggle-opts").onclick = () => {
+  const hidden = $("quick-opts").classList.toggle("hidden");
+  $("toggle-opts").textContent = hidden ? "+ Options (artiste, type, priorité, échéance)" : "− Masquer les options";
+};
+$("quick").onsubmit = async (e) => {
+  e.preventDefault();
+  const titre = $("q-titre").value.trim();
+  if (!titre) return;
+  const ok = await ajouter({
+    titre, client: $("q-client").value.trim(), type: $("q-type").value,
+    priorite: $("q-prio").value, echeance: $("q-date").value || null
+  });
+  if (ok) {
+    $("q-titre").value = ""; $("q-client").value = ""; $("q-date").value = "";
+    $("q-type").value = "Autre"; $("q-prio").value = "normale";
+    toast("Demande ajoutée");
+  }
+};
+
+document.querySelectorAll(".tab").forEach((t) => (t.onclick = () => setVue(t.dataset.vue)));
+$("chips").onclick = (e) => { const c = e.target.closest(".chip"); if (c) { filtre = c.dataset.f; renderListe(); } };
+$("search").oninput = (e) => { recherche = e.target.value; renderListe(); };
+$("list").addEventListener("change", (e) => {
+  if (e.target.matches("select.statut")) modifier(e.target.dataset.id, { statut: e.target.value });
+});
+$("list").addEventListener("click", (e) => {
+  if (e.target.closest("select")) return;
+  const li = e.target.closest(".item"); if (li) ouvrir(li.dataset.id);
+});
+$("cal").addEventListener("click", (e) => {
+  const ev = e.target.closest(".cal-ev");
+  if (ev) return ouvrir(ev.dataset.id);
+  const day = e.target.closest(".cal-day");
+  if (day) {
+    const evs = items.filter((i) => i.echeance === day.dataset.day);
+    // Sur mobile (points), un clic sur un jour avec une seule demande l'ouvre
+    if (evs.length === 1 && window.matchMedia("(max-width: 680px)").matches) return ouvrir(evs[0].id);
+    ouvrir(null, { echeance: day.dataset.day });
+  }
+});
+$("cal-prev").onclick = () => { mois.setMonth(mois.getMonth() - 1); renderCalendrier(); };
+$("cal-next").onclick = () => { mois.setMonth(mois.getMonth() + 1); renderCalendrier(); };
+$("cal-today").onclick = () => { mois = new Date(); mois.setDate(1); renderCalendrier(); };
+$("feed").addEventListener("click", (e) => { const ev = e.target.closest(".ev"); if (ev) ouvrir(ev.dataset.id); });
+
+$("overlay").onclick = fermer;
+$("d-close").onclick = fermer;
+$("d-save").onclick = () => enregistrer();
+$("d-delete").onclick = async () => {
+  if (!editId) return;
+  if (!confirm("Supprimer définitivement cette demande ?")) return;
+  if (await supprimer(editId)) { fermer(); toast("Demande supprimée"); }
+};
+$("e-update-btn").onclick = ajouterUpdate;
+$("e-update").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); ajouterUpdate(); } };
+$("e-titre").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); enregistrer(); } };
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && !$("drawer").classList.contains("hidden")) fermer();
+  if ((e.metaKey || e.ctrlKey) && e.key === "s" && !$("drawer").classList.contains("hidden")) { e.preventDefault(); enregistrer(); }
+});
+$("recap").onclick = () => copier(recap());
+
+// Rafraîchit les « il y a X min » de temps en temps
+setInterval(() => { if (vue === "activite") renderActivite(); }, 60000);
+
+// ---------- Connexion ----------
+$("login-form").onsubmit = async (e) => {
+  e.preventDefault();
+  const email = $("login-email").value.trim();
+  const msg = $("login-msg");
+  $("login-btn").disabled = true; msg.className = "msg"; msg.textContent = "Envoi…";
+  const { error } = await sb.auth.signInWithOtp({
+    email, options: { shouldCreateUser: false, emailRedirectTo: location.href.split("#")[0].split("?")[0] }
+  });
+  $("login-btn").disabled = false;
+  if (error) {
+    msg.className = "msg ko";
+    msg.textContent = /sign ?ups?|not allowed|not found|otp_disabled/i.test(error.message)
+      ? "Adresse non autorisée : demande une invitation à l'équipe."
+      : /rate|seconds/i.test(error.message)
+        ? "Trop de demandes de lien. Réessaie dans quelques minutes."
+        : "Erreur : " + error.message;
+  } else {
+    msg.className = "msg ok";
+    msg.textContent = "Lien envoyé ! Ouvre l'e-mail reçu pour te connecter.";
+  }
+};
+
+function afficherApp(email) {
+  userEmail = email || "";
+  $("login").classList.add("hidden");
+  $("app").classList.remove("hidden");
+  $("userbox").classList.toggle("hidden", !email);
+  $("useremail").textContent = email || "";
+}
+
+function setSession(session) {
+  if (session) {
+    afficherApp(session.user.email);
+    charger();
+    abonnerTempsReel();
+  } else {
+    if (channel) { sb.removeChannel(channel); channel = null; }
+    items = [];
+    $("app").classList.add("hidden");
+    $("userbox").classList.add("hidden");
+    $("login").classList.remove("hidden");
+  }
+}
+
+$("logout").onclick = async () => { await sb.auth.signOut(); };
+
+// ---------- Démarrage ----------
+try { const v = localStorage.getItem("noname-vue"); if (v && ["liste", "calendrier", "activite"].includes(v)) vue = v; } catch {}
+setVue(vue);
+
+if (configured && window.supabase) {
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  sb.auth.onAuthStateChange((_event, session) => {
+    // setTimeout : évite d'appeler Supabase à l'intérieur du callback d'auth
+    setTimeout(() => setSession(session), 0);
+  });
+} else {
+  if (configured && !window.supabase) showError("<b>Impossible de charger Supabase.</b> Vérifie ta connexion internet.");
+  $("banner-config").classList.toggle("hidden", configured);
+  afficherApp("");
+  charger();
+}
+</script>
+</body>
+</html>
