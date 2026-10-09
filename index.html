@@ -1753,7 +1753,7 @@ function ouvrir(id, preset = {}) {
   $("d-title").textContent = id ? (i.client || "Fiche demande") : "Nouvelle demande";
   $("e-client").value = i.client || "";
   $("e-titre").value = i.titre && i.titre !== i.client ? i.titre : "";
-  dates.e = sessionsDe(i); heures.e = JSON.parse(JSON.stringify(i.horaires || {})); renderChips("e");
+  dates.e = sessionsDe(i); heures.e = JSON.parse(JSON.stringify(i.horaires || {})); derniereDate.e = null; $("e-h-d").value = ""; $("e-h-f").value = ""; renderChips("e");
   setD("e-contact-date", i.date_contact);
   $("e-statut").value = i.statut || "nouvelle";
   setD("e-fin", i.date_fin);
@@ -1936,7 +1936,9 @@ function setDates(k, arr) {
   renderChips(k);
 }
 // Ajoute une date avec l'horaire choisi dans les menus « de / à »
+const derniereDate = { q: null, e: null }; // dernière date ajoutée : reçoit l'horaire choisi ensuite
 function ajouterDate(k, v) {
+  derniereDate[k] = v;
   const hd = $(k + "-h-d").value, hf = $(k + "-h-f").value;
   if (!dates[k].includes(v)) heures[k][v] = { d: hd, f: hf, le: new Date().toISOString(), par: userEmail || "" };
   else if (hd || hf) heures[k][v] = { ...heures[k][v], d: hd, f: hf };
@@ -1952,6 +1954,15 @@ for (const k of ["q", "e"]) {
     champSaisie().addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); validerSaisie(k); } });
   }, 0);
   $(k + "-h-d").innerHTML = OPTIONS_H; $(k + "-h-f").innerHTML = OPTIONS_H;
+  // Choisir l'heure APRÈS la date : l'horaire s'applique à la dernière date ajoutée (ou à la seule date)
+  for (const quoi of ["d", "f"]) $(k + "-h-" + quoi).addEventListener("change", () => {
+    const hd = $(k + "-h-d"), hf = $(k + "-h-f");
+    if (quoi === "d" && hd.value && (!hf.value || minutes(hf.value) <= minutes(hd.value))) hf.value = hm(minutes(hd.value) + 60); // fin = début + 1 h
+    const cible = dates[k].includes(derniereDate[k]) ? derniereDate[k] : dates[k].length === 1 ? dates[k][0] : null;
+    if (!cible) return;
+    heures[k][cible] = { ...(heures[k][cible] || { le: new Date().toISOString(), par: userEmail || "" }), d: hd.value, f: hf.value };
+    renderChips(k);
+  });
   $(k + "-date-add").addEventListener("change", (e) => { const v = e.target.value; if (!v) return; ajouterDate(k, v); setTimeout(() => setD(e.target, ""), 0); });
   $(k + "-chips").addEventListener("click", (e) => {
     const del = e.target.closest("[data-del]");
@@ -2026,7 +2037,7 @@ $("quick").onsubmit = async (e) => {
     resp: $("q-resp").value,
   });
   if (ok) {
-    $("q-client").value = ""; $("q-titre").value = ""; dates.q = []; heures.q = {}; renderChips("q");
+    $("q-client").value = ""; $("q-titre").value = ""; dates.q = []; heures.q = {}; derniereDate.q = null; $("q-h-d").value = ""; $("q-h-f").value = ""; renderChips("q");
     setD("q-contact", today()); $("q-statut").value = "nouvelle"; $("q-resp").innerHTML = respOptions("", "Choisir…");
     $("q-client").focus();
     toast("Demande ajoutée");
