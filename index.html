@@ -2554,7 +2554,7 @@ function setSession(session) {
     if (estAdmin) { try { localStorage.setItem(NOM_KEY, "Michael"); } catch {} }
     afficherApp(true);
     $("admin-open").classList.toggle("hidden", !estAdmin);
-    if (sb) sb.rpc("noter_connexion", { p_profil: userEmail || "", p_appareil: appareil() }).then(() => {}, () => {});
+    try { sb?.rpc?.("noter_connexion", { p_profil: userEmail || "", p_appareil: appareil() })?.then?.(() => {}, () => {}); } catch {} // ne bloque jamais le chargement
     charger();
     abonnerTempsReel();
     rejoindrePresence();
