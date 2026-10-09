@@ -325,6 +325,8 @@
   .hrow { display: flex; align-items: center; gap: 6px; margin-top: 6px; flex-wrap: wrap; font-size: 15px; color: var(--muted); }
   .hrow select { width: auto; padding: 5px 8px; }
   .hrow .hint { font-size: 13px; }
+  .hcible { font-weight: 700; color: var(--accent); font-size: 14px; }
+  .dchip.cible { outline: 2px solid var(--accent); outline-offset: 1px; }
   .dchip .dh { font-weight: 800; }
   .dchip .hbtn { font-size: 13px; }
   .hedit { display: inline-flex; gap: 4px; align-items: center; padding: 3px 6px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 14%, transparent); font-size: 14px; }
@@ -615,7 +617,7 @@
             <div class="q-client"><label for="q-client">Nom du client *</label><input type="text" id="q-client" required autocomplete="off" placeholder="Artiste, label…"></div>
             <div class="q-titre"><label for="q-titre">Demande</label><input type="text" id="q-titre" autocomplete="off" placeholder="Ex. : session voix 2 titres"></div>
             <div class="q-sessions"><label for="q-date-add">Sessions studio</label><div class="update-row"><input type="date" placeholder="jj/mm/aaaa" id="q-date-add"><button type="button" class="btn small" id="q-date-btn">+ Ajouter</button></div>
-              <div class="hrow"><span>🕐 de</span><select id="q-h-d" aria-label="Heure de début"></select><span>à</span><select id="q-h-f" aria-label="Heure de fin"></select></div><div class="date-chips" id="q-chips"></div></div>
+              <div class="hrow"><span>🕐 de</span><select id="q-h-d" aria-label="Heure de début"></select><span>à</span><select id="q-h-f" aria-label="Heure de fin"></select><span class="hcible" id="q-h-cible"></span></div><div class="date-chips" id="q-chips"></div></div>
             <div><label for="q-contact">Contact</label><input type="date" placeholder="jj/mm/aaaa" id="q-contact"></div>
             <div><label for="q-statut">Statut</label><select id="q-statut"></select></div>
             <div><label for="q-resp">Responsable *</label><select id="q-resp" required></select></div>
@@ -762,7 +764,7 @@
   <div class="field"><label for="e-client">Nom du client *</label><input type="text" id="e-client"></div>
   <div class="field"><label for="e-titre">Demande</label><input type="text" id="e-titre"></div>
   <div class="field"><label for="e-date-add">Sessions studio</label><div class="update-row"><input type="date" placeholder="jj/mm/aaaa" id="e-date-add"><button type="button" class="btn small" id="e-date-btn">+ Ajouter</button></div>
-              <div class="hrow"><span>🕐 de</span><select id="e-h-d" aria-label="Heure de début"></select><span>à</span><select id="e-h-f" aria-label="Heure de fin"></select></div><div class="date-chips" id="e-chips"></div></div>
+              <div class="hrow"><span>🕐 de</span><select id="e-h-d" aria-label="Heure de début"></select><span>à</span><select id="e-h-f" aria-label="Heure de fin"></select><span class="hcible" id="e-h-cible"></span></div><div class="date-chips" id="e-chips"></div></div>
   <div class="grid2">
     <div class="field"><label for="e-contact-date">Date de contact</label><input type="date" placeholder="jj/mm/aaaa" id="e-contact-date"></div>
     <div class="field"><label for="e-statut">Statut</label><select id="e-statut"></select></div>
@@ -1910,8 +1912,11 @@ const dates = { q: [], e: [] };
 function renderChips(k) {
   const t = today();
   $(k + "-chips").innerHTML = dates[k].length
-    ? dates[k].map((d, n) => `<span class="dchip ${d < t ? "past" : ""}" data-n="${n}"> <span class="dlabel" title="Cliquer pour modifier la date${heures[k][d]?.le ? " — placée le " + fmtDateHeure(new Date(heures[k][d].le)) + (heures[k][d].par ? " par " + heures[k][d].par : "") : ""}" style="cursor:pointer">${jourSemaine(d)} ${fmtDate(d)}${plage(heures[k][d]) ? ` · <span class="dh">${plage(heures[k][d])}</span>` : ""}</span><button type="button" class="hbtn" data-h="${n}" title="Modifier l'horaire">🕐</button><button type="button" data-del="${n}" aria-label="Retirer cette date">×</button></span>`).join("")
+    ? dates[k].map((d, n) => `<span class="dchip ${d < t ? "past" : ""} ${d === cibleHoraire(k) ? "cible" : ""}" data-n="${n}"> <span class="dlabel" title="Cliquer pour modifier la date${heures[k][d]?.le ? " — placée le " + fmtDateHeure(new Date(heures[k][d].le)) + (heures[k][d].par ? " par " + heures[k][d].par : "") : ""}" style="cursor:pointer">${jourSemaine(d)} ${fmtDate(d)}${plage(heures[k][d]) ? ` · <span class="dh">${plage(heures[k][d])}</span>` : ""}</span><button type="button" class="hbtn" data-h="${n}" title="Modifier l'horaire">🕐</button><button type="button" data-del="${n}" aria-label="Retirer cette date">×</button></span>`).join("")
     : "";
+  const c = cibleHoraire(k);
+  if ($(k + "-h-cible")) $(k + "-h-cible").textContent = c ? "→ " + jourSemaine(c) + " " + fmtDate(c).slice(0, 5) : "";
+  if (c && heures[k][c] && (heures[k][c].d || heures[k][c].f)) { $(k + "-h-d").value = heures[k][c].d || ""; $(k + "-h-f").value = heures[k][c].f || ""; }
 }
 // Date tapée au clavier (jj/mm/aaaa, jj.mm.aaaa, jj-mm-aaaa) → aaaa-mm-jj ; null si vide, false si invalide
 function lireSaisie(k) {
@@ -1937,6 +1942,7 @@ function setDates(k, arr) {
 }
 // Ajoute une date avec l'horaire choisi dans les menus « de / à »
 const derniereDate = { q: null, e: null }; // dernière date ajoutée : reçoit l'horaire choisi ensuite
+const cibleHoraire = (k) => dates[k].includes(derniereDate[k]) ? derniereDate[k] : dates[k].length === 1 ? dates[k][0] : null;
 function ajouterDate(k, v) {
   derniereDate[k] = v;
   const hd = $(k + "-h-d").value, hf = $(k + "-h-f").value;
@@ -1958,7 +1964,7 @@ for (const k of ["q", "e"]) {
   for (const quoi of ["d", "f"]) $(k + "-h-" + quoi).addEventListener("change", () => {
     const hd = $(k + "-h-d"), hf = $(k + "-h-f");
     if (quoi === "d" && hd.value && (!hf.value || minutes(hf.value) <= minutes(hd.value))) hf.value = hm(minutes(hd.value) + 60); // fin = début + 1 h
-    const cible = dates[k].includes(derniereDate[k]) ? derniereDate[k] : dates[k].length === 1 ? dates[k][0] : null;
+    const cible = cibleHoraire(k);
     if (!cible) return;
     heures[k][cible] = { ...(heures[k][cible] || { le: new Date().toISOString(), par: userEmail || "" }), d: hd.value, f: hf.value };
     renderChips(k);
