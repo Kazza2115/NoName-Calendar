@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Réservations NONAME</title>
 <meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="referrer" content="no-referrer">
 <script>try { const t = localStorage.getItem("noname-theme"); if (t) document.documentElement.dataset.theme = t; } catch {}</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
 <style>
@@ -523,6 +525,22 @@
   .wk-now::before { content: ""; position: absolute; left: -5px; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--danger); }
   body.glisse, body.glisse * { cursor: grabbing !important; }
   #jr-body .wk { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  /* Logs admin */
+  .lg-jour { font-size: 15px; font-weight: 800; text-transform: capitalize; margin: 14px 0 6px; padding-bottom: 4px; border-bottom: 2px solid var(--line); }
+  .lg-row { display: grid; grid-template-columns: 56px 130px minmax(0, 1fr) auto; gap: 10px; padding: 9px 6px; border-bottom: 1px solid var(--line); align-items: start; font-size: 15px; }
+  .lg-h { font-variant-numeric: tabular-nums; color: var(--muted); font-weight: 700; }
+  .lg-who small { display: block; color: var(--muted); font-size: 12px; }
+  .lg-act { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; padding: 1px 7px; border-radius: 6px; background: var(--soft); }
+  .lg-INSERT .lg-act { background: color-mix(in srgb, var(--ok) 18%, transparent); color: var(--ok); }
+  .lg-UPDATE .lg-act { background: color-mix(in srgb, var(--info) 18%, transparent); color: var(--info); }
+  .lg-DELETE .lg-act { background: color-mix(in srgb, var(--danger) 18%, transparent); color: var(--danger); }
+  .lg-CONNEXION .lg-act { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+  .lg-what ul { margin: 4px 0 0; padding-left: 18px; color: var(--muted); font-size: 14px; }
+  .lg-what ul b { color: var(--text); font-weight: 600; }
+  .lg-plus { color: var(--ok); font-weight: 700; } .lg-moins { color: var(--danger); font-weight: 700; }
+  .lg-note { font-size: 13px; color: var(--muted); margin-top: 14px; }
+  .lg-secu { margin: 0; padding-left: 18px; font-size: 15px; line-height: 1.6; }
+  @media (max-width: 680px) { .lg-row { grid-template-columns: 48px minmax(0, 1fr); } .lg-who { grid-column: 2; } .lg-what { grid-column: 1 / -1; } .lg-btn { grid-column: 1 / -1; } }
   .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 16px; z-index: 70; box-shadow: 0 6px 20px rgba(0,0,0,.2); max-width: calc(100% - 32px); }
 
   @media (max-width: 960px) {
@@ -710,6 +728,8 @@
     <div class="bc-head">
       <h2>🛡️ Panel admin</h2>
       <span class="ad-badge">Michael</span>
+      <span class="langsw" id="ad-tabs" style="margin:0"><button type="button" data-tab="apercu" class="on">Vue d'ensemble</button><button type="button" data-tab="logs">📜 Logs</button><button type="button" data-tab="acces">🔐 Connexions & comptes</button></span>
+      <button class="btn" id="ad-refresh" title="Actualiser">↻</button>
       <button class="btn" id="ad-csv">⬇ Exporter (CSV)</button>
       <button class="btn" id="ad-close" style="margin-left:auto">✕ Fermer</button>
     </div>
@@ -827,7 +847,7 @@ const EN = {
   "Enregistrement studio": "Studio recording", "Mix / master": "Mix / master", "Production / beat": "Production / beat", "Co-production label": "Label co-production", "Booking / live": "Booking / live", "Promo / com": "Promo / PR", "Admin / contrat": "Admin / contract", "Autre": "Other",
   "Cliquer pour modifier la date": "Click to change the date", "Retirer cette date": "Remove this date", "Fermer": "Close", "✕ Fermer": "✕ Close", "Mois précédent": "Previous month", "Mois suivant": "Next month", "Aujourd'hui": "Today", "Grand calendrier": "Big calendar", "+ session": "+ session", "Aucune session ce mois-ci.": "No sessions this month.",
   "Copier son récap": "Copy their summary", "+ Nouvelle demande": "+ New request", "Total facturé": "Total invoiced", "Déjà payé": "Already paid", "Reste à payer": "Amount due", "Tout est payé": "All paid", "Aucune session.": "No sessions.",
-  "jj/mm/aaaa": "dd/mm/yyyy", "Semaine": "Week", "Sans horaire": "No time", "🕐 Voir la journée": "🕐 See the day", "Journée": "Day", "Jour précédent": "Previous day", "Jour suivant": "Next day", "Aussi ce jour-là": "Also that day", "✓ Terminée": "✓ Finished", "☎ Contact": "☎ Contact", "🕐 détail": "🕐 details", "☀️ Clair": "☀️ Light", "🌙 Sombre": "🌙 Dark", "Thème": "Theme", "Catégorie": "Category", "Cliquer pour afficher / masquer": "Click to show / hide", "🕐 de": "🕐 from", "à": "to", "(facultatif, appliqué à la date ajoutée)": "(optional, applied to the date you add)", "Heure de début": "Start time", "Heure de fin": "End time", "Modifier l'horaire": "Change the time",
+  "jj/mm/aaaa": "dd/mm/yyyy", "Vue d'ensemble": "Overview", "📜 Logs": "📜 Logs", "🔐 Connexions & comptes": "🔐 Logins & accounts", "Actualiser": "Refresh", "Actualisé": "Refreshed", "Tous les profils": "All profiles", "Toutes les actions": "All actions", "7 derniers jours": "Last 7 days", "30 derniers jours": "Last 30 days", "Rechercher (client, profil…)": "Search (client, profile…)", "⬇ Logs (CSV)": "⬇ Logs (CSV)", "Création": "Created", "Modification": "Changed", "Suppression": "Deleted", "Connexion": "Login", "↩ Restaurer": "↩ Restore", "Restaurer cette demande supprimée ?": "Restore this deleted request?", "Demande restaurée": "Request restored", "Chargement…": "Loading…", "Aucune entrée pour ces filtres.": "No entries for these filters.", "Comptes Supabase": "Supabase accounts", "Compte": "Account", "Rôle": "Role", "Dernière connexion": "Last login", "Équipe": "Team", "Admin": "Admin", "🔒 Sécurité": "🔒 Security", "Aucune connexion enregistrée pour l'instant.": "No logins recorded yet.", "Aucune": "None", "Semaine": "Week", "Sans horaire": "No time", "🕐 Voir la journée": "🕐 See the day", "Journée": "Day", "Jour précédent": "Previous day", "Jour suivant": "Next day", "Aussi ce jour-là": "Also that day", "✓ Terminée": "✓ Finished", "☎ Contact": "☎ Contact", "🕐 détail": "🕐 details", "☀️ Clair": "☀️ Light", "🌙 Sombre": "🌙 Dark", "Thème": "Theme", "Catégorie": "Category", "Cliquer pour afficher / masquer": "Click to show / hide", "🕐 de": "🕐 from", "à": "to", "(facultatif, appliqué à la date ajoutée)": "(optional, applied to the date you add)", "Heure de début": "Start time", "Heure de fin": "End time", "Modifier l'horaire": "Change the time",
   "Ton profil": "Your profile", "🛡️ Admin": "🛡️ Admin", "🛡️ Panel admin": "🛡️ Admin panel", "Panel admin": "Admin panel", "⬇ Exporter (CSV)": "⬇ Export (CSV)", "Connectés maintenant": "Online now", "Demandes actives / total": "Active / total requests",
   "Par responsable": "By owner", "Actives": "Active", "Encaissé": "Collected", "Activité récente": "Recent activity", "Total": "Total", "Choisir ton profil…": "Choose your profile…", "Invité": "Guest", "➕ Nouveau profil…": "➕ New profile…", "Écris le nom de ton profil": "Type your profile name", "Écris le nom de ton profil.": "Type your profile name.", "Choisis ton profil.": "Choose your profile.", "Autres profils": "Other profiles", "Aucun profil créé pour l'instant.": "No profiles created yet.", "Supprimer ce profil": "Delete this profile", "Supprimer ce profil de la liste ?": "Remove this profile from the list?", "Profil supprimé": "Profile deleted", "en ligne": "online", "Personne": "Nobody", "+ Ajouter": "+ Add", "Mois": "Month", "Tout": "All", "Tous les événements": "All events", "Aucun événement pour l'instant.": "No events yet.",
   "Rien ce mois-ci.": "Nothing this month.",
@@ -852,7 +872,7 @@ const RULES = [
   [/^Créée le /, "Created on "], [/ · modifiée /, " · updated "], [/ · modifiée par un membre/, " · changed by a member"], [/^Modifiée /, "Updated "],
   [/ payés\b/g, " paid"], [/(\d+) modification\(s\)/, "$1 change(s)"],
   [/^Contacts : /, "Contacts: "], [/^Contact : /, "Contact: "], [/^Sessions : /, "Sessions: "], [/^Terminées : /, "Finished: "], [/^Terminée : /, "Finished: "],
-  [/^Voir toutes les sessions et paiements de /, "See all sessions and payments for "], [/^Connecté·e : /, "Signed in: "], [/^Profil : /, "Profile: "], [/(≈ )?placée le (\S+ \S+)( par (.+))?$/, (m, a, d, p, n) => `${a || ""}booked on ${d}${n ? " by " + n : ""}`], [/^Planning \((\d+)\)$/, "Schedule ($1)"], [/^Sessions sans horaire \((\d+)\)$/, "Sessions without a time ($1)"], [/^Profils créés \((\d+)\)$/, "Created profiles ($1)"], [/^Sessions du mois \((\d+)\)$/, "Sessions this month ($1)"], [/^Encaissé sur (.+) facturés$/, "Collected out of $1 invoiced"], [/^🟢 Connectés maintenant \((\d+)\)$/, "🟢 Online now ($1)"], [/^Connectés maintenant \((\d+)\)$/, "Online now ($1)"], [/ · depuis (\d)/, " · since $1"],
+  [/^Voir toutes les sessions et paiements de /, "See all sessions and payments for "], [/^Connecté·e : /, "Signed in: "], [/^Profil : /, "Profile: "], [/^(\d+) entrées?$/, (m, n) => `${n} entr${n > 1 ? "ies" : "y"}`], [/^Connexions sur 7 jours \((\d+)\)$/, "Logins over 7 days ($1)"], [/^Historique des connexions \((\d+)\)$/, "Login history ($1)"], [/(≈ )?placée le (\S+ \S+)( par (.+))?$/, (m, a, d, p, n) => `${a || ""}booked on ${d}${n ? " by " + n : ""}`], [/^Planning \((\d+)\)$/, "Schedule ($1)"], [/^Sessions sans horaire \((\d+)\)$/, "Sessions without a time ($1)"], [/^Profils créés \((\d+)\)$/, "Created profiles ($1)"], [/^Sessions du mois \((\d+)\)$/, "Sessions this month ($1)"], [/^Encaissé sur (.+) facturés$/, "Collected out of $1 invoiced"], [/^🟢 Connectés maintenant \((\d+)\)$/, "🟢 Online now ($1)"], [/^Connectés maintenant \((\d+)\)$/, "Online now ($1)"], [/ · depuis (\d)/, " · since $1"],
   [/\bdès (\d)/g, "from $1"], [/\bjusqu'à (\d)/g, "until $1"],
   [/\breste (?=[\d])/g, "due "], [/^✓ le /, "✓ on "], [/^Statut : /, "Status: "], [/^Responsable : /, "Owner: "], [/^Erreur : /, "Error: "],
   [/^Liste indisponible\./, "List unavailable."], [/le projet Supabase est peut-être en pause\./, "the Supabase project may be paused."],
@@ -1101,7 +1121,7 @@ async function charger() {
 }
 
 async function ajouter(obj) {
-  obj = avecFin(obj);
+  obj = { ...avecFin(obj), modifie_par: userEmail || "" };
   const now = new Date().toISOString();
   let row;
   if (sb) {
@@ -1122,7 +1142,7 @@ async function ajouter(obj) {
 
 async function modifier(id, patch) {
   const ancien = { ...items.find((x) => x.id === id) };
-  patch = { ...avecFin(patch, ancien), maj_le: new Date().toISOString() };
+  patch = { ...avecFin(patch, ancien), maj_le: new Date().toISOString(), modifie_par: userEmail || "" };
   let row;
   if (sb) {
     const { data, error } = await sb.from("demandes").update(patch).eq("id", id).select().single();
@@ -1140,6 +1160,8 @@ async function modifier(id, patch) {
 
 async function supprimer(id) {
   if (sb) {
+    // on note d'abord le profil sur la demande : le journal saura qui l'a supprimée
+    await sb.from("demandes").update({ modifie_par: userEmail || "" }).eq("id", id);
     const { error } = await sb.from("demandes").delete().eq("id", id);
     if (error) { toast("Erreur : " + error.message); return false; }
   }
@@ -1711,6 +1733,7 @@ function render(anim = false) {
   renderSide();
   renderBigCal();
   renderJour();
+  if (estAdmin && !$("adminbox").classList.contains("hidden")) { clearTimeout(journalTimer); journalTimer = setTimeout(chargerJournal, 1500); }
   renderClient();
   renderAdmin();
 }
@@ -2243,9 +2266,165 @@ $("online-btn").onclick = (e) => { e.stopPropagation(); ouvrirAdmin(); };
 document.addEventListener("click", (e) => { if (!e.target.closest("#online")) $("online-pop").classList.add("hidden"); });
 
 // ---------- Panel admin ----------
-function ouvrirAdmin() { if (!estAdmin) return; $("adminbox").classList.remove("hidden"); renderAdmin(); }
+function ouvrirAdmin() { if (!estAdmin) return; $("adminbox").classList.remove("hidden"); renderAdmin(); chargerJournal(); }
 function fermerAdmin() { $("adminbox").classList.add("hidden"); }
+let adOnglet = "apercu", journalData = [], comptesData = [], journalCharge = false, journalTimer = null;
+const lgF = { profil: "", action: "", periode: "30", q: "" };
+async function chargerJournal() {
+  if (!estAdmin || !sb) return;
+  const [j, c] = await Promise.all([
+    sb.from("journal").select("*").order("le", { ascending: false }).limit(1000),
+    sb.rpc("admin_comptes"),
+  ]);
+  if (j.error) { toast("Erreur : " + j.error.message); return; }
+  journalData = j.data || []; comptesData = c.data || []; journalCharge = true;
+  renderAdmin();
+}
 function renderAdmin() {
+  if (!estAdmin || $("adminbox").classList.contains("hidden")) return;
+  document.querySelectorAll("#ad-tabs [data-tab]").forEach((b) => b.classList.toggle("on", b.dataset.tab === adOnglet));
+  if (adOnglet === "logs") return renderLogs();
+  if (adOnglet === "acces") return renderAcces();
+  renderApercu();
+}
+// ---------- Logs : toutes les modifications, qui et quand ----------
+const CHAMPS = { client: "Client", titre: "Demande", type: "Type", statut: "Statut", resp: "Responsable", sessions: "Sessions", horaires: "Horaires",
+  date_contact: "Date de contact", date_fin: "Date de fin", prix: "Prix", paye: "Payé", contact: "Coordonnées", notes: "Notes", budget: "Budget", priorite: "Priorité", nom: "Nom" };
+const ACTIONS = { INSERT: "Création", UPDATE: "Modification", DELETE: "Suppression", CONNEXION: "Connexion" };
+const roleCompte = (email) => !email ? "—" : email === ADMIN_EMAIL ? "Admin" : email === EQUIPE_EMAIL ? "Équipe" : email;
+function valeur(champ, v) {
+  if (v === null || v === undefined || v === "") return "∅";
+  if (champ === "statut") return statutLabel(v);
+  if (["date_contact", "date_fin", "date_reservation"].includes(champ)) return fmtDate(v);
+  if (["prix", "paye"].includes(champ)) return chf(num(v));
+  return esc(String(v)).slice(0, 80);
+}
+function decrireChangements(ch) {
+  const out = [];
+  for (const [k, [a, b]] of Object.entries(ch || {})) {
+    if (["date_reservation", "echeance", "cree_par"].includes(k)) continue;
+    const nom = CHAMPS[k] || k;
+    if (k === "sessions") {
+      const A = a || [], B = b || [];
+      const plus = B.filter((d) => !A.includes(d)).map(fmtDate), moins = A.filter((d) => !B.includes(d)).map(fmtDate);
+      out.push(`<b>${nom}</b> : ${plus.length ? `<span class="lg-plus">+ ${plus.join(", ")}</span> ` : ""}${moins.length ? `<span class="lg-moins">− ${moins.join(", ")}</span>` : ""}`);
+    } else if (k === "horaires") {
+      const A = a || {}, B = b || {};
+      for (const d of [...new Set([...Object.keys(A), ...Object.keys(B)])].sort()) {
+        const pa = plage(A[d]), pb = plage(B[d]);
+        if (pa !== pb) out.push(`<b>Horaire ${fmtDate(d)}</b> : ${pa || "∅"} → ${pb || "∅"}`);
+      }
+    } else if (k === "notes") {
+      const lignes = String(b || "").split("\n").filter((x) => !String(a || "").includes(x));
+      out.push(`<b>${nom}</b> : ${lignes.length ? "« " + esc(lignes[0]).slice(0, 90) + " »" : "modifiées"}`);
+    } else out.push(`<b>${nom}</b> : ${valeur(k, a)} → ${valeur(k, b)}`);
+  }
+  return out;
+}
+function resumeLigne(r) {
+  if (!r) return [];
+  const o = [];
+  if (r.titre && r.titre !== r.client) o.push(esc(r.titre));
+  if (r.resp) o.push(`<b>Responsable</b> : ${esc(r.resp)}`);
+  if (r.statut) o.push(`<b>Statut</b> : ${statutLabel(r.statut)}`);
+  if (r.sessions && r.sessions.length) o.push(`<b>Sessions</b> : ${r.sessions.map(fmtDate).join(", ")}`);
+  if (r.prix) o.push(`<b>Prix</b> : ${chf(num(r.prix))} · <b>Payé</b> : ${chf(num(r.paye))}`);
+  return o;
+}
+function journalFiltre() {
+  const lim = lgF.periode ? Date.now() - +lgF.periode * 86400000 : 0, q = lgF.q.trim().toLowerCase();
+  return journalData.filter((e) => (!lgF.profil || (e.profil || "") === lgF.profil)
+    && (!lgF.action || e.action === lgF.action)
+    && (!lim || new Date(e.le).getTime() >= lim)
+    && (!q || [e.client, e.profil, e.compte, JSON.stringify(e.changements || {})].join(" ").toLowerCase().includes(q)));
+}
+function renderLogs() {
+  if (!journalCharge) { $("ad-body").innerHTML = `<div class="none">Chargement…</div>`; return; }
+  const profils = [...new Set(journalData.map((e) => e.profil).filter(Boolean))].sort();
+  const liste = journalFiltre();
+  const parJour = {};
+  for (const e of liste) (parJour[isoDay(new Date(e.le))] ||= []).push(e);
+  $("ad-body").innerHTML = `
+    <div class="toolbar">
+      <select data-lg="profil"><option value="">Tous les profils</option>${profils.map((p) => `<option ${lgF.profil === p ? "selected" : ""}>${esc(p)}</option>`).join("")}</select>
+      <select data-lg="action"><option value="">Toutes les actions</option>${Object.entries(ACTIONS).map(([k, v]) => `<option value="${k}" ${lgF.action === k ? "selected" : ""}>${v}</option>`).join("")}</select>
+      <select data-lg="periode">${[["1", "Aujourd'hui"], ["7", "7 derniers jours"], ["30", "30 derniers jours"], ["", "Tout"]].map(([v, l]) => `<option value="${v}" ${lgF.periode === v ? "selected" : ""}>${l}</option>`).join("")}</select>
+      <input type="search" class="grow" data-lg="q" placeholder="Rechercher (client, profil…)" value="${esc(lgF.q)}">
+      <button class="btn small" id="lg-csv">⬇ Logs (CSV)</button>
+    </div>
+    <p class="section-title">${liste.length} entrée${liste.length > 1 ? "s" : ""}</p>
+    ${liste.length ? Object.keys(parJour).map((d) => `<div class="lg-jour">${parse(d).toLocaleDateString(LOC(), { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</div>`
+      + parJour[d].map((e) => {
+        const det = e.action === "UPDATE" ? decrireChangements(e.changements) : e.action === "CONNEXION" ? [esc(e.apres?.appareil || "")] : resumeLigne(e.action === "DELETE" ? e.avant : e.apres);
+        const dt = new Date(e.le);
+        return `<div class="lg-row lg-${e.action}">
+          <div class="lg-h">${pad(dt.getHours())}:${pad(dt.getMinutes())}</div>
+          <div class="lg-who"><b translate="no">${esc(e.profil || "?")}</b><small>${esc(roleCompte(e.compte))}</small></div>
+          <div class="lg-what"><span class="lg-act">${ACTIONS[e.action] || e.action}</span> ${e.client ? `<b translate="no">${esc(e.client)}</b>` : ""}${e.table_nom === "profils" ? ` <small>(profil)</small>` : ""}
+            ${det.length ? `<ul>${det.map((x) => `<li>${x}</li>`).join("")}</ul>` : ""}</div>
+          <div class="lg-btn">${e.action === "DELETE" && e.table_nom === "demandes" && e.avant && !items.some((i) => i.id === e.ligne_id) ? `<button class="btn small" data-restaurer="${e.id}">↩ Restaurer</button>` : ""}</div>
+        </div>`; }).join("")).join("")
+      : `<div class="none">Aucune entrée pour ces filtres.</div>`}
+    <p class="lg-note">🔒 Ce journal est écrit par la base de données elle-même à chaque création, modification ou suppression : personne ne peut le modifier ni l'effacer depuis le site, et seul le compte admin peut le lire. Le profil est celui choisi à la connexion ; le compte (Admin / Équipe) est vérifié par Supabase.</p>`;
+}
+function exporterLogs() {
+  const cell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const tmp = document.createElement("div");
+  const texte = (h) => { tmp.innerHTML = h; return tmp.textContent; };
+  const lignes = journalFiltre().map((e) => [fmtDateHeure(new Date(e.le)), e.profil, roleCompte(e.compte), ACTIONS[e.action] || e.action, e.client,
+    (e.action === "UPDATE" ? decrireChangements(e.changements) : resumeLigne(e.action === "DELETE" ? e.avant : e.apres)).map(texte).join(" | ")].map(cell).join(";"));
+  const blob = new Blob(["\ufeff" + ["Date", "Profil", "Compte", "Action", "Client", "Détails"].join(";") + "\n" + lignes.join("\n")], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `noname-logs-${today()}.csv`; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+async function restaurer(idJournal) {
+  const e = journalData.find((x) => String(x.id) === String(idJournal)); if (!e || !e.avant) return;
+  if (!confirm(tr("Restaurer cette demande supprimée ?") + "\n" + (e.client || ""))) return;
+  const row = { ...e.avant, modifie_par: userEmail || "" };
+  const { data, error } = await sb.from("demandes").insert(row).select().single();
+  if (error) return toast("Erreur : " + error.message);
+  upsertLocal(data); marquer(data); render(true); toast(tr("Demande restaurée"));
+  setTimeout(chargerJournal, 800);
+}
+// ---------- Connexions & comptes ----------
+function renderAcces() {
+  if (!journalCharge) { $("ad-body").innerHTML = `<div class="none">Chargement…</div>`; return; }
+  const cnx = journalData.filter((e) => e.action === "CONNEXION");
+  const sem = cnx.filter((e) => Date.now() - new Date(e.le) < 7 * 86400000);
+  const parProfil = {};
+  for (const e of sem) parProfil[e.profil || "?"] = (parProfil[e.profil || "?"] || 0) + 1;
+  const dateH = (iso) => iso ? fmtDateHeure(new Date(iso)) : "—";
+  const connectes = [...enLigne].sort((a, b) => (a.nom || "").localeCompare(b.nom || ""));
+  $("ad-body").innerHTML = `
+    <div class="ad-grid">
+      <div class="card side-list">
+        <p class="section-title">🟢 Connectés maintenant (${connectes.length})</p>
+        ${connectes.length ? connectes.map((x) => `<div class="op-row"><span class="op-dot"></span><b translate="no">${esc(x.nom || "?")}</b><small>${esc(x.appareil || "")} · depuis ${new Date(x.depuis).toTimeString().slice(0, 5)}</small></div>`).join("") : `<div class="none">Personne</div>`}
+        <p class="section-title" style="margin-top:16px">Connexions sur 7 jours (${sem.length})</p>
+        ${Object.entries(parProfil).sort((a, b) => b[1] - a[1]).map(([p, n]) => `<div class="op-row"><b translate="no">${esc(p)}</b><small>${n}×</small></div>`).join("") || `<div class="none">Aucune</div>`}
+      </div>
+      <div class="card side-list">
+        <p class="section-title">Comptes Supabase</p>
+        <table class="ad-table"><thead><tr><th>Compte</th><th>Rôle</th><th>Dernière connexion</th></tr></thead>
+        <tbody>${comptesData.map((c) => `<tr><td translate="no">${esc(c.email)}</td><td><span class="pill r" style="--rc:${c.email === ADMIN_EMAIL ? "var(--accent)" : "var(--info)"}">${roleCompte(c.email)}</span>${c.confirme ? "" : " ⚠"}</td><td>${dateH(c.derniere_connexion)}</td></tr>`).join("")}</tbody></table>
+      </div>
+    </div>
+    <div class="card side-list">
+      <p class="section-title">Historique des connexions (${cnx.length})</p>
+      ${cnx.slice(0, 150).map((e) => `<div class="ad-act"><b translate="no">${esc(e.profil || "?")}</b><span class="pill r" style="--rc:${e.compte === ADMIN_EMAIL ? "var(--accent)" : "var(--info)"}">${esc(roleCompte(e.compte))}</span><span>${esc(e.apres?.appareil || "")}</span><small>${dateH(e.le)}</small></div>`).join("") || `<div class="none">Aucune connexion enregistrée pour l'instant.</div>`}
+    </div>
+    <div class="card side-list">
+      <p class="section-title">🔒 Sécurité</p>
+      <ul class="lg-secu">
+        <li>Les données (demandes, prix, paiements) ne sont lisibles qu'après connexion avec un mot de passe ; sans connexion, la base ne renvoie rien.</li>
+        <li>Le panel admin et ses données (logs, comptes) ne sont envoyés par la base qu'au compte admin ; le compte d'équipe ne peut pas les lire, même en trafiquant le site.</li>
+        <li>Les logs sont écrits automatiquement par la base et ne peuvent être ni modifiés ni effacés depuis le site.</li>
+        <li>Les profils (Johan, Michael…) sont déclaratifs : le compte réel (Admin / Équipe) est, lui, vérifié.</li>
+        <li>Conseil : change le mot de passe d'équipe si quelqu'un quitte l'équipe (Supabase → Authentication → Users).</li>
+      </ul>
+    </div>`;
+}
+function renderApercu() {
   if (!estAdmin || $("adminbox").classList.contains("hidden")) return;
   const t = today();
   const f = (iso) => { const d = new Date(iso); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
@@ -2304,8 +2483,14 @@ function exporterCSV() {
 $("admin-open").onclick = ouvrirAdmin;
 $("ad-close").onclick = fermerAdmin;
 $("ad-csv").onclick = exporterCSV;
+$("ad-refresh").onclick = () => { chargerJournal(); toast(tr("Actualisé")); };
+$("ad-tabs").addEventListener("click", (e) => { const b = e.target.closest("[data-tab]"); if (b) { adOnglet = b.dataset.tab; renderAdmin(); } });
+$("ad-body").addEventListener("change", (e) => { const f = e.target.dataset.lg; if (f && f !== "q") { lgF[f] = e.target.value; renderLogs(); } });
+$("ad-body").addEventListener("input", (e) => { if (e.target.dataset.lg === "q") { lgF.q = e.target.value; clearTimeout(e.target._t); e.target._t = setTimeout(() => { renderLogs(); const q = $("ad-body").querySelector('[data-lg="q"]'); if (q) { q.focus(); q.setSelectionRange(q.value.length, q.value.length); } }, 250); } });
 $("adminbox").addEventListener("click", async (e) => {
   if (e.target.id === "adminbox") return fermerAdmin();
+  if (e.target.id === "lg-csv") return exporterLogs();
+  const rs = e.target.closest("[data-restaurer]"); if (rs) return restaurer(rs.dataset.restaurer);
   const sp = e.target.closest("[data-suppr-profil]");
   if (sp) {
     const n = sp.dataset.supprProfil;
@@ -2327,6 +2512,7 @@ function setSession(session) {
     if (estAdmin) { try { localStorage.setItem(NOM_KEY, "Michael"); } catch {} }
     afficherApp(true);
     $("admin-open").classList.toggle("hidden", !estAdmin);
+    if (sb) sb.rpc("noter_connexion", { p_profil: userEmail || "", p_appareil: appareil() }).then(() => {}, () => {});
     charger();
     abonnerTempsReel();
     rejoindrePresence();

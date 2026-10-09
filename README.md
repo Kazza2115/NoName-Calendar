@@ -22,6 +22,8 @@ Le site est une seule page (`index.html`), sans installation ni build.
 - **Saisie des dates fiable** : une date tapée (jj/mm/aaaa) est enregistrée même sans appuyer sur Entrée ; une date impossible (ex. 45/13/2026) est refusée avec un message
 - **Profils** : à la connexion, chacun choisit son profil (Johan, Michael, Arnaud, Wiliam) ou **« ➕ Nouveau profil… »** : une barre permet d'écrire le nom voulu. Après connexion (bon mot de passe), ce profil s'ajoute à la liste pour tout le monde (table `profils`). Michael peut supprimer un profil créé depuis le panel admin
 - **Panel admin (Michael uniquement)** : profil « Michael » + mot de passe **admin** (compte Supabase séparé `michael-admin@noname-calendar.app`). Bouton « 🛡️ Admin » : personnes connectées en ce moment, chiffres par responsable (demandes, sessions à venir, facturé / encaissé / reste), activité récente, export CSV. Avec le mot de passe d'équipe, Michael est connecté normalement, sans panel admin
+- **Logs (panel admin)** : chaque création, modification et suppression de demande / profil est enregistrée **par la base de données elle-même** (déclencheur PostgreSQL, table `journal`) avec la date, le profil, le compte (Admin / Équipe, vérifié) et le détail « avant → après ». Lecture réservée au compte admin, aucune écriture possible depuis le site. Filtres, recherche, export CSV, bouton « ↩ Restaurer » pour une demande supprimée
+- **Connexions & comptes (panel admin)** : historique des connexions au site (profil, compte, appareil), comptes Supabase et dernière connexion, rappel des règles de sécurité
 - **Sessions du mois** listées sous le mini calendrier (date, client, horaire, couleur du responsable)
 - **Filtre des calendriers** : les éléments de la légende (Session studio, Contact, Terminée, Modifié ce jour) sont des interrupteurs ; un clic masque / réaffiche ces éléments sur le mini et le grand calendrier (mémorisé sur l'appareil, contacts masqués par défaut)
 - **Catégories** (Toutes, Actives, statuts…) repliées derrière le bouton « ☰ Catégorie »
@@ -189,3 +191,11 @@ Pour ajouter un champ (ex. « lieu ») :
 | Le lien e-mail ouvre une page vide ou localhost | Vérifie la **Site URL** et les **Redirect URLs** (étape 5) |
 | « Liste indisponible » | Le projet Supabase est en pause → relance-le depuis le tableau de bord |
 | Les autres ne voient pas les changements en direct | Relance la ligne `alter publication supabase_realtime add table public.demandes;` |
+
+---
+
+## Confidentialité
+
+- Les données (demandes, prix, paiements) ne sont envoyées par la base **qu'après connexion** (règles RLS) ; le panel admin et les logs uniquement au compte admin.
+- Le site n'est pas indexé par les moteurs de recherche (`noindex` + `robots.txt`).
+- Pour cacher aussi le **code** : passer le dépôt GitHub en privé. GitHub Pages ne publie un dépôt privé qu'avec un abonnement payant (GitHub Pro) ; sinon, héberger le site sur Cloudflare Pages ou Netlify (gratuits, compatibles dépôts privés). Penser alors à mettre la nouvelle adresse dans Supabase → Authentication → URL Configuration.
