@@ -499,7 +499,8 @@
     <p>Entre le mot de passe de l'équipe NONAME.</p>
     <form id="login-form">
       <div><label for="login-pwd">Mot de passe</label><input type="password" id="login-pwd" required autocomplete="current-password"></div>
-      <div><label for="login-nom">Ton profil</label><select id="login-nom" required><option value="" disabled selected>Choisir ton profil…</option><option value="Johan">Johan</option><option value="Michael">Michael</option><option value="Arnaud">Arnaud</option><option value="Wiliam">Wiliam</option><option value="Invité">Invité</option></select></div>
+      <div><label for="login-nom">Ton profil</label><select id="login-nom" required><option value="" disabled selected>Choisir ton profil…</option><option value="Johan">Johan</option><option value="Michael">Michael</option><option value="Arnaud">Arnaud</option><option value="Wiliam">Wiliam</option><option value="__nouveau">➕ Nouveau profil…</option></select>
+        <input type="text" id="login-new" class="hidden" maxlength="40" autocomplete="off" placeholder="Écris le nom de ton profil" style="margin-top:8px"></div>
       <button class="btn primary" type="submit" id="login-btn">Entrer</button>
     </form>
     <div class="msg" id="login-msg"></div>
@@ -729,7 +730,7 @@ const EN = {
   "Copier son récap": "Copy their summary", "+ Nouvelle demande": "+ New request", "Total facturé": "Total invoiced", "Déjà payé": "Already paid", "Reste à payer": "Amount due", "Tout est payé": "All paid", "Aucune session.": "No sessions.",
   "jj/mm/aaaa": "dd/mm/yyyy", "🕐 de": "🕐 from", "à": "to", "(facultatif, appliqué à la date ajoutée)": "(optional, applied to the date you add)", "Heure de début": "Start time", "Heure de fin": "End time", "Modifier l'horaire": "Change the time",
   "Ton profil": "Your profile", "🛡️ Admin": "🛡️ Admin", "🛡️ Panel admin": "🛡️ Admin panel", "Panel admin": "Admin panel", "⬇ Exporter (CSV)": "⬇ Export (CSV)", "Connectés maintenant": "Online now", "Demandes actives / total": "Active / total requests",
-  "Par responsable": "By owner", "Actives": "Active", "Encaissé": "Collected", "Activité récente": "Recent activity", "Total": "Total", "Choisir ton profil…": "Choose your profile…", "Invité": "Guest", "en ligne": "online", "Personne": "Nobody", "+ Ajouter": "+ Add", "Mois": "Month", "Tout": "All", "Tous les événements": "All events", "Aucun événement pour l'instant.": "No events yet.",
+  "Par responsable": "By owner", "Actives": "Active", "Encaissé": "Collected", "Activité récente": "Recent activity", "Total": "Total", "Choisir ton profil…": "Choose your profile…", "Invité": "Guest", "➕ Nouveau profil…": "➕ New profile…", "Écris le nom de ton profil": "Type your profile name", "Écris le nom de ton profil.": "Type your profile name.", "Choisis ton profil.": "Choose your profile.", "Autres profils": "Other profiles", "Aucun profil créé pour l'instant.": "No profiles created yet.", "Supprimer ce profil": "Delete this profile", "Supprimer ce profil de la liste ?": "Remove this profile from the list?", "Profil supprimé": "Profile deleted", "en ligne": "online", "Personne": "Nobody", "+ Ajouter": "+ Add", "Mois": "Month", "Tout": "All", "Tous les événements": "All events", "Aucun événement pour l'instant.": "No events yet.",
   "Rien ce mois-ci — passe en vue « Tout » pour voir tous les événements.": "Nothing this month — switch to the “All” view to see every event.",
   "Date de session invalide : écris-la au format jj/mm/aaaa": "Invalid session date: write it as dd/mm/yyyy", "Date invalide : écris-la au format jj/mm/aaaa": "Invalid date: write it as dd/mm/yyyy", "Langue / Language": "Language",
   "Demande ajoutée": "Request added", "Demande supprimée": "Request deleted", "Enregistré": "Saved", "Update ajoutée": "Update added",
@@ -752,7 +753,7 @@ const RULES = [
   [/^Créée le /, "Created on "], [/ · modifiée /, " · updated "], [/ · modifiée par un membre/, " · changed by a member"], [/^Modifiée /, "Updated "],
   [/ payés\b/g, " paid"], [/(\d+) modification\(s\)/, "$1 change(s)"],
   [/^Contacts : /, "Contacts: "], [/^Contact : /, "Contact: "], [/^Sessions : /, "Sessions: "], [/^Terminées : /, "Finished: "], [/^Terminée : /, "Finished: "],
-  [/^Voir toutes les sessions et paiements de /, "See all sessions and payments for "], [/^Connecté·e : /, "Signed in: "], [/^Profil : /, "Profile: "], [/^Sessions du mois \((\d+)\)$/, "Sessions this month ($1)"], [/^Encaissé sur (.+) facturés$/, "Collected out of $1 invoiced"], [/^🟢 Connectés maintenant \((\d+)\)$/, "🟢 Online now ($1)"], [/^Connectés maintenant \((\d+)\)$/, "Online now ($1)"], [/ · depuis (\d)/, " · since $1"],
+  [/^Voir toutes les sessions et paiements de /, "See all sessions and payments for "], [/^Connecté·e : /, "Signed in: "], [/^Profil : /, "Profile: "], [/^Profils créés \((\d+)\)$/, "Created profiles ($1)"], [/^Sessions du mois \((\d+)\)$/, "Sessions this month ($1)"], [/^Encaissé sur (.+) facturés$/, "Collected out of $1 invoiced"], [/^🟢 Connectés maintenant \((\d+)\)$/, "🟢 Online now ($1)"], [/^Connectés maintenant \((\d+)\)$/, "Online now ($1)"], [/ · depuis (\d)/, " · since $1"],
   [/\bdès (\d)/g, "from $1"], [/\bjusqu'à (\d)/g, "until $1"],
   [/\breste (?=[\d])/g, "due "], [/^✓ le /, "✓ on "], [/^Statut : /, "Status: "], [/^Responsable : /, "Owner: "], [/^Erreur : /, "Error: "],
   [/^Liste indisponible\./, "List unavailable."], [/le projet Supabase est peut-être en pause\./, "the Supabase project may be paused."],
@@ -1850,12 +1851,49 @@ setInterval(() => { if (!$("app").classList.contains("hidden")) { renderListe();
 // ---------- Connexion ----------
 // Un seul compte partagé par toute l'équipe : seul le mot de passe est demandé.
 const NOM_KEY = "noname-prenom";
-try { const n = localStorage.getItem(NOM_KEY); if (n && [...$("login-nom").options].some((o) => o.value === n)) $("login-nom").value = n; } catch {}
+const PROFILS_BASE = ["Johan", "Michael", "Arnaud", "Wiliam"];
+let profilsCrees = [];
+const normal = (n) => (n || "").trim().toLowerCase();
+const profilExiste = (n) => [...PROFILS_BASE, ...profilsCrees].some((x) => normal(x) === normal(n));
+// Remplit le menu des profils : profils de base, profils créés (triés), puis « Nouveau profil… »
+function remplirProfils() {
+  const sel = $("login-nom"), courant = sel.value;
+  const crees = profilsCrees.filter((n) => !PROFILS_BASE.some((b) => normal(b) === normal(n))).sort((a, b) => a.localeCompare(b, "fr"));
+  sel.innerHTML = `<option value="" disabled>Choisir ton profil…</option>`
+    + PROFILS_BASE.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join("")
+    + (crees.length ? `<optgroup label="Autres profils">${crees.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join("")}</optgroup>` : "")
+    + `<option value="__nouveau">➕ Nouveau profil…</option>`;
+  let voulu = courant;
+  if (!voulu || voulu === "__nouveau" && $("login-new").classList.contains("hidden")) { try { voulu = localStorage.getItem(NOM_KEY) || ""; } catch {} }
+  sel.value = [...sel.options].some((o) => o.value === voulu && !o.disabled) ? voulu : "";
+  majChampNouveau();
+}
+function majChampNouveau() {
+  const nouveau = $("login-nom").value === "__nouveau";
+  $("login-new").classList.toggle("hidden", !nouveau);
+  $("login-new").required = nouveau;
+  if (nouveau) setTimeout(() => $("login-new").focus(), 0);
+}
+async function chargerProfils() {
+  if (!sb) return;
+  const { data, error } = await sb.from("profils").select("nom").order("nom");
+  if (!error && data) { profilsCrees = data.map((x) => x.nom); remplirProfils(); }
+}
+$("login-nom").addEventListener("change", majChampNouveau);
+remplirProfils();
 
 $("login-form").onsubmit = async (e) => {
   e.preventDefault();
   const msg = $("login-msg");
-  const nom = $("login-nom").value.trim();
+  const choix = $("login-nom").value;
+  const nouveau = choix === "__nouveau";
+  let nom = nouveau ? $("login-new").value.trim().replace(/\s+/g, " ") : choix.trim();
+  if (!nom) { msg.className = "msg ko"; msg.textContent = nouveau ? "Écris le nom de ton profil." : "Choisis ton profil."; (nouveau ? $("login-new") : $("login-nom")).focus(); return; }
+  if (nouveau) {
+    // un nom déjà existant (même écrit autrement) reprend le profil existant
+    const existant = [...PROFILS_BASE, ...profilsCrees].find((x) => normal(x) === normal(nom));
+    if (existant) nom = existant;
+  }
   try { localStorage.setItem(NOM_KEY, nom); } catch {}
   $("login-btn").disabled = true; msg.className = "msg"; msg.textContent = "Connexion…";
   const pwd = $("login-pwd").value;
@@ -1872,6 +1910,14 @@ $("login-form").onsubmit = async (e) => {
   } else {
     msg.textContent = "";
     $("login-pwd").value = "";
+    // nouveau profil : ajouté à la liste pour tout le monde
+    if (!profilExiste(nom)) {
+      profilsCrees.push(nom);
+      const { error: e2 } = await sb.from("profils").insert({ nom });
+      if (e2 && !/duplicate|unique/i.test(e2.message)) console.warn("Profil non enregistré :", e2.message);
+    }
+    $("login-new").value = "";
+    remplirProfils();
   }
 };
 
@@ -1953,6 +1999,10 @@ function renderAdmin() {
       </div>
     </div>
     <div class="card side-list">
+      <p class="section-title">Profils créés (${profilsCrees.filter((n) => !PROFILS_BASE.includes(n)).length})</p>
+      <div class="chips" style="margin-bottom:6px">${profilsCrees.filter((n) => !PROFILS_BASE.includes(n)).map((n) => `<span class="chip" translate="no">${esc(n)} <button type="button" class="link" data-suppr-profil="${esc(n)}" title="Supprimer ce profil" style="margin-left:4px;color:var(--danger)">✕</button></span>`).join("") || `<span class="none">Aucun profil créé pour l'instant.</span>`}</div>
+    </div>
+    <div class="card side-list">
       <p class="section-title">Activité récente</p>
       ${recents.map((i) => `<div class="ad-act s-${i.statut}" data-id="${i.id}"><span class="dot"></span><b translate="no">${esc(i.client || i.titre)}</b><span class="pill">${statutLabel(i.statut)}</span><span class="pill r" style="--rc:${respCouleur(i.resp)}">${esc(respConnu(i.resp) ? i.resp : "À assigner")}</span><small>${relTime(i.maj_le)}</small></div>`).join("") || `<div class="none">Aucune modification.</div>`}
     </div>`;
@@ -1975,7 +2025,17 @@ function exporterCSV() {
 $("admin-open").onclick = ouvrirAdmin;
 $("ad-close").onclick = fermerAdmin;
 $("ad-csv").onclick = exporterCSV;
-$("adminbox").addEventListener("click", (e) => { if (e.target.id === "adminbox") return fermerAdmin(); const r = e.target.closest("[data-id]"); if (r) ouvrir(r.dataset.id); });
+$("adminbox").addEventListener("click", async (e) => {
+  if (e.target.id === "adminbox") return fermerAdmin();
+  const sp = e.target.closest("[data-suppr-profil]");
+  if (sp) {
+    const n = sp.dataset.supprProfil;
+    if (!confirm(tr("Supprimer ce profil de la liste ?") + "\n" + n)) return;
+    const { error } = await sb.from("profils").delete().eq("nom", n);
+    if (error) return toast("Erreur : " + error.message);
+    profilsCrees = profilsCrees.filter((x) => x !== n); remplirProfils(); renderAdmin(); toast(tr("Profil supprimé"));
+    return;
+  } const r = e.target.closest("[data-id]"); if (r) ouvrir(r.dataset.id); });
 
 let sessionUserId = null;
 function setSession(session) {
@@ -1984,6 +2044,7 @@ function setSession(session) {
     sessionUserId = session.user.id;
     if (!nouvelle) return; // simple rafraîchissement du jeton
     estAdmin = (session.user.email || "").toLowerCase() === ADMIN_EMAIL;
+    chargerProfils();
     if (estAdmin) { try { localStorage.setItem(NOM_KEY, "Michael"); } catch {} }
     afficherApp(true);
     $("admin-open").classList.toggle("hidden", !estAdmin);
@@ -1996,6 +2057,7 @@ function setSession(session) {
     estAdmin = false; $("admin-open").classList.add("hidden"); fermerAdmin();
     if (channel) { sb.removeChannel(channel); channel = null; }
     quitterPresence();
+    chargerProfils();
     items = [];
     $("app").classList.add("hidden");
     $("userbox").classList.add("hidden");
@@ -2029,6 +2091,7 @@ appliquerLangue(LANG);
 
 if (configured && window.supabase) {
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  chargerProfils();
   sb.auth.onAuthStateChange((_event, session) => {
     // setTimeout : évite d'appeler Supabase à l'intérieur du callback d'auth
     setTimeout(() => setSession(session), 0);
