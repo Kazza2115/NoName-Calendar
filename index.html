@@ -503,7 +503,7 @@
   .wk-allday-l { font-size: 12px; color: var(--muted); padding: 6px 4px; text-align: right; border-bottom: 2px solid var(--line); line-height: 1.2; }
   .wk-allday { border-left: 1px solid var(--line); border-bottom: 2px solid var(--line); padding: 4px; min-height: 38px; display: flex; flex-direction: column; gap: 3px; }
   .wk-allday.today, .wk-col.today { background-color: color-mix(in srgb, var(--accent) 5%, transparent); }
-  .wk-chip { font-size: 13px; font-weight: 600; padding: 3px 7px; border-radius: 7px; border-left: 4px solid var(--rc); background: color-mix(in srgb, var(--rc) 20%, var(--card)); cursor: grab; touch-action: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .wk-chip { font-size: 13px; font-weight: 600; padding: 3px 7px; border-radius: 7px; border-left: 4px solid var(--rc); background: color-mix(in srgb, var(--rc) 20%, var(--card)); cursor: grab; touch-action: pan-x pan-y; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; -webkit-touch-callout: none; }
   .wk-chip.contact { --rc: var(--info); background: transparent; border: 1.5px dotted var(--info); border-left-width: 4px; color: var(--info); cursor: pointer; touch-action: auto; }
   .wk-chip.fin { --rc: var(--ok); background: transparent; border: 1.5px dashed var(--ok); border-left-width: 4px; color: var(--ok); cursor: pointer; touch-action: auto; }
   .wk-time { position: relative; }
@@ -513,7 +513,7 @@
     background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(color-mix(in srgb, var(--line) 55%, transparent) 1px, transparent 1px);
     background-size: 100% var(--hh), 100% calc(var(--hh) / 2); }
   .wk-col.pulse { animation: bcflash 1.8s ease-out; }
-  .wk-ev { position: absolute; z-index: 2; border-radius: 8px; padding: 3px 7px; overflow: hidden; cursor: grab; touch-action: none; font-size: 13px; line-height: 1.25;
+  .wk-ev { position: absolute; z-index: 2; border-radius: 8px; padding: 3px 7px; overflow: hidden; cursor: grab; touch-action: pan-x pan-y; -webkit-touch-callout: none; font-size: 13px; line-height: 1.25;
     background: color-mix(in srgb, var(--rc) 24%, var(--card)); border-left: 4px solid var(--rc); box-shadow: 0 1px 4px rgba(0,0,0,.08); }
   .wk-ev:hover { z-index: 3; box-shadow: 0 3px 10px rgba(0,0,0,.15); }
   .wk-ev .wk-t { font-weight: 800; color: var(--rc); }
@@ -522,6 +522,7 @@
   .wk-ev.closed { opacity: .55; }
   .wk-ev.flash { animation: flash 1.8s ease-out; }
   .wk-ev.dragging, .wk-chip.dragging { opacity: .35; }
+  .wk-ev.pret, .wk-chip.pret { transform: scale(1.04); box-shadow: 0 6px 18px rgba(0,0,0,.25); }
   .wk-ghost { position: absolute; left: 2px; right: 2px; z-index: 5; border: 2px dashed var(--accent); border-radius: 8px; background: color-mix(in srgb, var(--accent) 14%, transparent); pointer-events: none; font-size: 13px; font-weight: 800; color: var(--accent); padding: 2px 6px; }
   .wk-now { position: absolute; left: 0; right: 0; height: 2px; background: var(--danger); z-index: 4; pointer-events: none; }
   .wk-now::before { content: ""; position: absolute; left: -5px; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--danger); }
@@ -543,6 +544,12 @@
   .lg-note { font-size: 13px; color: var(--muted); margin-top: 14px; }
   .lg-secu { margin: 0; padding-left: 18px; font-size: 15px; line-height: 1.6; }
   @media (max-width: 680px) { .lg-row { grid-template-columns: 48px minmax(0, 1fr); } .lg-who { grid-column: 2; } .lg-what { grid-column: 1 / -1; } .lg-btn { grid-column: 1 / -1; } }
+  /* Fenêtre ouverte : la page derrière ne bouge plus, seule la fenêtre défile */
+  body.verrou { position: fixed; left: 0; right: 0; overflow: hidden; }
+  .bigcal, .overlay { overscroll-behavior: contain; }
+  .bigcal-box { max-height: 100%; min-height: 0; }
+  .bc-scroll, .cl-body { min-height: 0; }
+  .bigcal-box, .bc-scroll, .cl-body, .drawer, .online-pop, .flatpickr-calendar { overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; }
   .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 16px; z-index: 70; box-shadow: 0 6px 20px rgba(0,0,0,.2); max-width: calc(100% - 32px); }
 
   @media (max-width: 960px) {
@@ -1516,11 +1523,17 @@ document.addEventListener("pointerdown", (e) => {
   const el = e.target.closest("[data-drag]"); if (!el || e.button !== 0) return;
   const r = el.getBoundingClientRect();
   glisse = { el, id: el.dataset.drag, jour: el.dataset.jour, duree: +el.dataset.duree || 60, x: e.clientX, y: e.clientY,
-    offY: el.classList.contains("wk-ev") ? e.clientY - r.top : 0, actif: false, fantome: null, cible: null };
+    offY: el.classList.contains("wk-ev") ? e.clientY - r.top : 0, actif: false, fantome: null, cible: null,
+    tactile: e.pointerType === "touch", pret: e.pointerType !== "touch" };
+  if (glisse.tactile) {
+    const g = glisse;
+    g.timer = setTimeout(() => { if (glisse === g) { g.pret = true; el.classList.add("pret"); navigator.vibrate?.(15); } }, 350);
+  }
 });
 window.addEventListener("pointermove", (e) => {
   const g = glisse; if (!g) return;
   if (!g.actif && Math.hypot(e.clientX - g.x, e.clientY - g.y) < 6) return;
+  if (!g.pret) { clearTimeout(g.timer); glisse = null; return; } // doigt qui défile avant l'appui long : on laisse défiler
   if (!g.actif) { g.actif = true; g.el.classList.add("dragging"); document.body.classList.add("glisse"); }
   e.preventDefault();
   const col = document.elementsFromPoint(e.clientX, e.clientY).find((n) => n.classList && n.classList.contains("wk-col"));
@@ -1534,12 +1547,15 @@ window.addEventListener("pointermove", (e) => {
 }, { passive: false });
 window.addEventListener("pointerup", () => {
   const g = glisse; if (!g) return; glisse = null;
+  clearTimeout(g.timer); g.el.classList.remove("pret");
   g.el.classList.remove("dragging"); document.body.classList.remove("glisse"); g.fantome?.remove();
   if (!g.actif) { ignorerClic = true; setTimeout(() => (ignorerClic = false), 0); return ouvrir(g.id); }
   ignorerClic = true; setTimeout(() => (ignorerClic = false), 0);
   if (g.cible) deplacerSession(g.id, g.jour, g.cible.jour, g.cible.m, g.duree);
 });
-window.addEventListener("pointercancel", () => { if (glisse) { glisse.el.classList.remove("dragging"); glisse.fantome?.remove(); glisse = null; document.body.classList.remove("glisse"); } });
+// pendant un glisser tactile, le doigt ne fait plus défiler la grille
+window.addEventListener("touchmove", (e) => { if (glisse && glisse.pret) e.preventDefault(); }, { passive: false });
+window.addEventListener("pointercancel", () => { if (glisse) { clearTimeout(glisse.timer); glisse.el.classList.remove("dragging", "pret"); glisse.fantome?.remove(); glisse = null; document.body.classList.remove("glisse"); } });
 // Clic dans la grille : créneau vide → nouvelle session à ce jour / cette heure ; en-tête → journée
 function clicGrille(e) {
   if (ignorerClic || e.target.closest("[data-drag]")) return true;
@@ -2561,6 +2577,18 @@ $("themesw").addEventListener("click", (e) => {
 });
 matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", majBoutonsTheme);
 majBoutonsTheme();
+
+// ---------- Fenêtre au premier plan : bloque le défilement de la page derrière ----------
+let verrouY = 0;
+const FENETRES = ["bigcal", "clientbox", "adminbox", "daybox", "drawer"];
+function majVerrou() {
+  const ouvert = FENETRES.some((id) => $(id) && !$(id).classList.contains("hidden"));
+  const deja = document.body.classList.contains("verrou");
+  if (ouvert && !deja) { verrouY = window.scrollY; document.body.style.top = `-${verrouY}px`; document.body.classList.add("verrou"); }
+  else if (!ouvert && deja) { document.body.classList.remove("verrou"); document.body.style.top = ""; window.scrollTo(0, verrouY); }
+}
+const obsFenetres = new MutationObserver(majVerrou);
+FENETRES.forEach((id) => $(id) && obsFenetres.observe($(id), { attributes: true, attributeFilter: ["class"] }));
 
 // ---------- Langue ----------
 function appliquerLangue(l) {
