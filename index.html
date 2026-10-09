@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Réservations NONAME</title>
 <meta name="color-scheme" content="light dark">
+<script>try { const t = localStorage.getItem("noname-theme"); if (t) document.documentElement.dataset.theme = t; } catch {}</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
 <style>
   :root {
@@ -25,8 +26,9 @@
     --radius: 14px;
     --shadow: 0 1px 2px rgba(0,0,0,.05), 0 4px 16px rgba(0,0,0,.05);
   }
+  /* Thème sombre : automatique (réglage de l'appareil) ou forcé avec le bouton Clair / Sombre */
   @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
       --bg: #111114;
       --card: #1b1b20;
       --text: #ececf0;
@@ -44,6 +46,25 @@
       --shadow: none;
     }
   }
+  :root[data-theme="dark"] {
+    --bg: #111114;
+    --card: #1b1b20;
+    --text: #ececf0;
+    --muted: #b0b0ba;
+    --line: #2c2c33;
+    --soft: #24242a;
+    --accent: #8b74ff;
+    --accent-text: #0f0f12;
+    --danger: #ff6b6b;
+    --warn: #f0a640;
+    --ok: #4cd18a;
+    --info: #6aa3ff;
+    --gray: #8d8d98;
+    --r-johan: #38bdf8; --r-michael: #f472b6; --r-arnaud: #a3e635; --r-wiliam: #fb923c;
+    --shadow: none;
+  }
+  :root[data-theme="light"] { color-scheme: light; }
+  :root[data-theme="dark"] { color-scheme: dark; }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
   body {
@@ -124,6 +145,8 @@
   .chip .n { color: var(--muted); margin-left: 4px; font-variant-numeric: tabular-nums; }
   .chip.active { background: var(--text); color: var(--bg); border-color: var(--text); }
   .chip.active .n { color: inherit; opacity: .7; }
+  #cat-btn .n { color: var(--muted); font-variant-numeric: tabular-nums; }
+  #cat-btn b { color: var(--accent); }
   .chip.day { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
   .toolbar .grow { flex: 1; min-width: 160px; }
   .toolbar select { width: auto; }
@@ -193,6 +216,10 @@
   .mday.sel .mk i { background: var(--accent-text); }
   .legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 14px; color: var(--muted); margin-top: 12px; }
   .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .legend button { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--card); color: var(--text); border-radius: 999px; padding: 3px 10px; font-size: 14px; cursor: pointer; }
+  .legend button::before { content: "✓"; font-weight: 800; color: var(--accent); }
+  .legend button.off { opacity: .5; text-decoration: line-through; }
+  .legend button.off::before { content: "✕"; color: var(--muted); }
   .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
   .legend .lr { background: color-mix(in srgb, var(--accent) 30%, transparent); }
   .legend .lc { background: var(--info); border-radius: 50%; width: 6px; height: 6px; }
@@ -472,9 +499,11 @@
   <header>
     <div>
       <h1>Réservations <span>NONAME</span></h1>
-      <p class="sub">Studio · Label · Services artistes — demandes, réservations et suivi</p>
     </div>
-    <div class="langsw" id="langsw" role="group" aria-label="Langue / Language">
+    <div class="langsw" id="themesw" role="group" aria-label="Thème" style="margin-left:auto">
+      <button type="button" data-theme-btn="light">☀️ Clair</button><button type="button" data-theme-btn="dark">🌙 Sombre</button>
+    </div>
+    <div class="langsw" id="langsw" role="group" aria-label="Langue / Language" style="margin-left:0">
       <button type="button" data-lang="fr">FR</button><button type="button" data-lang="en">EN</button>
     </div>
     <div class="user hidden" id="userbox">
@@ -496,7 +525,6 @@
   <!-- Connexion -->
   <div class="card login hidden" id="login">
     <h2>Accès équipe</h2>
-    <p>Entre le mot de passe de l'équipe NONAME.</p>
     <form id="login-form">
       <div><label for="login-pwd">Mot de passe</label><input type="password" id="login-pwd" required autocomplete="current-password"></div>
       <div><label for="login-nom">Ton profil</label><select id="login-nom" required><option value="" disabled selected>Choisir ton profil…</option><option value="Johan">Johan</option><option value="Michael">Michael</option><option value="Arnaud">Arnaud</option><option value="Wiliam">Wiliam</option><option value="__nouveau">➕ Nouveau profil…</option></select>
@@ -515,8 +543,8 @@
           <div class="quick-grid">
             <div class="q-client"><label for="q-client">Nom du client *</label><input type="text" id="q-client" required autocomplete="off" placeholder="Artiste, label…"></div>
             <div class="q-titre"><label for="q-titre">Demande</label><input type="text" id="q-titre" autocomplete="off" placeholder="Ex. : session voix 2 titres"></div>
-            <div class="q-sessions"><label for="q-date-add">Sessions studio (une ou plusieurs dates)</label><div class="update-row"><input type="date" placeholder="jj/mm/aaaa" id="q-date-add"><button type="button" class="btn small" id="q-date-btn">+ Ajouter</button></div>
-              <div class="hrow"><span>🕐 de</span><select id="q-h-d" aria-label="Heure de début"></select><span>à</span><select id="q-h-f" aria-label="Heure de fin"></select><span class="hint">(facultatif, appliqué à la date ajoutée)</span></div><div class="date-chips" id="q-chips"></div></div>
+            <div class="q-sessions"><label for="q-date-add">Sessions studio</label><div class="update-row"><input type="date" placeholder="jj/mm/aaaa" id="q-date-add"><button type="button" class="btn small" id="q-date-btn">+ Ajouter</button></div>
+              <div class="hrow"><span>🕐 de</span><select id="q-h-d" aria-label="Heure de début"></select><span>à</span><select id="q-h-f" aria-label="Heure de fin"></select></div><div class="date-chips" id="q-chips"></div></div>
             <div><label for="q-contact">Contact</label><input type="date" placeholder="jj/mm/aaaa" id="q-contact"></div>
             <div><label for="q-statut">Statut</label><select id="q-statut"></select></div>
             <div><label for="q-resp">Responsable *</label><select id="q-resp" required></select></div>
@@ -527,6 +555,10 @@
         <div class="kpis" id="kpis"></div>
 
         <div class="toolbar">
+          <button type="button" class="btn" id="cat-btn" aria-expanded="false"></button>
+          <span id="chip-day"></span>
+        </div>
+        <div class="toolbar hidden" id="cat-panel">
           <div class="chips" id="chips"></div>
         </div>
         <div class="toolbar">
@@ -555,11 +587,11 @@
             <button class="btn small ghost" id="cal-next" aria-label="Mois suivant">›</button>
           </div>
           <div class="mini-grid" id="cal"></div>
-          <div class="legend">
-            <span><i class="lr"></i>Session studio</span>
-            <span><i class="lc"></i>Contact</span>
-            <span><i class="lf"></i>Terminée</span>
-            <span><i class="lm"></i>Modifié ce jour</span>
+          <div class="legend" id="cal-filtre" title="Cliquer pour afficher / masquer">
+            <button type="button" data-calf="sessions"><i class="lr"></i>Session studio</button>
+            <button type="button" data-calf="contacts"><i class="lc"></i>Contact</button>
+            <button type="button" data-calf="fins"><i class="lf"></i>Terminée</button>
+            <button type="button" data-calf="modifs"><i class="lm"></i>Modifié ce jour</button>
           </div>
           <div class="mois-liste" id="mois-liste"></div>
           <button class="btn" id="cal-open" style="width:100%;margin-top:12px">⤢ Ouvrir le grand calendrier</button>
@@ -595,8 +627,8 @@
       <button class="btn" id="bc-next" aria-label="Mois suivant">›</button>
       <div class="bc-opts">
         <span class="langsw" id="bc-vue" style="margin:0"><button type="button" data-vue="mois" class="on">Mois</button><button type="button" data-vue="tout">Tout</button></span>
-        <label><input type="checkbox" id="bc-contacts" checked> Contacts</label>
-        <label><input type="checkbox" id="bc-fins" checked> Fins</label>
+        <label><input type="checkbox" id="bc-contacts"> Contacts</label>
+        <label><input type="checkbox" id="bc-fins"> Fins</label>
       </div>
       <div class="bc-legend" id="bc-legend"></div>
       <button class="btn" id="bc-close" aria-label="Fermer">✕ Fermer</button>
@@ -642,8 +674,8 @@
   </div>
   <div class="field"><label for="e-client">Nom du client *</label><input type="text" id="e-client"></div>
   <div class="field"><label for="e-titre">Demande</label><input type="text" id="e-titre"></div>
-  <div class="field"><label for="e-date-add">Sessions studio — ajoute autant de dates que nécessaire</label><div class="update-row"><input type="date" placeholder="jj/mm/aaaa" id="e-date-add"><button type="button" class="btn small" id="e-date-btn">+ Ajouter</button></div>
-              <div class="hrow"><span>🕐 de</span><select id="e-h-d" aria-label="Heure de début"></select><span>à</span><select id="e-h-f" aria-label="Heure de fin"></select><span class="hint">(facultatif, appliqué à la date ajoutée)</span></div><div class="date-chips" id="e-chips"></div></div>
+  <div class="field"><label for="e-date-add">Sessions studio</label><div class="update-row"><input type="date" placeholder="jj/mm/aaaa" id="e-date-add"><button type="button" class="btn small" id="e-date-btn">+ Ajouter</button></div>
+              <div class="hrow"><span>🕐 de</span><select id="e-h-d" aria-label="Heure de début"></select><span>à</span><select id="e-h-f" aria-label="Heure de fin"></select></div><div class="date-chips" id="e-chips"></div></div>
   <div class="grid2">
     <div class="field"><label for="e-contact-date">Date de contact</label><input type="date" placeholder="jj/mm/aaaa" id="e-contact-date"></div>
     <div class="field"><label for="e-statut">Statut</label><select id="e-statut"></select></div>
@@ -728,10 +760,10 @@ const EN = {
   "Enregistrement studio": "Studio recording", "Mix / master": "Mix / master", "Production / beat": "Production / beat", "Co-production label": "Label co-production", "Booking / live": "Booking / live", "Promo / com": "Promo / PR", "Admin / contrat": "Admin / contract", "Autre": "Other",
   "Cliquer pour modifier la date": "Click to change the date", "Retirer cette date": "Remove this date", "Fermer": "Close", "✕ Fermer": "✕ Close", "Mois précédent": "Previous month", "Mois suivant": "Next month", "Aujourd'hui": "Today", "Grand calendrier": "Big calendar", "+ session": "+ session", "Aucune session ce mois-ci.": "No sessions this month.",
   "Copier son récap": "Copy their summary", "+ Nouvelle demande": "+ New request", "Total facturé": "Total invoiced", "Déjà payé": "Already paid", "Reste à payer": "Amount due", "Tout est payé": "All paid", "Aucune session.": "No sessions.",
-  "jj/mm/aaaa": "dd/mm/yyyy", "🕐 de": "🕐 from", "à": "to", "(facultatif, appliqué à la date ajoutée)": "(optional, applied to the date you add)", "Heure de début": "Start time", "Heure de fin": "End time", "Modifier l'horaire": "Change the time",
+  "jj/mm/aaaa": "dd/mm/yyyy", "☀️ Clair": "☀️ Light", "🌙 Sombre": "🌙 Dark", "Thème": "Theme", "Catégorie": "Category", "Cliquer pour afficher / masquer": "Click to show / hide", "🕐 de": "🕐 from", "à": "to", "(facultatif, appliqué à la date ajoutée)": "(optional, applied to the date you add)", "Heure de début": "Start time", "Heure de fin": "End time", "Modifier l'horaire": "Change the time",
   "Ton profil": "Your profile", "🛡️ Admin": "🛡️ Admin", "🛡️ Panel admin": "🛡️ Admin panel", "Panel admin": "Admin panel", "⬇ Exporter (CSV)": "⬇ Export (CSV)", "Connectés maintenant": "Online now", "Demandes actives / total": "Active / total requests",
   "Par responsable": "By owner", "Actives": "Active", "Encaissé": "Collected", "Activité récente": "Recent activity", "Total": "Total", "Choisir ton profil…": "Choose your profile…", "Invité": "Guest", "➕ Nouveau profil…": "➕ New profile…", "Écris le nom de ton profil": "Type your profile name", "Écris le nom de ton profil.": "Type your profile name.", "Choisis ton profil.": "Choose your profile.", "Autres profils": "Other profiles", "Aucun profil créé pour l'instant.": "No profiles created yet.", "Supprimer ce profil": "Delete this profile", "Supprimer ce profil de la liste ?": "Remove this profile from the list?", "Profil supprimé": "Profile deleted", "en ligne": "online", "Personne": "Nobody", "+ Ajouter": "+ Add", "Mois": "Month", "Tout": "All", "Tous les événements": "All events", "Aucun événement pour l'instant.": "No events yet.",
-  "Rien ce mois-ci — passe en vue « Tout » pour voir tous les événements.": "Nothing this month — switch to the “All” view to see every event.",
+  "Rien ce mois-ci.": "Nothing this month.",
   "Date de session invalide : écris-la au format jj/mm/aaaa": "Invalid session date: write it as dd/mm/yyyy", "Date invalide : écris-la au format jj/mm/aaaa": "Invalid date: write it as dd/mm/yyyy", "Langue / Language": "Language",
   "Demande ajoutée": "Request added", "Demande supprimée": "Request deleted", "Enregistré": "Saved", "Update ajoutée": "Update added",
   "Le nom du client est obligatoire.": "The client name is required.", "Choisis un responsable : chaque demande doit être assignée.": "Choose an owner: every request must be assigned.",
@@ -1128,8 +1160,11 @@ function renderListe() {
     { v: "impayees", l: "💰 À encaisser", n: items.filter(aEncaisser).length },
     ...STATUTS.map((s) => ({ ...s, n: counts[s.v] })),
   ];
-  $("chips").innerHTML = chips.map((c) => `<button class="chip ${filtre === c.v ? "active" : ""}" data-f="${c.v}">${esc(c.l)}<span class="n">${c.n}</span></button>`).join("")
-    + (jourSel ? `<button class="chip day" data-clear-day>📅 ${fmtDate(jourSel)} ✕</button>` : "");
+  $("chips").innerHTML = chips.map((c) => `<button class="chip ${filtre === c.v ? "active" : ""}" data-f="${c.v}">${esc(c.l)}<span class="n">${c.n}</span></button>`).join("");
+  const actif = chips.find((c) => c.v === filtre) || chips[0];
+  const ouvert = !$("cat-panel").classList.contains("hidden");
+  $("cat-btn").innerHTML = `☰ <span>Catégorie</span> : <b>${esc(actif.l)}</b> <span class="n">${actif.n}</span> ${ouvert ? "▴" : "▾"}`;
+  $("chip-day").innerHTML = jourSel ? `<button class="chip day" data-clear-day>📅 ${fmtDate(jourSel)} ✕</button>` : "";
 
   const rows = trier(items.filter(correspond));
   $("rows").innerHTML = rows.length ? rows.map((i) => `
@@ -1154,6 +1189,16 @@ function renderListe() {
     : `<div class="empty">${items.length ? "Aucune demande ne correspond." : "Aucune demande pour l'instant. Remplis le formulaire ci-dessus pour commencer."}</div>`;
 }
 
+// Ce qui est affiché sur les calendriers (mémorisé sur l'appareil)
+const CALF_KEY = "noname-cal-filtres";
+let calF = { sessions: true, contacts: false, fins: true, modifs: true };
+try { Object.assign(calF, JSON.parse(localStorage.getItem(CALF_KEY)) || {}); } catch {}
+function majCalF(k, v) {
+  calF[k] = v;
+  try { localStorage.setItem(CALF_KEY, JSON.stringify(calF)); } catch {}
+  $("bc-contacts").checked = calF.contacts; $("bc-fins").checked = calF.fins;
+  renderCalendrier(); renderBigCal();
+}
 function renderCalendrier() {
   const y = mois.getFullYear(), m = mois.getMonth();
   $("cal-title").textContent = mois.toLocaleDateString(LOC(), { month: "long", year: "numeric" });
@@ -1163,11 +1208,12 @@ function renderCalendrier() {
 
   const resa = {}, contact = {}, modif = {}, fin = {};
   for (const i of items) {
-    if (i.statut !== "annulee") for (const d of sessionsDe(i)) (resa[d] ||= []).push(i);
-    if (i.date_contact) (contact[i.date_contact] ||= []).push(i);
-    if (i.date_fin) (fin[i.date_fin] ||= []).push(i);
-    const dm = jourModif(i); if (dm) (modif[dm] ||= []).push(i);
+    if (calF.sessions && i.statut !== "annulee") for (const d of sessionsDe(i)) (resa[d] ||= []).push(i);
+    if (calF.contacts && i.date_contact) (contact[i.date_contact] ||= []).push(i);
+    if (calF.fins && i.date_fin) (fin[i.date_fin] ||= []).push(i);
+    const dm = jourModif(i); if (calF.modifs && dm) (modif[dm] ||= []).push(i);
   }
+  document.querySelectorAll("#cal-filtre [data-calf]").forEach((b) => b.classList.toggle("off", !calF[b.dataset.calf]));
 
   const t = today();
   let html = DOWS("mini").map((d) => `<div class="mini-dow">${d}</div>`).join("");
@@ -1276,7 +1322,7 @@ function renderBigCal() {
     </div>`;
   }
   const vide = !Object.keys(parJour).some((d) => d.startsWith(isoDay(mois).slice(0, 7)));
-  $("bc-grid").innerHTML = html + (vide ? `<div class="bc-empty">Rien ce mois-ci — passe en vue « Tout » pour voir tous les événements.</div>` : "");
+  $("bc-grid").innerHTML = html + (vide ? `<div class="bc-empty">Rien ce mois-ci.</div>` : "");
 }
 // ---------- Fiche client ----------
 let clientSel = null, clientMois = null;
@@ -1624,7 +1670,7 @@ function renderChips(k) {
   const t = today();
   $(k + "-chips").innerHTML = dates[k].length
     ? dates[k].map((d, n) => `<span class="dchip ${d < t ? "past" : ""}" data-n="${n}"><span class="dlabel" title="Cliquer pour modifier la date" style="cursor:pointer">${jourSemaine(d)} ${fmtDate(d)}${plage(heures[k][d]) ? ` · <span class="dh">${plage(heures[k][d])}</span>` : ""}</span><button type="button" class="hbtn" data-h="${n}" title="Modifier l'horaire">🕐</button><button type="button" data-del="${n}" aria-label="Retirer cette date">×</button></span>`).join("")
-    : `<span class="hint">Aucune date — choisis-en une ci-dessus (tu peux en ajouter plusieurs)</span>`;
+    : "";
 }
 // Date tapée au clavier (jj/mm/aaaa, jj.mm.aaaa, jj-mm-aaaa) → aaaa-mm-jj ; null si vide, false si invalide
 function lireSaisie(k) {
@@ -1745,9 +1791,15 @@ $("quick").onsubmit = async (e) => {
   }
 };
 
+$("cat-btn").onclick = () => {
+  const p = $("cat-panel"); p.classList.toggle("hidden");
+  $("cat-btn").setAttribute("aria-expanded", String(!p.classList.contains("hidden")));
+  renderListe();
+};
+$("chip-day").onclick = (e) => { if (e.target.closest("[data-clear-day]")) { jourSel = null; render(); } };
 $("chips").onclick = (e) => {
   if (e.target.closest("[data-clear-day]")) { jourSel = null; render(); return; }
-  const c = e.target.closest(".chip"); if (c) { filtre = c.dataset.f; renderListe(); }
+  const c = e.target.closest(".chip"); if (c) { filtre = c.dataset.f; $("cat-panel").classList.add("hidden"); renderListe(); }
 };
 $("search").oninput = (e) => { recherche = e.target.value; renderListe(); };
 $("sort").onchange = (e) => { tri = e.target.value; try { localStorage.setItem("noname-tri", tri); } catch {} renderListe(); };
@@ -1788,14 +1840,16 @@ $("bigcal").addEventListener("click", (e) => { if (e.target.id === "bigcal") fer
 $("bc-prev").onclick = () => { mois.setMonth(mois.getMonth() - 1); render(); };
 $("bc-next").onclick = () => { mois.setMonth(mois.getMonth() + 1); render(); };
 $("bc-today").onclick = () => { mois = new Date(); mois.setDate(1); render(); };
-$("bc-contacts").onchange = renderBigCal;
+$("bc-contacts").checked = calF.contacts; $("bc-fins").checked = calF.fins;
+$("bc-contacts").onchange = (e) => majCalF("contacts", e.target.checked);
+$("cal-filtre").addEventListener("click", (e) => { const b = e.target.closest("[data-calf]"); if (b) majCalF(b.dataset.calf, !calF[b.dataset.calf]); });
 $("bc-vue").addEventListener("click", (e) => {
   const b = e.target.closest("[data-vue]"); if (!b) return;
   bcVue = b.dataset.vue; renderBigCal();
   if (bcVue === "tout") setTimeout(() => $("bc-next-day")?.scrollIntoView({ block: "start" }), 0);
 });
 $("bc-alert").addEventListener("click", (e) => { const b = e.target.closest("[data-id]"); if (b) ouvrir(b.dataset.id); });
-$("bc-fins").onchange = renderBigCal;
+$("bc-fins").onchange = (e) => majCalF("fins", e.target.checked);
 $("bc-grid").addEventListener("click", (e) => {
   const ev = e.target.closest(".bc-ev"); if (ev) return ouvrir(ev.dataset.id);
   const day = e.target.closest(".bc-day"); if (day && bcVue === "mois") ouvrir(null, { sessions: [day.dataset.day] });
@@ -2067,6 +2121,18 @@ function setSession(session) {
 }
 
 $("logout").onclick = async () => { await sb.auth.signOut(); };
+
+// ---------- Thème clair / sombre ----------
+function themeActuel() { return document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"); }
+function majBoutonsTheme() { const t = themeActuel(); document.querySelectorAll("[data-theme-btn]").forEach((b) => b.classList.toggle("on", b.dataset.themeBtn === t)); }
+$("themesw").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-theme-btn]"); if (!b) return;
+  document.documentElement.dataset.theme = b.dataset.themeBtn;
+  try { localStorage.setItem("noname-theme", b.dataset.themeBtn); } catch {}
+  majBoutonsTheme();
+});
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", majBoutonsTheme);
+majBoutonsTheme();
 
 // ---------- Langue ----------
 function appliquerLangue(l) {

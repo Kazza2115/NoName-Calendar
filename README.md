@@ -23,6 +23,9 @@ Le site est une seule page (`index.html`), sans installation ni build.
 - **Profils** : à la connexion, chacun choisit son profil (Johan, Michael, Arnaud, Wiliam) ou **« ➕ Nouveau profil… »** : une barre permet d'écrire le nom voulu. Après connexion (bon mot de passe), ce profil s'ajoute à la liste pour tout le monde (table `profils`). Michael peut supprimer un profil créé depuis le panel admin
 - **Panel admin (Michael uniquement)** : profil « Michael » + mot de passe **admin** (compte Supabase séparé `michael-admin@noname-calendar.app`). Bouton « 🛡️ Admin » : personnes connectées en ce moment, chiffres par responsable (demandes, sessions à venir, facturé / encaissé / reste), activité récente, export CSV. Avec le mot de passe d'équipe, Michael est connecté normalement, sans panel admin
 - **Sessions du mois** listées sous le mini calendrier (date, client, horaire, couleur du responsable)
+- **Filtre des calendriers** : les éléments de la légende (Session studio, Contact, Terminée, Modifié ce jour) sont des interrupteurs ; un clic masque / réaffiche ces éléments sur le mini et le grand calendrier (mémorisé sur l'appareil, contacts masqués par défaut)
+- **Catégories** (Toutes, Actives, statuts…) repliées derrière le bouton « ☰ Catégorie »
+- **Bouton ☀️ Clair / 🌙 Sombre** en haut (mémorisé sur l'appareil ; sinon suit le réglage de l'appareil)
 - **Mini calendrier** : chaque jour de session est surligné (plus foncé s'il y a plusieurs réservations), un point bleu = contact, un point vert = terminée ce jour-là, un point orange = modifié ce jour-là
 - **Effets visuels** : à chaque ajout ou modification (par toi ou un autre membre en direct), la ligne s'illumine et le jour concerné « pulse » dans le calendrier
 - **Grand calendrier** — affiche sessions, contacts et fins ; vue « Mois » ou « Tout » (tous les événements passés et à venir), alerte des demandes sans date de session (bouton « 📅 Grand calendrier » en haut, ou « Ouvrir le grand calendrier » sous le mini calendrier) : mois entier en plein écran, nom de chaque session écrit dans la case, couleur du responsable ; fins (✓) et contacts (☎) affichables ; clic sur une session = fiche, clic sur un jour = nouvelle session. Sur téléphone : vue agenda jour par jour
@@ -31,7 +34,7 @@ Le site est une seule page (`index.html`), sans installation ni build.
 - Compteurs : demandes actives, réservations sous 7 jours, réservations du mois, en attente
 - Colonne latérale : prochaines réservations et dernières modifications
 - Fiche détaillée : coordonnées, type, responsable, budget (CHF), notes, **updates datées et signées**, suppression
-- Filtres par statut (« Toutes » par défaut), recherche, tri (réservation, modification, contact, client)
+- Filtres par statut via le bouton « ☰ Catégorie » (« Toutes » par défaut), recherche, tri (réservation, modification, contact, client)
 - Bouton « Copier le récap » : résumé à coller dans WhatsApp ou un mail
 - **Dates au format jj/mm/aaaa** partout, avec un calendrier de saisie en français (on peut aussi taper la date au clavier, ex. 15/10/2026)
 - **FR / EN** : bouton en haut à droite pour passer tout le site en anglais (mémorisé sur chaque appareil). Les noms et notes saisis ne sont pas traduits
