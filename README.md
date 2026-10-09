@@ -20,7 +20,9 @@ Le site est une seule page (`index.html`), sans installation ni build.
 - **Prix & paiements** (à remplir plus tard, depuis la fiche) : prix total, montant déjà payé, barre de progression, reste à payer. Bouton « + Encaisser » : ajoute le montant reçu et l'inscrit dans le journal. Colonne « Paiement » (Non payé / Acompte / Payé), filtre « À encaisser », carte « Paiements » (facturé / encaissé / reste) et section « À encaisser » dans le récap
 - **Horaires des sessions** : menus « 🕐 de … à … » à côté du champ date (ex. 14h–16h, 18h30–19h) ; bouton 🕐 sur chaque pastille pour changer l'horaire. Affichés dans le tableau, les calendriers, la fiche client et les récaps
 - **Saisie des dates fiable** : une date tapée (jj/mm/aaaa) est enregistrée même sans appuyer sur Entrée ; une date impossible (ex. 45/13/2026) est refusée avec un message
-- **Profils & connectés** : à la connexion, chacun choisit son profil (Johan, Michael, Arnaud, Wiliam, Invité). Le profil **Michael** voit en haut « 🟢 N en ligne » et la liste des personnes connectées en ce moment (profil, appareil, depuis quand)
+- **Profils** : à la connexion, chacun choisit son profil (Johan, Michael, Arnaud, Wiliam, Invité)
+- **Panel admin (Michael uniquement)** : profil « Michael » + mot de passe **admin** (compte Supabase séparé `michael-admin@noname-calendar.app`). Bouton « 🛡️ Admin » : personnes connectées en ce moment, chiffres par responsable (demandes, sessions à venir, facturé / encaissé / reste), activité récente, export CSV. Avec le mot de passe d'équipe, Michael est connecté normalement, sans panel admin
+- **Sessions du mois** listées sous le mini calendrier (date, client, horaire, couleur du responsable)
 - **Mini calendrier** : chaque jour de session est surligné (plus foncé s'il y a plusieurs réservations), un point bleu = contact, un point vert = terminée ce jour-là, un point orange = modifié ce jour-là
 - **Effets visuels** : à chaque ajout ou modification (par toi ou un autre membre en direct), la ligne s'illumine et le jour concerné « pulse » dans le calendrier
 - **Grand calendrier** — affiche sessions, contacts et fins ; vue « Mois » ou « Tout » (tous les événements passés et à venir), alerte des demandes sans date de session (bouton « 📅 Grand calendrier » en haut, ou « Ouvrir le grand calendrier » sous le mini calendrier) : mois entier en plein écran, nom de chaque session écrit dans la case, couleur du responsable ; fins (✓) et contacts (☎) affichables ; clic sur une session = fiche, clic sur un jour = nouvelle session. Sur téléphone : vue agenda jour par jour
@@ -136,6 +138,8 @@ En coulisses, il se connecte à un compte Supabase partagé : `equipe@noname-cal
 2. E-mail : `equipe@noname-calendar.app` · Mot de passe : celui de l'équipe · coche **Auto Confirm User**.
 
 Envoie ensuite le lien du site et le mot de passe à l'équipe. Chacun peut indiquer son prénom à la connexion : il signe ses updates (mémorisé sur son appareil).
+
+**Créer le compte admin de Michael (une seule fois)** : **Authentication** → **Users** → **Add user** → **Create new user** → e-mail `michael-admin@noname-calendar.app`, mot de passe admin choisi par Michael, coche **Auto Confirm User**. Le mot de passe n'est jamais écrit dans `index.html` (le dépôt est public) : c'est Supabase qui le vérifie.
 
 **Changer le mot de passe** (ex. quelqu'un quitte l'équipe) : **Authentication** → **Users** → clic sur `equipe@noname-calendar.app` → **Reset password** / changer le mot de passe. Les sessions déjà ouvertes restent actives jusqu'à déconnexion ; pour éjecter tout le monde, supprime l'utilisateur et recrée-le.
 

@@ -198,6 +198,15 @@
   .legend .lc { background: var(--info); border-radius: 50%; width: 6px; height: 6px; }
   .legend .lm { background: var(--warn); border-radius: 50%; width: 6px; height: 6px; }
   .legend .lf { background: var(--ok); border-radius: 50%; width: 6px; height: 6px; }
+  /* Liste des sessions du mois affiché, sous le mini calendrier */
+  .mois-liste { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; }
+  .mois-liste h4 { margin: 0 0 6px; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  .ml-row { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 8px; cursor: pointer; font-size: 15px; border-left: 4px solid var(--rc); background: color-mix(in srgb, var(--rc) 10%, transparent); margin-bottom: 4px; }
+  .ml-row:hover { background: color-mix(in srgb, var(--rc) 20%, transparent); }
+  .ml-row.past { opacity: .6; }
+  .ml-row .ml-d { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .ml-row .ml-n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
+  .ml-row .ml-h { color: var(--muted); font-size: 14px; white-space: nowrap; }
   .day-detail { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; font-size: 15px; }
   .day-detail .dd-title { font-weight: 650; margin-bottom: 6px; text-transform: capitalize; }
   .day-detail .dd-item { display: flex; gap: 8px; align-items: center; padding: 4px 0; cursor: pointer; }
@@ -421,6 +430,19 @@
   .op-row:first-of-type { border-top: none; }
   .op-row small { color: var(--muted); font-size: 14px; margin-left: auto; white-space: nowrap; }
   .op-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 25%, transparent); }
+  /* Panel admin */
+  .ad-badge { font-size: 14px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+  .ad-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 18px; align-items: start; }
+  .ad-table { width: 100%; border-collapse: collapse; font-size: 16px; }
+  .ad-table th { text-align: left; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); padding: 8px; border-bottom: 1px solid var(--line); }
+  .ad-table td { padding: 9px 8px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+  .ad-table td.n, .ad-table th.n { text-align: right; }
+  .ad-table tr:last-child td { border-bottom: none; }
+  .ad-table tfoot td { font-weight: 800; border-top: 2px solid var(--line); }
+  .ad-act { display: flex; gap: 10px; align-items: center; padding: 8px 4px; border-top: 1px solid var(--line); cursor: pointer; font-size: 15px; }
+  .ad-act:first-child { border-top: none; }
+  .ad-act small { margin-left: auto; color: var(--muted); white-space: nowrap; }
+  @media (max-width: 900px) { .ad-grid { grid-template-columns: 1fr; } .ad-table { font-size: 14px; } }
   .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 16px; z-index: 70; box-shadow: 0 6px 20px rgba(0,0,0,.2); max-width: calc(100% - 32px); }
 
   @media (max-width: 960px) {
@@ -458,6 +480,7 @@
     <div class="user hidden" id="userbox">
       <span class="online hidden" id="online"><button type="button" class="btn small" id="online-btn">🟢 <b id="online-n">1</b> <span>en ligne</span></button><div class="online-pop hidden" id="online-pop"></div></span>
       <span id="useremail"></span>
+      <button class="btn small hidden" id="admin-open" style="border-color:var(--accent);color:var(--accent);font-weight:700">🛡️ Admin</button>
       <button class="btn small primary" id="cal-open2">📅 Grand calendrier</button>
       <button class="btn small" id="recap">Copier le récap</button>
       <button class="btn small" id="logout">Déconnexion</button>
@@ -537,6 +560,7 @@
             <span><i class="lf"></i>Terminée</span>
             <span><i class="lm"></i>Modifié ce jour</span>
           </div>
+          <div class="mois-liste" id="mois-liste"></div>
           <button class="btn" id="cal-open" style="width:100%;margin-top:12px">⤢ Ouvrir le grand calendrier</button>
           <div class="day-detail hidden" id="day-detail"></div>
         </div>
@@ -591,6 +615,19 @@
       <button class="btn" id="cl-close" style="margin-left:auto">✕ Fermer</button>
     </div>
     <div class="cl-body" id="cl-body"></div>
+  </div>
+</div>
+
+<!-- Panel admin (compte Michael uniquement) -->
+<div class="bigcal hidden" id="adminbox" role="dialog" aria-label="Panel admin">
+  <div class="bigcal-box cl-box">
+    <div class="bc-head">
+      <h2>🛡️ Panel admin</h2>
+      <span class="ad-badge">Michael</span>
+      <button class="btn" id="ad-csv">⬇ Exporter (CSV)</button>
+      <button class="btn" id="ad-close" style="margin-left:auto">✕ Fermer</button>
+    </div>
+    <div class="cl-body" id="ad-body"></div>
   </div>
 </div>
 
@@ -691,7 +728,8 @@ const EN = {
   "Cliquer pour modifier la date": "Click to change the date", "Retirer cette date": "Remove this date", "Fermer": "Close", "✕ Fermer": "✕ Close", "Mois précédent": "Previous month", "Mois suivant": "Next month", "Aujourd'hui": "Today", "Grand calendrier": "Big calendar", "+ session": "+ session", "Aucune session ce mois-ci.": "No sessions this month.",
   "Copier son récap": "Copy their summary", "+ Nouvelle demande": "+ New request", "Total facturé": "Total invoiced", "Déjà payé": "Already paid", "Reste à payer": "Amount due", "Tout est payé": "All paid", "Aucune session.": "No sessions.",
   "jj/mm/aaaa": "dd/mm/yyyy", "🕐 de": "🕐 from", "à": "to", "(facultatif, appliqué à la date ajoutée)": "(optional, applied to the date you add)", "Heure de début": "Start time", "Heure de fin": "End time", "Modifier l'horaire": "Change the time",
-  "Ton profil": "Your profile", "Choisir ton profil…": "Choose your profile…", "Invité": "Guest", "en ligne": "online", "Personne": "Nobody", "+ Ajouter": "+ Add", "Mois": "Month", "Tout": "All", "Tous les événements": "All events", "Aucun événement pour l'instant.": "No events yet.",
+  "Ton profil": "Your profile", "🛡️ Admin": "🛡️ Admin", "🛡️ Panel admin": "🛡️ Admin panel", "Panel admin": "Admin panel", "⬇ Exporter (CSV)": "⬇ Export (CSV)", "Connectés maintenant": "Online now", "Demandes actives / total": "Active / total requests",
+  "Par responsable": "By owner", "Actives": "Active", "Encaissé": "Collected", "Activité récente": "Recent activity", "Total": "Total", "Choisir ton profil…": "Choose your profile…", "Invité": "Guest", "en ligne": "online", "Personne": "Nobody", "+ Ajouter": "+ Add", "Mois": "Month", "Tout": "All", "Tous les événements": "All events", "Aucun événement pour l'instant.": "No events yet.",
   "Rien ce mois-ci — passe en vue « Tout » pour voir tous les événements.": "Nothing this month — switch to the “All” view to see every event.",
   "Date de session invalide : écris-la au format jj/mm/aaaa": "Invalid session date: write it as dd/mm/yyyy", "Date invalide : écris-la au format jj/mm/aaaa": "Invalid date: write it as dd/mm/yyyy", "Langue / Language": "Language",
   "Demande ajoutée": "Request added", "Demande supprimée": "Request deleted", "Enregistré": "Saved", "Update ajoutée": "Update added",
@@ -714,7 +752,7 @@ const RULES = [
   [/^Créée le /, "Created on "], [/ · modifiée /, " · updated "], [/ · modifiée par un membre/, " · changed by a member"], [/^Modifiée /, "Updated "],
   [/ payés\b/g, " paid"], [/(\d+) modification\(s\)/, "$1 change(s)"],
   [/^Contacts : /, "Contacts: "], [/^Contact : /, "Contact: "], [/^Sessions : /, "Sessions: "], [/^Terminées : /, "Finished: "], [/^Terminée : /, "Finished: "],
-  [/^Voir toutes les sessions et paiements de /, "See all sessions and payments for "], [/^Connecté·e : /, "Signed in: "], [/^Profil : /, "Profile: "], [/^Connectés maintenant \((\d+)\)$/, "Online now ($1)"], [/ · depuis (\d)/, " · since $1"],
+  [/^Voir toutes les sessions et paiements de /, "See all sessions and payments for "], [/^Connecté·e : /, "Signed in: "], [/^Profil : /, "Profile: "], [/^Sessions du mois \((\d+)\)$/, "Sessions this month ($1)"], [/^Encaissé sur (.+) facturés$/, "Collected out of $1 invoiced"], [/^🟢 Connectés maintenant \((\d+)\)$/, "🟢 Online now ($1)"], [/^Connectés maintenant \((\d+)\)$/, "Online now ($1)"], [/ · depuis (\d)/, " · since $1"],
   [/\bdès (\d)/g, "from $1"], [/\bjusqu'à (\d)/g, "until $1"],
   [/\breste (?=[\d])/g, "due "], [/^✓ le /, "✓ on "], [/^Statut : /, "Status: "], [/^Responsable : /, "Owner: "], [/^Erreur : /, "Error: "],
   [/^Liste indisponible\./, "List unavailable."], [/le projet Supabase est peut-être en pause\./, "the Supabase project may be paused."],
@@ -783,6 +821,10 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 // Compte partagé de l'équipe (créé dans Supabase → Authentication → Users → Add user)
 const EQUIPE_EMAIL = "equipe@noname-calendar.app";
+// Compte administrateur de Michael (créé dans Supabase → Authentication → Users → Add user).
+// Seule une connexion avec CE compte ouvre le panel admin ; son mot de passe n'est pas dans ce fichier.
+const ADMIN_EMAIL = "michael-admin@noname-calendar.app";
+let estAdmin = false;
 
 const TYPES = [
   "Enregistrement studio", "Mix / master", "Production / beat", "Co-production label",
@@ -1148,6 +1190,14 @@ function renderCalendrier() {
   }
   $("cal").innerHTML = html;
   renderDetailJour(resa, contact, modif, fin);
+  // Toutes les sessions du mois affiché, en toutes lettres
+  const prefixe = isoDay(mois).slice(0, 7);
+  const duMois = items.filter((i) => i.statut !== "annulee").flatMap((i) => sessionsDe(i).filter((d) => d.startsWith(prefixe)).map((d) => ({ i, d })))
+    .sort((a, b) => a.d.localeCompare(b.d) || (horaireDe(a.i, a.d)?.d || "99").localeCompare(horaireDe(b.i, b.d)?.d || "99"));
+  $("mois-liste").innerHTML = `<h4>Sessions du mois (${duMois.length})</h4>`
+    + (duMois.length ? duMois.map(({ i, d }) => `<div class="ml-row ${d < t ? "past" : ""}" style="--rc:${respCouleur(i.resp)}" data-id="${i.id}" title="${esc(i.titre || "")} · ${esc(i.resp || "")}">
+        <span class="ml-d">${jourSemaine(d)} ${fmtDate(d).slice(0, 5)}</span><span class="ml-n" translate="no">${esc(i.client || i.titre)}</span>${plageDe(i, d) ? `<span class="ml-h">${plageDe(i, d)}</span>` : ""}</div>`).join("")
+      : `<div class="none" style="font-size:14px">Aucune session ce mois-ci.</div>`);
 }
 
 let bcVue = "mois";
@@ -1397,6 +1447,7 @@ function render(anim = false) {
   renderSide();
   renderBigCal();
   renderClient();
+  renderAdmin();
 }
 
 function allerAuMois(s) { const d = parse(s); mois = new Date(d.getFullYear(), d.getMonth(), 1); }
@@ -1729,6 +1780,7 @@ $("upcoming").addEventListener("click", (e) => { const s = e.target.closest(".si
 $("payments").addEventListener("click", (e) => { const s = e.target.closest(".si"); if (s) ouvrir(s.dataset.id); });
 $("recent").addEventListener("click", (e) => { const s = e.target.closest(".si"); if (s) ouvrir(s.dataset.id); });
 $("cal-open").onclick = ouvrirBigCal;
+$("mois-liste").addEventListener("click", (e) => { const r = e.target.closest("[data-id]"); if (r) ouvrir(r.dataset.id); });
 $("cal-open2").onclick = ouvrirBigCal;
 $("bc-close").onclick = fermerBigCal;
 $("bigcal").addEventListener("click", (e) => { if (e.target.id === "bigcal") fermerBigCal(); });
@@ -1785,6 +1837,7 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && !document.querySelector(".flatpickr-calendar.open")) {
     if (!$("drawer").classList.contains("hidden")) fermer();
     else if (!$("clientbox").classList.contains("hidden")) fermerClient();
+    else if (!$("adminbox").classList.contains("hidden")) fermerAdmin();
     else if (!$("bigcal").classList.contains("hidden")) fermerBigCal();
   }
   if ((e.metaKey || e.ctrlKey) && e.key === "s" && !$("drawer").classList.contains("hidden")) { e.preventDefault(); enregistrer(); }
@@ -1805,7 +1858,9 @@ $("login-form").onsubmit = async (e) => {
   const nom = $("login-nom").value.trim();
   try { localStorage.setItem(NOM_KEY, nom); } catch {}
   $("login-btn").disabled = true; msg.className = "msg"; msg.textContent = "Connexion…";
-  const { error } = await sb.auth.signInWithPassword({ email: EQUIPE_EMAIL, password: $("login-pwd").value });
+  const pwd = $("login-pwd").value;
+  let { error } = nom === "Michael" ? await sb.auth.signInWithPassword({ email: ADMIN_EMAIL, password: pwd }) : { error: { message: "skip" } };
+  if (error) ({ error } = await sb.auth.signInWithPassword({ email: EQUIPE_EMAIL, password: pwd }));
   $("login-btn").disabled = false;
   if (error) {
     msg.className = "msg ko";
@@ -1842,7 +1897,7 @@ function rejoindrePresence() {
   presence.on("presence", { event: "sync" }, () => {
     const st = presence.presenceState();
     enLigne = Object.values(st).map((l) => l[0]).filter(Boolean);
-    renderPresence();
+    renderPresence(); renderAdmin();
   });
   presence.subscribe(async (statut) => {
     if (statut === "SUBSCRIBED") await presence.track({ nom: userEmail || "Invité", depuis: new Date().toISOString(), appareil: appareil() });
@@ -1850,7 +1905,7 @@ function rejoindrePresence() {
 }
 function quitterPresence() { if (presence) { sb.removeChannel(presence); presence = null; } enLigne = []; renderPresence(); }
 function renderPresence() {
-  const visible = !!sb && userEmail === PROFIL_ADMIN && !$("app").classList.contains("hidden");
+  const visible = !!sb && estAdmin && !$("app").classList.contains("hidden");
   $("online").classList.toggle("hidden", !visible);
   if (!visible) return;
   const liste = [...enLigne].sort((a, b) => (a.nom || "").localeCompare(b.nom || ""));
@@ -1859,8 +1914,68 @@ function renderPresence() {
   $("online-pop").innerHTML = `<h4>Connectés maintenant (${liste.length})</h4>`
     + (liste.length ? liste.map((x) => `<div class="op-row"><span class="op-dot"></span><b translate="no">${esc(x.nom || "Invité")}</b> <small>${esc(x.appareil || "")} · depuis ${f(x.depuis)}</small></div>`).join("") : `<div class="none">Personne</div>`);
 }
-$("online-btn").onclick = (e) => { e.stopPropagation(); $("online-pop").classList.toggle("hidden"); };
+$("online-btn").onclick = (e) => { e.stopPropagation(); ouvrirAdmin(); };
 document.addEventListener("click", (e) => { if (!e.target.closest("#online")) $("online-pop").classList.add("hidden"); });
+
+// ---------- Panel admin ----------
+function ouvrirAdmin() { if (!estAdmin) return; $("adminbox").classList.remove("hidden"); renderAdmin(); }
+function fermerAdmin() { $("adminbox").classList.add("hidden"); }
+function renderAdmin() {
+  if (!estAdmin || $("adminbox").classList.contains("hidden")) return;
+  const t = today();
+  const f = (iso) => { const d = new Date(iso); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+  const valides = items.filter((i) => i.statut !== "annulee");
+  const somme = (arr, fn) => arr.reduce((a, i) => a + fn(i), 0);
+  const fact = (i) => paiement(i).prix || 0, enc = (i) => Math.min(paiement(i).paye, paiement(i).prix || 0), dus = (i) => paiement(i).reste;
+  const sessAVenir = (arr) => arr.flatMap(sessionsDe).filter((d) => d >= t).length;
+  const lignes = [...RESPS.map((r) => ({ nom: r.v, c: r.c, l: valides.filter((i) => i.resp === r.v) })), { nom: "À assigner", c: "var(--danger)", l: valides.filter((i) => !respConnu(i.resp)) }];
+  const connectes = [...enLigne].sort((a, b) => (a.nom || "").localeCompare(b.nom || ""));
+  const recents = [...items].sort((a, b) => (b.maj_le || "").localeCompare(a.maj_le || "")).slice(0, 15);
+  $("ad-body").innerHTML = `
+    <div class="cl-sum">
+      <div class="card kpi"><div class="v">${connectes.length}</div><div class="l">Connectés maintenant</div></div>
+      <div class="card kpi"><div class="v">${items.filter((i) => !estClos(i)).length} / ${items.length}</div><div class="l">Demandes actives / total</div></div>
+      <div class="card kpi"><div class="v">${sessAVenir(valides)}</div><div class="l">Sessions à venir</div></div>
+      <div class="card kpi"><div class="v green">${chf(somme(valides, enc))}</div><div class="l">Encaissé sur ${chf(somme(valides, fact))} facturés</div></div>
+    </div>
+    <div class="ad-grid">
+      <div class="card side-list">
+        <p class="section-title">🟢 Connectés maintenant (${connectes.length})</p>
+        ${connectes.length ? connectes.map((x) => `<div class="op-row"><span class="op-dot"></span><b translate="no">${esc(x.nom || "Invité")}</b><small>${esc(x.appareil || "")} · depuis ${f(x.depuis)}</small></div>`).join("") : `<div class="none">Personne</div>`}
+      </div>
+      <div class="card side-list">
+        <p class="section-title">Par responsable</p>
+        <table class="ad-table">
+          <thead><tr><th>Responsable</th><th class="n">Actives</th><th class="n">Sessions à venir</th><th class="n">Facturé</th><th class="n">Encaissé</th><th class="n">Reste</th></tr></thead>
+          <tbody>${lignes.map((x) => `<tr><td><span class="pill r" style="--rc:${x.c}">${esc(x.nom)}</span></td><td class="n">${x.l.filter((i) => !estClos(i)).length}</td><td class="n">${sessAVenir(x.l)}</td><td class="n">${chf(somme(x.l, fact), false)}</td><td class="n">${chf(somme(x.l, enc), false)}</td><td class="n" style="color:${somme(x.l, dus) ? "var(--danger)" : "inherit"}">${chf(somme(x.l, dus), false)}</td></tr>`).join("")}</tbody>
+          <tfoot><tr><td>Total</td><td class="n">${valides.filter((i) => !estClos(i)).length}</td><td class="n">${sessAVenir(valides)}</td><td class="n">${chf(somme(valides, fact), false)}</td><td class="n">${chf(somme(valides, enc), false)}</td><td class="n">${chf(somme(valides, dus))}</td></tr></tfoot>
+        </table>
+      </div>
+    </div>
+    <div class="card side-list">
+      <p class="section-title">Activité récente</p>
+      ${recents.map((i) => `<div class="ad-act s-${i.statut}" data-id="${i.id}"><span class="dot"></span><b translate="no">${esc(i.client || i.titre)}</b><span class="pill">${statutLabel(i.statut)}</span><span class="pill r" style="--rc:${respCouleur(i.resp)}">${esc(respConnu(i.resp) ? i.resp : "À assigner")}</span><small>${relTime(i.maj_le)}</small></div>`).join("") || `<div class="none">Aucune modification.</div>`}
+    </div>`;
+}
+function exporterCSV() {
+  const col = ["client", "titre", "type", "statut", "resp", "sessions", "horaires", "date_contact", "date_fin", "prix", "paye", "reste", "contact", "notes", "cree_le", "maj_le"];
+  const cell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const lignes = items.map((i) => col.map((c) => cell(
+    c === "sessions" ? sessionsDe(i).map(fmtDate).join(" ; ")
+    : c === "horaires" ? sessionsDe(i).filter((d) => plageDe(i, d)).map((d) => fmtDate(d) + " " + plageDe(i, d)).join(" ; ")
+    : c === "statut" ? statutLabel(i.statut)
+    : c === "reste" ? paiement(i).reste
+    : ["date_contact", "date_fin"].includes(c) ? fmtDate(i[c])
+    : i[c])).join(";"));
+  const blob = new Blob(["\ufeff" + col.join(";") + "\n" + lignes.join("\n")], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = `noname-demandes-${today()}.csv`; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+$("admin-open").onclick = ouvrirAdmin;
+$("ad-close").onclick = fermerAdmin;
+$("ad-csv").onclick = exporterCSV;
+$("adminbox").addEventListener("click", (e) => { if (e.target.id === "adminbox") return fermerAdmin(); const r = e.target.closest("[data-id]"); if (r) ouvrir(r.dataset.id); });
 
 let sessionUserId = null;
 function setSession(session) {
@@ -1868,13 +1983,17 @@ function setSession(session) {
     const nouvelle = session.user.id !== sessionUserId;
     sessionUserId = session.user.id;
     if (!nouvelle) return; // simple rafraîchissement du jeton
+    estAdmin = (session.user.email || "").toLowerCase() === ADMIN_EMAIL;
+    if (estAdmin) { try { localStorage.setItem(NOM_KEY, "Michael"); } catch {} }
     afficherApp(true);
+    $("admin-open").classList.toggle("hidden", !estAdmin);
     charger();
     abonnerTempsReel();
     rejoindrePresence();
     renderPresence();
   } else {
     sessionUserId = null;
+    estAdmin = false; $("admin-open").classList.add("hidden"); fermerAdmin();
     if (channel) { sb.removeChannel(channel); channel = null; }
     quitterPresence();
     items = [];
