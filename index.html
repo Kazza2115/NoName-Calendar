@@ -185,6 +185,7 @@
   .mday .mk i { width: 4px; height: 4px; border-radius: 50%; display: block; }
   .mk .c { background: var(--info); }
   .mk .m { background: var(--warn); }
+  .mk .f { background: var(--ok); }
   .mday.sel .mk i { background: var(--accent-text); }
   .legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-top: 12px; }
   .legend span { display: inline-flex; align-items: center; gap: 5px; }
@@ -192,6 +193,7 @@
   .legend .lr { background: color-mix(in srgb, var(--accent) 30%, transparent); }
   .legend .lc { background: var(--info); border-radius: 50%; width: 6px; height: 6px; }
   .legend .lm { background: var(--warn); border-radius: 50%; width: 6px; height: 6px; }
+  .legend .lf { background: var(--ok); border-radius: 50%; width: 6px; height: 6px; }
   .day-detail { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; font-size: 13px; }
   .day-detail .dd-title { font-weight: 650; margin-bottom: 6px; text-transform: capitalize; }
   .day-detail .dd-item { display: flex; gap: 8px; align-items: center; padding: 4px 0; cursor: pointer; }
@@ -200,6 +202,8 @@
   .tag.r { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
   .tag.c { background: color-mix(in srgb, var(--info) 16%, transparent); color: var(--info); }
   .tag.m { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
+  .tag.f { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+  .fin { font-size: 12px; color: var(--ok); font-weight: 600; margin-top: 4px; white-space: nowrap; }
 
   /* Listes latérales */
   .side-list { padding: 14px; }
@@ -331,6 +335,7 @@
             <option value="modif">Tri : dernière modification</option>
             <option value="contact">Tri : dernier contact</option>
             <option value="client">Tri : client A → Z</option>
+            <option value="fin">Tri : date de fin (récentes d'abord)</option>
           </select>
         </div>
 
@@ -350,6 +355,7 @@
           <div class="legend">
             <span><i class="lr"></i>Session studio</span>
             <span><i class="lc"></i>Contact</span>
+            <span><i class="lf"></i>Terminée</span>
             <span><i class="lm"></i>Modifié ce jour</span>
           </div>
           <div class="day-detail hidden" id="day-detail"></div>
@@ -382,6 +388,7 @@
   <div class="grid2">
     <div class="field"><label for="e-contact-date">Date de contact</label><input type="date" id="e-contact-date"></div>
     <div class="field"><label for="e-statut">Statut</label><select id="e-statut"></select></div>
+    <div class="field"><label for="e-fin">Date de fin (terminée le)</label><input type="date" id="e-fin"></div>
     <div class="field"><label for="e-type">Type</label><select id="e-type"></select></div>
     <div class="field"><label for="e-contact">Coordonnées</label><input type="text" id="e-contact" placeholder="tél, e-mail, @insta…"></div>
     <div class="field"><label for="e-resp">Responsable</label><input type="text" id="e-resp"></div>
@@ -469,6 +476,11 @@ const jourModif = (i) => i.maj_le ? isoDay(new Date(i.maj_le)) : null;
 const sessionsDe = (i) => [...new Set(i.sessions?.length ? i.sessions : (i.date_reservation ? [i.date_reservation] : []))].sort();
 // Prochaine session à venir (sinon la dernière passée)
 const prochaine = (i) => { const s = sessionsDe(i), t = today(); return s.find((d) => d >= t) || s[s.length - 1] || null; };
+// Passage en « Terminée » sans date de fin → aujourd'hui
+function avecFin(patch, ancien) {
+  const fin = patch.date_fin !== undefined ? patch.date_fin : ancien?.date_fin;
+  return patch.statut === "terminee" && !fin ? { ...patch, date_fin: today() } : patch;
+}
 const sessionsPayload = (arr) => { const s = [...new Set(arr)].sort(); return { sessions: s, date_reservation: s[0] || null }; };
 
 // ---------- Interface utilitaire ----------
@@ -489,7 +501,7 @@ const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString
 function marquer(row, ancien) {
   if (!row) return;
   flash.ids.add(row.id);
-  [...sessionsDe(row), row.date_contact, ...(ancien ? sessionsDe(ancien) : []), jourModif(row)].filter(Boolean).forEach((d) => flash.days.add(d));
+  [...sessionsDe(row), row.date_contact, row.date_fin, ...(ancien ? sessionsDe(ancien) : []), jourModif(row)].filter(Boolean).forEach((d) => flash.days.add(d));
   clearTimeout(marquer.t);
   marquer.t = setTimeout(() => { flash.ids.clear(); flash.days.clear(); }, 1900);
 }
@@ -507,7 +519,7 @@ function demoSeed() {
     { ...base, id: uid(), client: "Artiste B", titre: "Master EP 5 titres", type: "Mix / master", statut: "nouvelle", sessions: [plus(1)], date_contact: plus(0), cree_le: ago(5), maj_le: ago(5) },
     { ...base, id: uid(), client: "Label X", titre: "Co-prod single", type: "Co-production label", statut: "en-attente", sessions: [plus(9)], date_contact: plus(-6), cree_le: ago(200), maj_le: ago(30) },
     { ...base, id: uid(), client: "Artiste C", titre: "Beat + topline", type: "Production / beat", statut: "en-cours", sessions: [plus(3), plus(17)], date_contact: plus(-1), cree_le: ago(48), maj_le: ago(20) },
-    { ...base, id: uid(), client: "Artiste D", titre: "Showcase", type: "Booking / live", statut: "terminee", sessions: [plus(-4)], date_contact: plus(-12), cree_le: ago(400), maj_le: ago(90) },
+    { ...base, id: uid(), client: "Artiste D", titre: "Showcase", type: "Booking / live", statut: "terminee", date_fin: plus(-3), sessions: [plus(-4)], date_contact: plus(-12), cree_le: ago(400), maj_le: ago(90) },
   ];
 }
 
@@ -530,6 +542,7 @@ async function charger() {
 }
 
 async function ajouter(obj) {
+  obj = avecFin(obj);
   const now = new Date().toISOString();
   let row;
   if (sb) {
@@ -538,7 +551,7 @@ async function ajouter(obj) {
     row = data;
   } else {
     row = { id: uid(), titre: "", client: "", type: "Autre", priorite: "normale", statut: "nouvelle",
-      sessions: [], date_reservation: null, date_contact: null, contact: "", notes: "", resp: "", budget: "", ...obj, cree_le: now, maj_le: now };
+      sessions: [], date_reservation: null, date_contact: null, date_fin: null, contact: "", notes: "", resp: "", budget: "", ...obj, cree_le: now, maj_le: now };
   }
   upsertLocal(row);
   if (!sb) demoSave();
@@ -550,7 +563,7 @@ async function ajouter(obj) {
 
 async function modifier(id, patch) {
   const ancien = { ...items.find((x) => x.id === id) };
-  patch = { ...patch, maj_le: new Date().toISOString() };
+  patch = { ...avecFin(patch, ancien), maj_le: new Date().toISOString() };
   let row;
   if (sb) {
     const { data, error } = await sb.from("demandes").update(patch).eq("id", id).select().single();
@@ -596,7 +609,7 @@ function abonnerTempsReel() {
 function correspond(i) {
   const q = recherche.trim().toLowerCase();
   if (q && ![i.client, i.titre, i.type, i.notes, i.contact, i.resp].join(" ").toLowerCase().includes(q)) return false;
-  if (jourSel && !sessionsDe(i).includes(jourSel) && i.date_contact !== jourSel) return false;
+  if (jourSel && !sessionsDe(i).includes(jourSel) && i.date_contact !== jourSel && i.date_fin !== jourSel) return false;
   if (filtre === "actives") return !estClos(i);
   if (filtre === "toutes") return true;
   return i.statut === filtre;
@@ -607,6 +620,7 @@ function trier(rows) {
     resa: (a, b) => estClos(a) - estClos(b) || (prochaine(a) || "9999").localeCompare(prochaine(b) || "9999"),
     modif: (a, b) => (b.maj_le || "").localeCompare(a.maj_le || ""),
     contact: (a, b) => (b.date_contact || "").localeCompare(a.date_contact || ""),
+    fin: (a, b) => (b.date_fin || "").localeCompare(a.date_fin || ""),
     client: (a, b) => (a.client || a.titre || "").localeCompare(b.client || b.titre || "", "fr"),
   }[tri] || ((a, b) => 0);
   return rows.sort(cmp);
@@ -668,6 +682,7 @@ function renderListe() {
         <select class="statut s-${i.statut}" data-id="${i.id}" aria-label="Statut">
           ${STATUTS.map((s) => `<option value="${s.v}" ${s.v === i.statut ? "selected" : ""}>${s.l}</option>`).join("")}
         </select>
+        ${i.date_fin && i.statut === "terminee" ? `<div class="fin" title="${fmtDate(i.date_fin)}">✓ le ${fmtShort(i.date_fin)}</div>` : ""}
       </div>
       <div class="c-md modif" title="${i.maj_le ? new Date(i.maj_le).toLocaleString("fr-CH") : ""}">${relTime(i.maj_le)}</div>
     </div>`).join("")
@@ -681,10 +696,11 @@ function renderCalendrier() {
   const nbJours = new Date(y, m + 1, 0).getDate();
   const cases = Math.ceil((offset + nbJours) / 7) * 7;
 
-  const resa = {}, contact = {}, modif = {};
+  const resa = {}, contact = {}, modif = {}, fin = {};
   for (const i of items) {
     if (i.statut !== "annulee") for (const d of sessionsDe(i)) (resa[d] ||= []).push(i);
     if (i.date_contact) (contact[i.date_contact] ||= []).push(i);
+    if (i.date_fin) (fin[i.date_fin] ||= []).push(i);
     const dm = jourModif(i); if (dm) (modif[dm] ||= []).push(i);
   }
 
@@ -693,30 +709,32 @@ function renderCalendrier() {
   for (let k = 0; k < cases; k++) {
     const d = new Date(y, m, 1 - offset + k);
     const key = isoDay(d);
-    const r = resa[key]?.length || 0, c = contact[key]?.length || 0, md = modif[key]?.length || 0;
+    const r = resa[key]?.length || 0, c = contact[key]?.length || 0, md = modif[key]?.length || 0, f = fin[key]?.length || 0;
     const cls = ["mday",
       d.getMonth() !== m && "out", key === t && "today", r && "resa", r === 2 && "r2", r >= 3 && "r3",
       key === jourSel && "sel", flash.days.has(key) && "pulse"].filter(Boolean).join(" ");
     const tip = [
       r && `Sessions : ${resa[key].map((i) => i.client || i.titre).join(", ")}`,
       c && `Contacts : ${contact[key].map((i) => i.client || i.titre).join(", ")}`,
+      f && `Terminées : ${fin[key].map((i) => i.client || i.titre).join(", ")}`,
       md && `${md} modification(s)`,
     ].filter(Boolean).join("\n");
     html += `<button class="${cls}" data-day="${key}" title="${esc(tip)}">${d.getDate()}`
       + (r > 1 ? `<span class="cnt">${r}</span>` : "")
-      + (c || md ? `<span class="mk">${c ? '<i class="c"></i>' : ""}${md ? '<i class="m"></i>' : ""}</span>` : "")
+      + (c || md || f ? `<span class="mk">${c ? '<i class="c"></i>' : ""}${f ? '<i class="f"></i>' : ""}${md ? '<i class="m"></i>' : ""}</span>` : "")
       + `</button>`;
   }
   $("cal").innerHTML = html;
-  renderDetailJour(resa, contact, modif);
+  renderDetailJour(resa, contact, modif, fin);
 }
 
-function renderDetailJour(resa, contact, modif) {
+function renderDetailJour(resa, contact, modif, fin) {
   const box = $("day-detail");
   if (!jourSel) { box.classList.add("hidden"); return; }
   const lignes = [
     ...(resa[jourSel] || []).map((i) => ({ i, t: "r", l: "Session" })),
     ...(contact[jourSel] || []).map((i) => ({ i, t: "c", l: "Contact" })),
+    ...(fin[jourSel] || []).map((i) => ({ i, t: "f", l: "Fin" })),
     ...(modif[jourSel] || []).map((i) => ({ i, t: "m", l: "Modif" })),
   ];
   box.innerHTML = `<div class="dd-title">${parse(jourSel).toLocaleDateString("fr-CH", { weekday: "long", day: "numeric", month: "long" })}</div>`
@@ -770,6 +788,7 @@ function ouvrir(id, preset = {}) {
   dates.e = sessionsDe(i); renderChips("e");
   $("e-contact-date").value = i.date_contact || "";
   $("e-statut").value = i.statut || "nouvelle";
+  $("e-fin").value = i.date_fin || "";
   $("e-type").value = TYPES.includes(i.type) ? i.type : "Autre";
   $("e-contact").value = i.contact || "";
   $("e-resp").value = i.resp || "";
@@ -791,6 +810,7 @@ function lireTiroir() {
     ...sessionsPayload(dates.e),
     date_contact: $("e-contact-date").value || null,
     statut: $("e-statut").value,
+    date_fin: $("e-fin").value || null,
     type: $("e-type").value,
     contact: $("e-contact").value.trim(),
     resp: $("e-resp").value.trim(),
@@ -834,6 +854,12 @@ function recap() {
   if (aPlanifier.length) {
     txt += `\n*🗂️ À planifier / à relancer* (${aPlanifier.length})\n`;
     for (const i of aPlanifier) txt += `• ${nom(i)} · ${statutLabel(i.statut)}${i.date_contact ? " · contact " + fmtShort(i.date_contact) : ""}\n`;
+  }
+  const finies = items.filter((i) => i.statut === "terminee" && i.date_fin && daysUntil(i.date_fin) >= -7 && daysUntil(i.date_fin) <= 0)
+    .sort((a, b) => b.date_fin.localeCompare(a.date_fin));
+  if (finies.length) {
+    txt += `\n*✅ Terminées ces 7 derniers jours* (${finies.length})\n`;
+    for (const i of finies) txt += `• ${nom(i)} · le ${fmtShort(i.date_fin)}\n`;
   }
   if (!actives.length) txt += "\nAucune demande active.\n";
   return txt;
@@ -879,6 +905,8 @@ renderChips("q");
 
 // ---------- Événements ----------
 fillSelect($("q-statut"), STATUTS); fillSelect($("e-statut"), STATUTS);
+// Dans la fiche : passer en « Terminée » propose la date du jour (modifiable)
+$("e-statut").addEventListener("change", (e) => { if (e.target.value === "terminee" && !$("e-fin").value) $("e-fin").value = today(); });
 fillSelect($("e-type"), TYPES);
 $("q-contact").value = today();
 

@@ -15,7 +15,8 @@ Le site est une seule page (`index.html`), sans installation ni build.
 - **Tableau des demandes** : nom du client, demande, sessions studio, date de contact, statut et dernière modification
 - **Plusieurs sessions studio par demande** : choisis autant de dates que nécessaire (chaque date devient une pastille). Clic sur une pastille = modifier la date, × = la retirer
 - **Statut modifiable directement dans le tableau** : Nouvelle → En cours → En attente → Confirmée → Terminée / Annulée (pastilles de couleur)
-- **Mini calendrier** : chaque jour de session est surligné (plus foncé s'il y a plusieurs réservations), un point bleu = contact, un point orange = modifié ce jour-là
+- **Date de fin** : quand une demande passe en « Terminée », la date du jour est notée automatiquement (modifiable dans la fiche, champ « Date de fin »). Elle s'affiche sous le statut (« ✓ le 12.10 »), apparaît dans le calendrier (point vert) et dans le récap
+- **Mini calendrier** : chaque jour de session est surligné (plus foncé s'il y a plusieurs réservations), un point bleu = contact, un point vert = terminée ce jour-là, un point orange = modifié ce jour-là
 - **Effets visuels** : à chaque ajout ou modification (par toi ou un autre membre en direct), la ligne s'illumine et le jour concerné « pulse » dans le calendrier
 - Clic sur un jour : détail du jour, tableau filtré sur cette date, bouton « + Réservation ce jour »
 - Compteurs : demandes actives, réservations sous 7 jours, réservations du mois, en attente
@@ -46,6 +47,7 @@ create table public.demandes (
   echeance   date,
   date_reservation date,          -- première session (compatibilité / tri)
   sessions   date[] not null default '{}',  -- toutes les dates de session studio
+  date_fin   date,                          -- date à laquelle la demande s'est terminée
   date_contact     date,
   contact    text default '',
   notes      text default '',
