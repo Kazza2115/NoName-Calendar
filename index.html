@@ -20,6 +20,7 @@
     --ok: #1f9d5a;
     --info: #2a6fdb;
     --gray: #7a7a85;
+    --r-johan: #0e8fb5; --r-michael: #d63384; --r-arnaud: #5f9a0e; --r-wiliam: #e8590c;
     --radius: 14px;
     --shadow: 0 1px 2px rgba(0,0,0,.05), 0 4px 16px rgba(0,0,0,.05);
   }
@@ -38,6 +39,7 @@
       --ok: #4cd18a;
       --info: #6aa3ff;
       --gray: #8d8d98;
+      --r-johan: #38bdf8; --r-michael: #f472b6; --r-arnaud: #a3e635; --r-wiliam: #fb923c;
       --shadow: none;
     }
   }
@@ -134,10 +136,11 @@
   .s-annulee    { --c: var(--danger); }
 
   /* Tableau des demandes */
-  .thead, .row { display: grid; grid-template-columns: minmax(0, 2.2fr) 1.15fr 1.15fr 1.25fr .9fr; gap: 12px; align-items: center; padding: 10px 14px; }
+  .thead, .row { display: grid; grid-template-columns: minmax(0, 1.8fr) .95fr 1.05fr .95fr 1.15fr 1fr; gap: 12px; align-items: center; padding: 10px 14px; }
   .thead { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; padding-top: 0; padding-bottom: 6px; }
   .rows { display: grid; gap: 6px; }
   .row { background: var(--card); border: 1px solid var(--line); border-radius: 12px; cursor: pointer; position: relative; overflow: hidden; transition: border-color .15s, transform .15s; }
+  .row.unassigned { border-color: color-mix(in srgb, var(--danger) 45%, var(--line)); }
   .row::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--c); }
   .row:hover { border-color: color-mix(in srgb, var(--c) 50%, var(--line)); transform: translateY(-1px); }
   .row.closed { opacity: .62; }
@@ -203,6 +206,36 @@
   .tag.c { background: color-mix(in srgb, var(--info) 16%, transparent); color: var(--info); }
   .tag.m { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
   .tag.f { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+  /* Paiements */
+  .pay-txt { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .pay-txt small { color: var(--muted); font-weight: 500; }
+  .bar { height: 6px; border-radius: 999px; background: var(--soft); overflow: hidden; margin-top: 5px; }
+  .bar i { display: block; height: 100%; border-radius: 999px; background: var(--pc, var(--accent)); transition: width .5s ease; }
+  .bar.big { height: 10px; margin: 10px 0 6px; }
+  .p-paye    { --pc: var(--ok); }
+  .p-partiel { --pc: var(--warn); }
+  .p-impaye  { --pc: var(--danger); }
+  .p-aucun   { --pc: var(--line); }
+  .pay-etat { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--pc); margin-top: 3px; }
+  .paybox { border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 12px; background: color-mix(in srgb, var(--soft) 45%, transparent); }
+  .pay-sum { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .pay-sum b { color: var(--text); font-variant-numeric: tabular-nums; }
+  .money { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; text-align: center; }
+  .money div { background: var(--soft); border-radius: 10px; padding: 8px 4px; }
+  .money b { display: block; font-size: 15px; font-variant-numeric: tabular-nums; }
+  .money small { font-size: 11px; color: var(--muted); }
+  .si-amt { font-size: 13px; font-weight: 700; color: var(--danger); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  /* Responsables */
+  select.resp {
+    -webkit-appearance: none; appearance: none; width: auto; max-width: 100%;
+    padding: 4px 26px 4px 8px; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer;
+    color: var(--rc); border: 1px solid color-mix(in srgb, var(--rc) 45%, transparent);
+    background: color-mix(in srgb, var(--rc) 14%, var(--card)) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23888' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 9px center;
+  }
+  select.resp option { color: var(--text); background: var(--card); }
+  select.resp.r-none { --rc: var(--danger); border-style: dashed; animation: alerte 2s ease-in-out infinite; }
+  @keyframes alerte { 50% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 25%, transparent); } }
+  .rbadge { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--rc); color: #fff; font-size: 11px; font-weight: 700; flex: none; }
   .fin { font-size: 12px; color: var(--ok); font-weight: 600; margin-top: 4px; white-space: nowrap; }
 
   /* Listes latérales */
@@ -266,7 +299,8 @@
     .quick-grid { grid-template-columns: 1fr 1fr; }
     .quick-grid button[type=submit] { grid-column: span 2; }
     .thead { display: none; }
-    .row { grid-template-columns: 1fr 1fr; grid-template-areas: "cl st" "rs ct"; row-gap: 8px; }
+    .row { grid-template-columns: 1fr 1fr; grid-template-areas: "cl st" "rs ct" "rp pa"; row-gap: 8px; }
+    .row .c-pa { grid-area: pa; } .row .c-rp { grid-area: rp; }
     .row .c-cl { grid-area: cl; } .row .c-st { grid-area: st; justify-self: end; }
     .row .c-rs { grid-area: rs; } .row .c-ct { grid-area: ct; }
     .row .c-md { display: none; }
@@ -319,6 +353,7 @@
             <div class="q-sessions"><label for="q-date-add">Sessions studio (une ou plusieurs dates)</label><input type="date" id="q-date-add"><div class="date-chips" id="q-chips"></div></div>
             <div><label for="q-contact">Contact</label><input type="date" id="q-contact"></div>
             <div><label for="q-statut">Statut</label><select id="q-statut"></select></div>
+            <div><label for="q-resp">Responsable *</label><select id="q-resp" required></select></div>
             <button class="btn primary" type="submit">Ajouter</button>
           </div>
         </form>
@@ -330,16 +365,18 @@
         </div>
         <div class="toolbar">
           <input type="search" class="grow" id="search" placeholder="Rechercher un client, une demande…">
+          <select id="f-resp" aria-label="Filtrer par responsable"></select>
           <select id="sort" aria-label="Trier">
             <option value="resa">Tri : prochaine session</option>
             <option value="modif">Tri : dernière modification</option>
             <option value="contact">Tri : dernier contact</option>
             <option value="client">Tri : client A → Z</option>
+            <option value="reste">Tri : reste à payer</option>
             <option value="fin">Tri : date de fin (récentes d'abord)</option>
           </select>
         </div>
 
-        <div class="thead"><span>Client</span><span>Sessions</span><span>Contact</span><span>Statut</span><span style="text-align:right">Modifié</span></div>
+        <div class="thead"><span>Client</span><span>Responsable</span><span>Sessions</span><span>Contact</span><span>Statut</span><span>Paiement</span></div>
         <div class="rows" id="rows"></div>
       </div>
 
@@ -367,6 +404,11 @@
         </div>
 
         <div class="card side-list">
+          <p class="section-title">💰 Paiements</p>
+          <div id="payments"></div>
+        </div>
+
+        <div class="card side-list">
           <p class="section-title">Dernières modifications</p>
           <div id="recent"></div>
         </div>
@@ -391,8 +433,20 @@
     <div class="field"><label for="e-fin">Date de fin (terminée le)</label><input type="date" id="e-fin"></div>
     <div class="field"><label for="e-type">Type</label><select id="e-type"></select></div>
     <div class="field"><label for="e-contact">Coordonnées</label><input type="text" id="e-contact" placeholder="tél, e-mail, @insta…"></div>
-    <div class="field"><label for="e-resp">Responsable</label><input type="text" id="e-resp"></div>
-    <div class="field"><label for="e-budget">Budget (CHF)</label><input type="text" id="e-budget" inputmode="decimal"></div>
+    <div class="field"><label for="e-resp">Responsable *</label><select id="e-resp"></select></div>
+  </div>
+  <div class="paybox" id="paybox">
+    <p class="section-title" style="margin-bottom:8px">💰 Prix & paiement</p>
+    <div class="grid2">
+      <div class="field" style="margin:0"><label for="e-prix">Prix total (CHF)</label><input type="text" id="e-prix" inputmode="decimal" placeholder="Ex. : 600"></div>
+      <div class="field" style="margin:0"><label for="e-paye">Déjà payé (CHF)</label><input type="text" id="e-paye" inputmode="decimal" placeholder="0"></div>
+    </div>
+    <div class="bar big" id="e-bar"><i></i></div>
+    <div class="pay-sum"><span id="e-pay-etat"></span><span>Reste à payer : <b id="e-reste">—</b></span></div>
+    <div class="update-row">
+      <input type="text" id="e-pay-add" inputmode="decimal" placeholder="Paiement reçu (CHF)">
+      <button class="btn small" id="e-pay-btn" type="button">+ Encaisser</button>
+    </div>
   </div>
   <div class="field">
     <label for="e-update">Ajouter une update</label>
@@ -424,6 +478,13 @@ const TYPES = [
   "Enregistrement studio", "Mix / master", "Production / beat", "Co-production label",
   "Booking / live", "Promo / com", "Admin / contrat", "Autre"
 ];
+// Responsables (obligatoire) — nom et couleur (couleurs définies dans :root)
+const RESPS = [
+  { v: "Johan", c: "var(--r-johan)" },
+  { v: "Michael", c: "var(--r-michael)" },
+  { v: "Arnaud", c: "var(--r-arnaud)" },
+  { v: "Wiliam", c: "var(--r-wiliam)" },
+];
 const STATUTS = [
   { v: "nouvelle", l: "Nouvelle" }, { v: "en-cours", l: "En cours" },
   { v: "en-attente", l: "En attente" }, { v: "confirmee", l: "Confirmée" },
@@ -436,6 +497,14 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const statutLabel = (v) => (STATUTS.find((s) => s.v === v) || STATUTS[0]).l;
 const estClos = (i) => CLOS.includes(i.statut);
+const respConnu = (v) => RESPS.some((r) => r.v === v);
+const respCouleur = (v) => (RESPS.find((r) => r.v === v) || {}).c || "var(--danger)";
+const respBadge = (v) => respConnu(v) ? `<span class="rbadge" style="--rc:${respCouleur(v)}" title="${esc(v)}">${esc(v[0])}</span>` : `<span class="rbadge" style="--rc:var(--danger)" title="À assigner">?</span>`;
+function respOptions(courant, placeholder) {
+  return (respConnu(courant) ? "" : `<option value="" selected disabled>${placeholder}</option>`)
+    + RESPS.map((r) => `<option value="${r.v}" ${r.v === courant ? "selected" : ""}>${r.v}</option>`).join("");
+}
+let filtreResp = "";
 
 const configured = !SUPABASE_URL.includes("VOTRE-PROJET") && !SUPABASE_ANON_KEY.includes("VOTRE_CLE");
 let sb = null, channel = null, userEmail = "";
@@ -476,6 +545,23 @@ const jourModif = (i) => i.maj_le ? isoDay(new Date(i.maj_le)) : null;
 const sessionsDe = (i) => [...new Set(i.sessions?.length ? i.sessions : (i.date_reservation ? [i.date_reservation] : []))].sort();
 // Prochaine session à venir (sinon la dernière passée)
 const prochaine = (i) => { const s = sessionsDe(i), t = today(); return s.find((d) => d >= t) || s[s.length - 1] || null; };
+// Montants : accepte « 1'200 », « 1200.50 », « 1200,50 »
+const num = (v) => {
+  if (v === null || v === undefined || String(v).trim() === "") return null;
+  const n = Number(String(v).replace(/[’'\s]/g, "").replace(",", "."));
+  return Number.isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : NaN;
+};
+const chf = (n, unite = true) => (n || 0).toLocaleString("fr-CH", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }) + (unite ? " CHF" : "");
+const ETATS_PAY = { aucun: "Pas de prix", impaye: "Non payé", partiel: "Acompte", paye: "Payé" };
+function paiement(i) {
+  const prix = num(i.prix), paye = num(i.paye) || 0;
+  if (prix === null || Number.isNaN(prix)) return { etat: "aucun", prix: null, paye, reste: 0, pct: 0 };
+  const reste = Math.max(0, Math.round((prix - paye) * 100) / 100);
+  const etat = paye >= prix ? "paye" : paye > 0 ? "partiel" : "impaye";
+  return { etat, prix, paye, reste, pct: prix ? Math.min(100, (paye / prix) * 100) : 100 };
+}
+const aEncaisser = (i) => i.statut !== "annulee" && paiement(i).reste > 0;
+
 // Passage en « Terminée » sans date de fin → aujourd'hui
 function avecFin(patch, ancien) {
   const fin = patch.date_fin !== undefined ? patch.date_fin : ancien?.date_fin;
@@ -515,11 +601,11 @@ function demoSeed() {
   const ago = (h) => new Date(Date.now() - h * 3600000).toISOString();
   const base = { contact: "", resp: "", budget: "", notes: "", priorite: "normale", type: "Autre" };
   return [
-    { ...base, id: uid(), client: "Artiste A", titre: "Session voix — 2 titres", type: "Enregistrement studio", statut: "confirmee", sessions: [plus(3), plus(4), plus(10)], date_contact: plus(-2), cree_le: ago(60), maj_le: ago(2) },
-    { ...base, id: uid(), client: "Artiste B", titre: "Master EP 5 titres", type: "Mix / master", statut: "nouvelle", sessions: [plus(1)], date_contact: plus(0), cree_le: ago(5), maj_le: ago(5) },
-    { ...base, id: uid(), client: "Label X", titre: "Co-prod single", type: "Co-production label", statut: "en-attente", sessions: [plus(9)], date_contact: plus(-6), cree_le: ago(200), maj_le: ago(30) },
-    { ...base, id: uid(), client: "Artiste C", titre: "Beat + topline", type: "Production / beat", statut: "en-cours", sessions: [plus(3), plus(17)], date_contact: plus(-1), cree_le: ago(48), maj_le: ago(20) },
-    { ...base, id: uid(), client: "Artiste D", titre: "Showcase", type: "Booking / live", statut: "terminee", date_fin: plus(-3), sessions: [plus(-4)], date_contact: plus(-12), cree_le: ago(400), maj_le: ago(90) },
+    { ...base, id: uid(), client: "Artiste A", resp: "Johan", titre: "Session voix — 2 titres", type: "Enregistrement studio", statut: "confirmee", prix: 900, paye: 300, sessions: [plus(3), plus(4), plus(10)], date_contact: plus(-2), cree_le: ago(60), maj_le: ago(2) },
+    { ...base, id: uid(), client: "Artiste B", resp: "Michael", titre: "Master EP 5 titres", type: "Mix / master", statut: "nouvelle", sessions: [plus(1)], date_contact: plus(0), cree_le: ago(5), maj_le: ago(5) },
+    { ...base, id: uid(), client: "Label X", resp: "Arnaud", titre: "Co-prod single", type: "Co-production label", statut: "en-attente", prix: 1200, paye: 0, sessions: [plus(9)], date_contact: plus(-6), cree_le: ago(200), maj_le: ago(30) },
+    { ...base, id: uid(), client: "Artiste C", resp: "Wiliam", titre: "Beat + topline", type: "Production / beat", statut: "en-cours", sessions: [plus(3), plus(17)], date_contact: plus(-1), cree_le: ago(48), maj_le: ago(20) },
+    { ...base, id: uid(), client: "Artiste D", resp: "Michael", titre: "Showcase", type: "Booking / live", statut: "terminee", prix: 450, paye: 450, date_fin: plus(-3), sessions: [plus(-4)], date_contact: plus(-12), cree_le: ago(400), maj_le: ago(90) },
   ];
 }
 
@@ -551,7 +637,7 @@ async function ajouter(obj) {
     row = data;
   } else {
     row = { id: uid(), titre: "", client: "", type: "Autre", priorite: "normale", statut: "nouvelle",
-      sessions: [], date_reservation: null, date_contact: null, date_fin: null, contact: "", notes: "", resp: "", budget: "", ...obj, cree_le: now, maj_le: now };
+      sessions: [], date_reservation: null, date_contact: null, date_fin: null, prix: null, paye: 0, contact: "", notes: "", resp: "", budget: "", ...obj, cree_le: now, maj_le: now };
   }
   upsertLocal(row);
   if (!sb) demoSave();
@@ -610,8 +696,10 @@ function correspond(i) {
   const q = recherche.trim().toLowerCase();
   if (q && ![i.client, i.titre, i.type, i.notes, i.contact, i.resp].join(" ").toLowerCase().includes(q)) return false;
   if (jourSel && !sessionsDe(i).includes(jourSel) && i.date_contact !== jourSel && i.date_fin !== jourSel) return false;
+  if (filtreResp === "aucun" ? respConnu(i.resp) : filtreResp && i.resp !== filtreResp) return false;
   if (filtre === "actives") return !estClos(i);
   if (filtre === "toutes") return true;
+  if (filtre === "impayees") return aEncaisser(i);
   return i.statut === filtre;
 }
 
@@ -621,6 +709,7 @@ function trier(rows) {
     modif: (a, b) => (b.maj_le || "").localeCompare(a.maj_le || ""),
     contact: (a, b) => (b.date_contact || "").localeCompare(a.date_contact || ""),
     fin: (a, b) => (b.date_fin || "").localeCompare(a.date_fin || ""),
+    reste: (a, b) => paiement(b).reste - paiement(a).reste,
     client: (a, b) => (a.client || a.titre || "").localeCompare(b.client || b.titre || "", "fr"),
   }[tri] || ((a, b) => 0);
   return rows.sort(cmp);
@@ -634,7 +723,15 @@ function cellSessions(i) {
   const autres = all.length - 1;
   const restant = all.filter((d) => d >= today()).length;
   return `<div class="date" title="${esc(all.map((d) => jourSemaine(d) + " " + fmtDate(d)).join("\n"))}">${jourSemaine(p)} ${fmtShort(p)}${autres ? `<span class="nb">+${autres}</span>` : ""}</div>`
-    + `<div class="date-rel ${cls}">${relJour(p)}${all.length > 1 ? ` · ${restant}/${all.length} à venir` : ""}</div>`;
+    + `<div class="date-rel ${cls}">${relJour(p)}${all.length > 1 ? ` · ${restant}/${all.length}` : ""}</div>`;
+}
+
+function cellPaiement(i) {
+  const p = paiement(i);
+  if (p.etat === "aucun") return `<span class="lbl">Paiement</span><span class="none">—</span>`;
+  return `<div class="p-${p.etat}" title="${ETATS_PAY[p.etat]} · reste ${chf(p.reste)}"><span class="lbl">Paiement</span>`
+    + `<div class="pay-txt">${chf(p.paye, false)} <small>/ ${chf(p.prix)}</small></div>`
+    + `<div class="bar"><i style="width:${p.pct}%"></i></div><div class="pay-etat">${ETATS_PAY[p.etat]}</div></div>`;
 }
 
 function cellDate(s, kind) {
@@ -652,7 +749,7 @@ function renderKpis(anim) {
     { v: items.filter((i) => !estClos(i)).length, l: "Demandes actives" },
     { v: items.filter((i) => !estClos(i)).flatMap(sessionsDe).filter((d) => d >= t && daysUntil(d) <= 7).length, l: "Sessions sous 7 jours" },
     { v: items.filter((i) => i.statut !== "annulee").flatMap(sessionsDe).filter((d) => d.startsWith(m)).length, l: "Sessions · " + mois.toLocaleDateString("fr-CH", { month: "long" }) },
-    { v: items.filter((i) => i.statut === "en-attente").length, l: "En attente" },
+    { v: chf(items.filter((i) => i.statut !== "annulee").reduce((t, i) => t + paiement(i).reste, 0)), l: "Reste à encaisser" },
   ];
   const prev = renderKpis.prev || [];
   $("kpis").innerHTML = vals.map((k, n) => `<div class="card kpi ${anim && prev[n] !== undefined && prev[n] !== k.v ? "bump" : ""}"><div class="v">${k.v}</div><div class="l">${esc(k.l)}</div></div>`).join("");
@@ -664,6 +761,7 @@ function renderListe() {
   const chips = [
     { v: "actives", l: "Actives", n: items.filter((i) => !estClos(i)).length },
     { v: "toutes", l: "Toutes", n: items.length },
+    { v: "impayees", l: "💰 À encaisser", n: items.filter(aEncaisser).length },
     ...STATUTS.map((s) => ({ ...s, n: counts[s.v] })),
   ];
   $("chips").innerHTML = chips.map((c) => `<button class="chip ${filtre === c.v ? "active" : ""}" data-f="${c.v}">${esc(c.l)}<span class="n">${c.n}</span></button>`).join("")
@@ -671,10 +769,13 @@ function renderListe() {
 
   const rows = trier(items.filter(correspond));
   $("rows").innerHTML = rows.length ? rows.map((i) => `
-    <div class="row s-${i.statut} ${estClos(i) ? "closed" : ""} ${flash.ids.has(i.id) ? "flash" : ""}" data-id="${i.id}">
+    <div class="row s-${i.statut} ${estClos(i) ? "closed" : ""} ${respConnu(i.resp) ? "" : "unassigned"} ${flash.ids.has(i.id) ? "flash" : ""}" data-id="${i.id}" title="Modifiée ${relTime(i.maj_le)}">
       <div class="c-cl">
         <div class="cl-name">${esc(i.client || i.titre)}</div>
         <div class="cl-sub">${esc([i.client && i.titre !== i.client ? i.titre : "", i.type && i.type !== "Autre" ? i.type : ""].filter(Boolean).join(" · ") || "—")}</div>
+      </div>
+      <div class="c-rp"><span class="lbl">Responsable</span>
+        <select class="resp ${respConnu(i.resp) ? "" : "r-none"}" style="--rc:${respCouleur(i.resp)}" data-id="${i.id}" aria-label="Responsable">${respOptions(i.resp, "⚠ À assigner")}</select>
       </div>
       <div class="c-rs"><span class="lbl">Sessions</span>${cellSessions(i)}</div>
       <div class="c-ct"><span class="lbl">Contact</span>${cellDate(i.date_contact, "contact")}</div>
@@ -684,7 +785,7 @@ function renderListe() {
         </select>
         ${i.date_fin && i.statut === "terminee" ? `<div class="fin" title="${fmtDate(i.date_fin)}">✓ le ${fmtShort(i.date_fin)}</div>` : ""}
       </div>
-      <div class="c-md modif" title="${i.maj_le ? new Date(i.maj_le).toLocaleString("fr-CH") : ""}">${relTime(i.maj_le)}</div>
+      <div class="c-pa">${cellPaiement(i)}</div>
     </div>`).join("")
     : `<div class="empty">${items.length ? "Aucune demande ne correspond." : "Aucune demande pour l'instant. Remplis le formulaire ci-dessus pour commencer."}</div>`;
 }
@@ -738,19 +839,33 @@ function renderDetailJour(resa, contact, modif, fin) {
     ...(modif[jourSel] || []).map((i) => ({ i, t: "m", l: "Modif" })),
   ];
   box.innerHTML = `<div class="dd-title">${parse(jourSel).toLocaleDateString("fr-CH", { weekday: "long", day: "numeric", month: "long" })}</div>`
-    + (lignes.length ? lignes.map(({ i, t, l }) => `<div class="dd-item s-${i.statut}" data-id="${i.id}"><span class="tag ${t}">${l}</span><span class="dot"></span><span class="dd-name">${esc(i.client || i.titre)}</span></div>`).join("")
+    + (lignes.length ? lignes.map(({ i, t, l }) => `<div class="dd-item s-${i.statut}" data-id="${i.id}"><span class="tag ${t}">${l}</span>${respBadge(i.resp)}<span class="dd-name">${esc(i.client || i.titre)}</span></div>`).join("")
       : `<div class="none">Rien ce jour-là.</div>`)
     + `<div style="margin-top:8px"><button class="btn small" id="dd-new">+ Session ce jour</button></div>`;
   box.classList.remove("hidden");
 }
 
+function renderPaiements() {
+  const valides = items.filter((i) => i.statut !== "annulee").map((i) => ({ i, p: paiement(i) })).filter((x) => x.p.etat !== "aucun");
+  const total = valides.reduce((t, x) => t + x.p.prix, 0), recu = valides.reduce((t, x) => t + Math.min(x.p.paye, x.p.prix), 0);
+  const reste = valides.reduce((t, x) => t + x.p.reste, 0);
+  const pct = total ? (recu / total) * 100 : 0;
+  const dus = valides.filter((x) => x.p.reste > 0).sort((a, b) => b.p.reste - a.p.reste).slice(0, 5);
+  $("payments").innerHTML = !valides.length
+    ? `<div class="none" style="font-size:13px">Aucun prix renseigné. Ajoute-le dans la fiche d'une demande.</div>`
+    : `<div class="money"><div><b>${chf(total, false)}</b><small>Facturé</small></div><div><b style="color:var(--ok)">${chf(recu, false)}</b><small>Encaissé</small></div><div><b style="color:var(--danger)">${chf(reste, false)}</b><small>Reste</small></div></div>`
+      + `<div class="bar big p-${reste ? "partiel" : "paye"}"><i style="width:${pct}%"></i></div>`
+      + dus.map(({ i, p }) => `<div class="si s-${i.statut}" data-id="${i.id}"><span class="dot"></span><div class="si-main"><div class="si-name">${esc(i.client || i.titre)}</div><div class="si-sub">${chf(p.paye, false)} / ${chf(p.prix)} payés</div></div><span class="si-amt">${chf(p.reste)}</span></div>`).join("");
+}
+
 function renderSide() {
+  renderPaiements();
   const t = today();
   const up = items.filter((i) => !estClos(i)).flatMap((i) => sessionsDe(i).filter((d) => d >= t).map((d) => ({ i, d })))
     .sort((a, b) => a.d.localeCompare(b.d)).slice(0, 6);
   $("upcoming").innerHTML = up.length ? up.map(({ i, d }) => `
     <div class="si s-${i.statut}" data-id="${i.id}">
-      <div class="si-date"><small>${jourSemaine(d)}</small><b>${parse(d).getDate()}</b></div>
+      <div class="si-date" style="background:color-mix(in srgb, ${respCouleur(i.resp)} 16%, transparent);color:${respCouleur(i.resp)}"><small>${jourSemaine(d)}</small><b>${parse(d).getDate()}</b></div>
       <div class="si-main"><div class="si-name">${esc(i.client || i.titre)}</div><div class="si-sub">${relJour(d)}${i.titre && i.client && i.titre !== i.client ? " · " + esc(i.titre) : ""}</div></div>
       <span class="dot" title="${statutLabel(i.statut)}"></span>
     </div>`).join("") : `<div class="none" style="font-size:13px">Aucune session à venir.</div>`;
@@ -791,8 +906,11 @@ function ouvrir(id, preset = {}) {
   $("e-fin").value = i.date_fin || "";
   $("e-type").value = TYPES.includes(i.type) ? i.type : "Autre";
   $("e-contact").value = i.contact || "";
-  $("e-resp").value = i.resp || "";
-  $("e-budget").value = i.budget || "";
+  $("e-resp").innerHTML = respOptions(i.resp, "Choisir un responsable…");
+  $("e-prix").value = i.prix ?? (num(i.budget) > 0 ? num(i.budget) : "");
+  $("e-paye").value = num(i.paye) ? num(i.paye) : "";
+  $("e-pay-add").value = "";
+  majPaybox();
   $("e-notes").value = i.notes || "";
   $("e-update").value = "";
   $("d-info").textContent = id ? infoLine(i) : "";
@@ -813,11 +931,32 @@ function lireTiroir() {
     date_fin: $("e-fin").value || null,
     type: $("e-type").value,
     contact: $("e-contact").value.trim(),
-    resp: $("e-resp").value.trim(),
-    budget: $("e-budget").value.trim(),
+    resp: $("e-resp").value,
+    prix: num($("e-prix").value),
+    paye: num($("e-paye").value) || 0,
     notes: $("e-notes").value,
   };
 }
+function majPaybox() {
+  const p = paiement({ prix: $("e-prix").value, paye: $("e-paye").value });
+  $("paybox").className = "paybox p-" + p.etat;
+  $("e-bar").firstElementChild.style.width = p.pct + "%";
+  $("e-pay-etat").innerHTML = `<span class="pay-etat" style="margin:0">${ETATS_PAY[p.etat]}</span>`;
+  $("e-reste").textContent = p.etat === "aucun" ? "—" : chf(p.reste);
+}
+function encaisser() {
+  const m = num($("e-pay-add").value);
+  if (!m) { toast("Indique le montant reçu, ex. 200"); $("e-pay-add").focus(); return; }
+  const total = Math.round(((num($("e-paye").value) || 0) + m) * 100) / 100;
+  $("e-paye").value = total;
+  $("e-pay-add").value = "";
+  majPaybox();
+  const prix = num($("e-prix").value);
+  $("e-update").value = `💰 Paiement reçu : ${chf(m)} (payé ${chf(total, false)}${prix ? " / " + chf(prix) : " CHF"})`;
+  ajouterUpdate();
+  if (!editId) toast("Paiement ajouté — pense à enregistrer");
+}
+
 function ajouterUpdate() {
   const txt = $("e-update").value.trim();
   if (!txt) return;
@@ -831,7 +970,9 @@ function ajouterUpdate() {
 }
 async function enregistrer(garderOuvert = false) {
   const data = lireTiroir();
+  if (Number.isNaN(data.prix) || Number.isNaN(num($("e-paye").value))) { toast("Montant invalide : écris un nombre, ex. 600 ou 1250.50"); return; }
   if (!data.client) { toast("Le nom du client est obligatoire."); $("e-client").focus(); return; }
+  if (!respConnu(data.resp)) { toast("Choisis un responsable : chaque demande doit être assignée."); $("e-resp").focus(); return; }
   const ok = editId ? await modifier(editId, data) : await ajouter(data);
   if (!ok) return;
   if (garderOuvert && editId) { $("d-info").textContent = infoLine(items.find((x) => x.id === editId)); toast("Update ajoutée"); }
@@ -841,7 +982,7 @@ async function enregistrer(garderOuvert = false) {
 // ---------- Récap ----------
 function recap() {
   const d = new Date();
-  const nom = (i) => (i.client || i.titre) + (i.client && i.titre && i.titre !== i.client ? " (" + i.titre + ")" : "");
+  const nom = (i) => (i.client || i.titre) + (i.client && i.titre && i.titre !== i.client ? " (" + i.titre + ")" : "") + (respConnu(i.resp) ? " — " + i.resp : " — ⚠ à assigner");
   let txt = `📋 Réservations NONAME — ${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}\n`;
   const actives = items.filter((i) => !estClos(i));
   const avenir = actives.flatMap((i) => sessionsDe(i).filter((d) => d >= today()).map((d) => ({ i, d })))
@@ -860,6 +1001,11 @@ function recap() {
   if (finies.length) {
     txt += `\n*✅ Terminées ces 7 derniers jours* (${finies.length})\n`;
     for (const i of finies) txt += `• ${nom(i)} · le ${fmtShort(i.date_fin)}\n`;
+  }
+  const dus = items.filter(aEncaisser).sort((a, b) => paiement(b).reste - paiement(a).reste);
+  if (dus.length) {
+    txt += `\n*💰 À encaisser* (total ${chf(dus.reduce((t, i) => t + paiement(i).reste, 0))})\n`;
+    for (const i of dus) { const p = paiement(i); txt += `• ${nom(i)} · reste ${chf(p.reste)} (payé ${chf(p.paye, false)} / ${chf(p.prix)})\n`; }
   }
   if (!actives.length) txt += "\nAucune demande active.\n";
   return txt;
@@ -905,6 +1051,9 @@ renderChips("q");
 
 // ---------- Événements ----------
 fillSelect($("q-statut"), STATUTS); fillSelect($("e-statut"), STATUTS);
+$("q-resp").innerHTML = respOptions("", "Choisir…");
+$("f-resp").innerHTML = `<option value="">Tous les responsables</option>` + RESPS.map((r) => `<option value="${r.v}">${r.v}</option>`).join("") + `<option value="aucun">⚠ Non assignées</option>`;
+$("f-resp").onchange = (e) => { filtreResp = e.target.value; renderListe(); };
 // Dans la fiche : passer en « Terminée » propose la date du jour (modifiable)
 $("e-statut").addEventListener("change", (e) => { if (e.target.value === "terminee" && !$("e-fin").value) $("e-fin").value = today(); });
 fillSelect($("e-type"), TYPES);
@@ -914,14 +1063,16 @@ $("quick").onsubmit = async (e) => {
   e.preventDefault();
   const client = $("q-client").value.trim();
   if (!client) return;
+  if (!respConnu($("q-resp").value)) { toast("Choisis un responsable : chaque demande doit être assignée."); $("q-resp").focus(); return; }
   const ok = await ajouter({
     client, titre: $("q-titre").value.trim() || client,
     ...sessionsPayload(dates.q), date_contact: $("q-contact").value || null,
     statut: $("q-statut").value,
+    resp: $("q-resp").value,
   });
   if (ok) {
     $("q-client").value = ""; $("q-titre").value = ""; dates.q = []; renderChips("q");
-    $("q-contact").value = today(); $("q-statut").value = "nouvelle";
+    $("q-contact").value = today(); $("q-statut").value = "nouvelle"; $("q-resp").innerHTML = respOptions("", "Choisir…");
     $("q-client").focus();
     toast("Demande ajoutée");
   }
@@ -934,6 +1085,11 @@ $("chips").onclick = (e) => {
 $("search").oninput = (e) => { recherche = e.target.value; renderListe(); };
 $("sort").onchange = (e) => { tri = e.target.value; try { localStorage.setItem("noname-tri", tri); } catch {} renderListe(); };
 $("rows").addEventListener("change", (e) => {
+  if (e.target.matches("select.resp")) {
+    const v = e.target.value;
+    modifier(e.target.dataset.id, { resp: v }).then((ok) => ok && toast("Responsable : " + v));
+    return;
+  }
   if (e.target.matches("select.statut")) {
     const s = statutLabel(e.target.value);
     modifier(e.target.dataset.id, { statut: e.target.value }).then((ok) => ok && toast("Statut : " + s));
@@ -954,6 +1110,7 @@ $("day-detail").addEventListener("click", (e) => {
   const it = e.target.closest(".dd-item"); if (it) ouvrir(it.dataset.id);
 });
 $("upcoming").addEventListener("click", (e) => { const s = e.target.closest(".si"); if (s) ouvrir(s.dataset.id); });
+$("payments").addEventListener("click", (e) => { const s = e.target.closest(".si"); if (s) ouvrir(s.dataset.id); });
 $("recent").addEventListener("click", (e) => { const s = e.target.closest(".si"); if (s) ouvrir(s.dataset.id); });
 $("cal-prev").onclick = () => { mois.setMonth(mois.getMonth() - 1); renderCalendrier(); renderKpis(); };
 $("cal-next").onclick = () => { mois.setMonth(mois.getMonth() + 1); renderCalendrier(); renderKpis(); };
@@ -968,6 +1125,9 @@ $("d-delete").onclick = async () => {
   if (await supprimer(editId)) { fermer(); toast("Demande supprimée"); }
 };
 $("e-update-btn").onclick = ajouterUpdate;
+$("e-prix").oninput = majPaybox; $("e-paye").oninput = majPaybox;
+$("e-pay-btn").onclick = encaisser;
+$("e-pay-add").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); encaisser(); } };
 $("e-update").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); ajouterUpdate(); } };
 $("e-client").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); enregistrer(); } };
 document.addEventListener("keydown", (e) => {

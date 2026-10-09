@@ -16,6 +16,8 @@ Le site est une seule page (`index.html`), sans installation ni build.
 - **Plusieurs sessions studio par demande** : choisis autant de dates que nécessaire (chaque date devient une pastille). Clic sur une pastille = modifier la date, × = la retirer
 - **Statut modifiable directement dans le tableau** : Nouvelle → En cours → En attente → Confirmée → Terminée / Annulée (pastilles de couleur)
 - **Date de fin** : quand une demande passe en « Terminée », la date du jour est notée automatiquement (modifiable dans la fiche, champ « Date de fin »). Elle s'affiche sous le statut (« ✓ le 12.10 »), apparaît dans le calendrier (point vert) et dans le récap
+- **Responsable obligatoire** : Johan, Michael, Arnaud ou Wiliam, chacun avec sa couleur (pastille dans le tableau, modifiable directement). Une demande sans responsable est signalée « ⚠ À assigner » ; filtre par responsable
+- **Prix & paiements** (à remplir plus tard, depuis la fiche) : prix total, montant déjà payé, barre de progression, reste à payer. Bouton « + Encaisser » : ajoute le montant reçu et l'inscrit dans le journal. Colonne « Paiement » (Non payé / Acompte / Payé), filtre « À encaisser », carte « Paiements » (facturé / encaissé / reste) et section « À encaisser » dans le récap
 - **Mini calendrier** : chaque jour de session est surligné (plus foncé s'il y a plusieurs réservations), un point bleu = contact, un point vert = terminée ce jour-là, un point orange = modifié ce jour-là
 - **Effets visuels** : à chaque ajout ou modification (par toi ou un autre membre en direct), la ligne s'illumine et le jour concerné « pulse » dans le calendrier
 - Clic sur un jour : détail du jour, tableau filtré sur cette date, bouton « + Réservation ce jour »
@@ -48,6 +50,8 @@ create table public.demandes (
   date_reservation date,          -- première session (compatibilité / tri)
   sessions   date[] not null default '{}',  -- toutes les dates de session studio
   date_fin   date,                          -- date à laquelle la demande s'est terminée
+  prix       numeric(10,2) check (prix is null or prix >= 0),  -- prix total (CHF)
+  paye       numeric(10,2) not null default 0 check (paye >= 0),  -- montant déjà payé (CHF)
   date_contact     date,
   contact    text default '',
   notes      text default '',
@@ -138,6 +142,7 @@ Tout se trouve dans `index.html`. Modifie le fichier directement sur GitHub (ic�
 | Liste des types de demandes | `const TYPES = [...]` dans le script |
 | Priorités | `const PRIOS = [...]` (+ contrainte `check` dans la table si tu ajoutes une valeur) |
 | Statuts | `const STATUTS = [...]` (+ contrainte `check` dans la table) ; `const CLOS` = statuts considérés comme fermés |
+| Responsables (noms et couleurs) | `const RESPS = [...]` dans le script + variables `--r-johan`, etc. dans `:root` |
 | Couleurs | variables `--accent`, `--bg`, etc. dans `:root` en haut du `<style>` |
 | Titre et sous-titre | balises `<h1>` et `<p class="sub">` |
 
