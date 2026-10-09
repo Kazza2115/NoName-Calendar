@@ -20,11 +20,12 @@ Le site est une seule page (`index.html`), sans installation ni build.
 - **Prix & paiements** (à remplir plus tard, depuis la fiche) : prix total, montant déjà payé, barre de progression, reste à payer. Bouton « + Encaisser » : ajoute le montant reçu et l'inscrit dans le journal. Colonne « Paiement » (Non payé / Acompte / Payé), filtre « À encaisser », carte « Paiements » (facturé / encaissé / reste) et section « À encaisser » dans le récap
 - **Mini calendrier** : chaque jour de session est surligné (plus foncé s'il y a plusieurs réservations), un point bleu = contact, un point vert = terminée ce jour-là, un point orange = modifié ce jour-là
 - **Effets visuels** : à chaque ajout ou modification (par toi ou un autre membre en direct), la ligne s'illumine et le jour concerné « pulse » dans le calendrier
+- **Grand calendrier** (bouton « 📅 Grand calendrier » en haut, ou « Ouvrir le grand calendrier » sous le mini calendrier) : mois entier en plein écran, nom de chaque session écrit dans la case, couleur du responsable ; fins (✓) et contacts (☎) affichables ; clic sur une session = fiche, clic sur un jour = nouvelle session. Sur téléphone : vue agenda jour par jour
 - Clic sur un jour : détail du jour, tableau filtré sur cette date, bouton « + Réservation ce jour »
 - Compteurs : demandes actives, réservations sous 7 jours, réservations du mois, en attente
 - Colonne latérale : prochaines réservations et dernières modifications
 - Fiche détaillée : coordonnées, type, responsable, budget (CHF), notes, **updates datées et signées**, suppression
-- Filtres par statut, recherche, tri (réservation, modification, contact, client)
+- Filtres par statut (« Toutes » par défaut), recherche, tri (réservation, modification, contact, client)
 - Bouton « Copier le récap » : résumé à coller dans WhatsApp ou un mail
 - **Dates au format jj/mm/aaaa** partout, avec un calendrier de saisie en français (on peut aussi taper la date au clavier, ex. 15/10/2026)
 - Accès par **un seul mot de passe d'équipe**, synchronisation en temps réel, mode clair / sombre, utilisable sur mobile
