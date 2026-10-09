@@ -384,6 +384,10 @@
     .cl-grid .bc-full { display: none !important; }
     .cl-grid { display: grid !important; }
   }
+  /* Sélecteur de langue */
+  .langsw { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-left: auto; background: var(--card); }
+  .langsw button { border: none; background: transparent; padding: 7px 14px; font-weight: 700; font-size: 15px; cursor: pointer; color: var(--muted); }
+  .langsw button.on { background: var(--accent); color: var(--accent-text); }
   .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 16px; z-index: 70; box-shadow: 0 6px 20px rgba(0,0,0,.2); max-width: calc(100% - 32px); }
 
   @media (max-width: 960px) {
@@ -414,6 +418,9 @@
     <div>
       <h1>Réservations <span>NONAME</span></h1>
       <p class="sub">Studio · Label · Services artistes — demandes, réservations et suivi</p>
+    </div>
+    <div class="langsw" id="langsw" role="group" aria-label="Langue / Language">
+      <button type="button" data-lang="fr">FR</button><button type="button" data-lang="en">EN</button>
     </div>
     <div class="user hidden" id="userbox">
       <span id="useremail"></span>
@@ -541,7 +548,7 @@
 <div class="bigcal hidden" id="clientbox" role="dialog" aria-label="Fiche client">
   <div class="bigcal-box cl-box">
     <div class="bc-head">
-      <h2 id="cl-title"></h2>
+      <h2 id="cl-title" translate="no"></h2>
       <button class="btn" id="cl-recap">Copier son récap</button>
       <button class="btn primary" id="cl-new">+ Nouvelle demande</button>
       <button class="btn" id="cl-close" style="margin-left:auto">✕ Fermer</button>
@@ -603,6 +610,130 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/fr.min.js"></script>
 <script>
+// ====== LANGUE (FR / EN) ======
+// Le site est écrit en français ; en anglais, chaque texte affiché est traduit à la volée
+// via le dictionnaire EN ci-dessous (texte exact) puis les règles (phrases avec chiffres).
+let LANG = (() => { try { return localStorage.getItem("noname-lang") || "fr"; } catch { return "fr"; } })();
+const LOC = () => (LANG === "en" ? "en-GB" : "fr-CH");
+const DOWS = (k) => ({
+  fr: { mini: ["L", "M", "M", "J", "V", "S", "D"], court: ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"], long: ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"] },
+  en: { mini: ["M", "T", "W", "T", "F", "S", "S"], court: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], long: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] },
+}[LANG][k]);
+const EN = {
+  "Réservations NONAME": "NONAME Bookings", "Réservations": "Bookings",
+  "Studio · Label · Services artistes — demandes, réservations et suivi": "Studio · Label · Artist services — requests, bookings and follow-up",
+  "📅 Grand calendrier": "📅 Big calendar", "Copier le récap": "Copy summary", "Déconnexion": "Log out",
+  "Configuration manquante.": "Missing configuration.", "Les clés Supabase ne sont pas remplies dans": "The Supabase keys are not filled in", "Le site tourne en": "The site runs in", "mode démo": "demo mode", ": les données restent uniquement dans ce navigateur.": ": data stays only in this browser.",
+  "Impossible de charger Supabase.": "Could not load Supabase.", "Vérifie ta connexion internet.": "Check your internet connection.",
+  "Accès équipe": "Team access", "Entre le mot de passe de l'équipe NONAME.": "Enter the NONAME team password.", "Mot de passe": "Password",
+  "Ton prénom (pour signer tes updates)": "Your first name (to sign your updates)", "Facultatif": "Optional", "Entrer": "Enter",
+  "Connexion…": "Signing in…", "Mot de passe incorrect.": "Wrong password.", "Trop de tentatives. Réessaie dans quelques minutes.": "Too many attempts. Try again in a few minutes.",
+  "Nouvelle demande": "New request", "Nom du client *": "Client name *", "Demande": "Request", "Artiste, label…": "Artist, label…", "Ex. : session voix 2 titres": "E.g. vocal session, 2 tracks",
+  "Sessions studio (une ou plusieurs dates)": "Studio sessions (one or more dates)", "Sessions studio — ajoute autant de dates que nécessaire": "Studio sessions — add as many dates as needed",
+  "Aucune date — choisis-en une ci-dessus (tu peux en ajouter plusieurs)": "No date yet — pick one above (you can add several)",
+  "Contact": "Contact", "Statut": "Status", "Responsable *": "Owner *", "Responsable": "Owner", "Choisir…": "Choose…", "Choisir un responsable…": "Choose an owner…", "Ajouter": "Add",
+  "Demandes actives": "Active requests", "Sessions sous 7 jours": "Sessions within 7 days", "Reste à encaisser": "Left to collect",
+  "Toutes": "All", "Actives": "Active", "💰 À encaisser": "💰 To collect",
+  "Nouvelle": "New", "En cours": "In progress", "En attente": "On hold", "Confirmée": "Confirmed", "Terminée": "Finished", "Annulée": "Cancelled",
+  "Rechercher un client, une demande…": "Search a client, a request…", "Tous les responsables": "All owners", "⚠ Non assignées": "⚠ Unassigned", "⚠ À assigner": "⚠ Unassigned", "À assigner": "Unassigned", "à assigner": "unassigned",
+  "Tri : prochaine session": "Sort: next session", "Tri : dernière modification": "Sort: last change", "Tri : dernier contact": "Sort: last contact", "Tri : client A → Z": "Sort: client A → Z", "Tri : reste à payer": "Sort: amount due", "Tri : date de fin (récentes d'abord)": "Sort: end date (newest first)",
+  "Trier": "Sort", "Filtrer par responsable": "Filter by owner",
+  "Client": "Client", "Sessions": "Sessions", "Paiement": "Payment",
+  "Aucune demande ne correspond.": "No matching request.", "Aucune demande pour l'instant. Remplis le formulaire ci-dessus pour commencer.": "No requests yet. Fill in the form above to start.",
+  "Session studio": "Studio session", "Contacts": "Contacts", "Fins": "Ends", "Modifié ce jour": "Changed that day", "⤢ Ouvrir le grand calendrier": "⤢ Open the big calendar",
+  "Prochaines sessions": "Upcoming sessions", "Aucune session à venir.": "No upcoming sessions.", "💰 Paiements": "💰 Payments", "Dernières modifications": "Recent changes", "Aucune modification.": "No changes.",
+  "Facturé": "Invoiced", "Encaissé": "Collected", "Reste": "Due", "Aucun prix renseigné. Ajoute-le dans la fiche d'une demande.": "No price yet. Add it in a request's sheet.",
+  "Rien ce jour-là.": "Nothing that day.", "+ Session ce jour": "+ Session this day", "Session": "Session", "Fin": "End", "Modif": "Change",
+  "Pas de prix": "No price", "Pas encore de prix": "No price yet", "Non payé": "Unpaid", "Acompte": "Deposit", "Payé": "Paid", "soldé": "paid in full",
+  "Fiche": "Sheet", "Fiche demande": "Request sheet", "👤 Fiche client": "👤 Client sheet", "Fiche client": "Client sheet", "Voir toutes les demandes de ce client": "See all requests for this client",
+  "Date de contact": "Contact date", "Date de fin (terminée le)": "End date (finished on)", "Type": "Type", "Coordonnées": "Contact details", "tél, e-mail, @insta…": "phone, e-mail, @insta…",
+  "💰 Prix & paiement": "💰 Price & payment", "Prix total (CHF)": "Total price (CHF)", "Déjà payé (CHF)": "Already paid (CHF)", "Ex. : 600": "E.g. 600", "Reste à payer :": "Amount due:", "Paiement reçu (CHF)": "Payment received (CHF)", "+ Encaisser": "+ Collect",
+  "Ajouter une update": "Add an update", "Ex. : session calée, en attente des stems…": "E.g. session booked, waiting for stems…", "Notes & journal": "Notes & log", "Supprimer": "Delete", "Enregistrer": "Save",
+  "Enregistrement studio": "Studio recording", "Mix / master": "Mix / master", "Production / beat": "Production / beat", "Co-production label": "Label co-production", "Booking / live": "Booking / live", "Promo / com": "Promo / PR", "Admin / contrat": "Admin / contract", "Autre": "Other",
+  "Cliquer pour modifier la date": "Click to change the date", "Retirer cette date": "Remove this date", "Fermer": "Close", "✕ Fermer": "✕ Close", "Mois précédent": "Previous month", "Mois suivant": "Next month", "Aujourd'hui": "Today", "Grand calendrier": "Big calendar", "+ session": "+ session", "Aucune session ce mois-ci.": "No sessions this month.",
+  "Copier son récap": "Copy their summary", "+ Nouvelle demande": "+ New request", "Total facturé": "Total invoiced", "Déjà payé": "Already paid", "Reste à payer": "Amount due", "Tout est payé": "All paid", "Aucune session.": "No sessions.",
+  "jj/mm/aaaa": "dd/mm/yyyy", "Langue / Language": "Language",
+  "Demande ajoutée": "Request added", "Demande supprimée": "Request deleted", "Enregistré": "Saved", "Update ajoutée": "Update added",
+  "Le nom du client est obligatoire.": "The client name is required.", "Choisis un responsable : chaque demande doit être assignée.": "Choose an owner: every request must be assigned.",
+  "Indique le montant reçu, ex. 200": "Enter the amount received, e.g. 200", "Montant invalide : écris un nombre, ex. 600 ou 1250.50": "Invalid amount: type a number, e.g. 600 or 1250.50",
+  "Paiement ajouté — pense à enregistrer": "Payment added — remember to save", "Récap copié — colle-le dans WhatsApp ou un mail": "Summary copied — paste it into WhatsApp or an e-mail",
+  "Supprimer définitivement cette demande ?": "Delete this request permanently?",
+  // récap
+  "Sessions à venir": "Upcoming sessions", "À planifier / à relancer": "To schedule / follow up", "Terminées ces 7 derniers jours": "Finished in the last 7 days", "À encaisser": "To collect",
+  "Aucune demande active.": "No active requests.", "Prestation": "Service", "Tout est réglé, merci !": "All settled, thank you!",
+};
+// Phrases avec des parties variables (appliquées après le dictionnaire)
+const RULES = [
+  [/^Session(s?) à venir · (\d+) au total$/, (m, s, n) => `Upcoming session${s} · ${n} in total`],
+  [/^Demandes \((\d+)\)$/, "Requests ($1)"],
+  [/^Sessions · /, "Sessions · "],
+  [/\bil y a (\d+) min\b/g, "$1 min ago"], [/\bil y a (\d+) h\b/g, "$1 h ago"], [/\bil y a (\d+) j\b/g, "$1 d ago"],
+  [/\bdans (\d+) j\b/g, "in $1 d"], [/aujourd'hui/g, "today"], [/Aujourd'hui/g, "Today"], [/\bdemain\b/g, "tomorrow"], [/\bhier\b/g, "yesterday"], [/à l'instant/g, "just now"],
+  [/^Créée le /, "Created on "], [/ · modifiée /, " · updated "], [/ · modifiée par un membre/, " · changed by a member"], [/^Modifiée /, "Updated "],
+  [/ payés\b/g, " paid"], [/(\d+) modification\(s\)/, "$1 change(s)"],
+  [/^Contacts : /, "Contacts: "], [/^Contact : /, "Contact: "], [/^Sessions : /, "Sessions: "], [/^Terminées : /, "Finished: "], [/^Terminée : /, "Finished: "],
+  [/^Voir toutes les sessions et paiements de /, "See all sessions and payments for "], [/^Connecté·e : /, "Signed in: "],
+  [/\breste (?=[\d])/g, "due "], [/^✓ le /, "✓ on "], [/^Statut : /, "Status: "], [/^Responsable : /, "Owner: "], [/^Erreur : /, "Error: "],
+  [/^Liste indisponible\./, "List unavailable."], [/le projet Supabase est peut-être en pause\./, "the Supabase project may be paused."],
+  // récap
+  [/Réservations NONAME/, "NONAME bookings"], [/Sessions à venir/, "Upcoming sessions"], [/Terminées ces 7 derniers jours/, "Finished in the last 7 days"],
+  [/À planifier \/ à relancer/, "To schedule / follow up"], [/À encaisser/, "To collect"], [/ — récap au /, " — summary as of "], [/\*Paiement\*/, "*Payment*"], [/Reste à payer : /, "Amount due: "],
+  [/\(total /, "(total "], [/\(payé /g, "(paid "], [/ — payé /g, " — paid "], [/ · contact /g, " · contact "], [/ · le /g, " · on "], [/ — à assigner/g, " — unassigned"],
+];
+function tr(str) {
+  if (LANG !== "en" || !str) return str;
+  const t = str.trim();
+  if (!t) return str;
+  if (EN[t] !== undefined) return str.replace(t, EN[t]);
+  // segments séparés par « · » traduits un par un (ex. « Confirmée · il y a 2 h »)
+  if (t.includes(" · ")) {
+    const parts = t.split(" · ").map((x) => (EN[x] !== undefined ? EN[x] : x));
+    let out = parts.join(" · ");
+    for (const [re, rep] of RULES) out = out.replace(re, rep);
+    return str.replace(t, out);
+  }
+  let out = t;
+  for (const [re, rep] of RULES) out = out.replace(re, rep);
+  return str.replace(t, out);
+}
+const trTexte = (txt) => txt.split("\n").map(tr).join("\n"); // pour le récap copié
+const ORIG = new WeakMap(), FAIT = new WeakMap();
+const ATTRS = ["placeholder", "title", "aria-label"];
+const ignorer = (el) => !el || el.closest("script, style, textarea, [translate=no], .flatpickr-calendar");
+function trNoeud(n) {
+  if (n.nodeType === 3) {
+    if (ignorer(n.parentElement) || FAIT.get(n) === n.data) return;
+    const v = tr(n.data);
+    if (v !== n.data) { ORIG.set(n, n.data); n.data = v; FAIT.set(n, v); }
+  } else if (n.nodeType === 1) {
+    if (ignorer(n)) return;
+    const els = [n, ...n.querySelectorAll("[placeholder], [title], [aria-label]")];
+    for (const el of els) {
+      if (ignorer(el)) continue;
+      for (const a of ATTRS) {
+        const v = el.getAttribute(a); if (!v || el.dataset["fr" + a.replace("-", "")] !== undefined && tr(el.dataset["fr" + a.replace("-", "")]) === v) continue;
+        const t = tr(v); if (t !== v) { el.dataset["fr" + a.replace("-", "")] = v; el.setAttribute(a, t); }
+      }
+    }
+    const w = document.createTreeWalker(n, NodeFilter.SHOW_TEXT);
+    let x; while ((x = w.nextNode())) trNoeud(x);
+  }
+}
+function restaurerFR(racine) {
+  const w = document.createTreeWalker(racine, NodeFilter.SHOW_TEXT);
+  let x; while ((x = w.nextNode())) { const o = ORIG.get(x); if (o !== undefined) { x.data = o; ORIG.delete(x); FAIT.delete(x); } }
+  racine.querySelectorAll("[data-frplaceholder], [data-frtitle], [data-frarialabel]").forEach((el) => {
+    for (const a of ATTRS) { const k = "fr" + a.replace("-", ""); if (el.dataset[k] !== undefined) { el.setAttribute(a, el.dataset[k]); delete el.dataset[k]; } }
+  });
+}
+new MutationObserver((muts) => {
+  if (LANG !== "en") return;
+  for (const m of muts) {
+    if (m.type === "characterData") trNoeud(m.target);
+    else m.addedNodes.forEach(trNoeud);
+  }
+}).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+
 // ====== CONFIGURATION ======
 const SUPABASE_URL = "https://cmcgdvkobkielgkocmgc.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtY2dkdmtvYmtpZWxna29jbWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NDMzMjEsImV4cCI6MjEwNzExOTMyMX0.rx1NEylSZXfnk_ozY0-_vgwd_hmV0WulwBuDZ5PNW9U";
@@ -658,7 +789,7 @@ const parse = (s) => new Date(s + "T00:00:00");
 const fmtDate = (s) => { if (!s) return ""; const [y, m, d] = s.split("-"); return `${d}/${m}/${y}`; };
 const fmtShort = fmtDate; // toutes les dates au format jj/mm/aaaa
 const fmtDateHeure = (d) => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-const jourSemaine = (s) => parse(s).toLocaleDateString("fr-CH", { weekday: "short" }).replace(".", "");
+const jourSemaine = (s) => parse(s).toLocaleDateString(LOC(), { weekday: "short" }).replace(".", "");
 const daysUntil = (s) => Math.round((parse(s) - parse(today())) / 86400000);
 function relJour(s) {
   const n = daysUntil(s);
@@ -885,7 +1016,7 @@ function renderKpis(anim) {
   const vals = [
     { v: items.filter((i) => !estClos(i)).length, l: "Demandes actives" },
     { v: items.filter((i) => !estClos(i)).flatMap(sessionsDe).filter((d) => d >= t && daysUntil(d) <= 7).length, l: "Sessions sous 7 jours" },
-    { v: items.filter((i) => i.statut !== "annulee").flatMap(sessionsDe).filter((d) => d.startsWith(m)).length, l: "Sessions · " + mois.toLocaleDateString("fr-CH", { month: "long" }) },
+    { v: items.filter((i) => i.statut !== "annulee").flatMap(sessionsDe).filter((d) => d.startsWith(m)).length, l: "Sessions · " + mois.toLocaleDateString(LOC(), { month: "long" }) },
     { v: chf(items.filter((i) => i.statut !== "annulee").reduce((t, i) => t + paiement(i).reste, 0)), l: "Reste à encaisser" },
   ];
   const prev = renderKpis.prev || [];
@@ -908,7 +1039,7 @@ function renderListe() {
   $("rows").innerHTML = rows.length ? rows.map((i) => `
     <div class="row s-${i.statut} ${estClos(i) ? "closed" : ""} ${respConnu(i.resp) ? "" : "unassigned"} ${flash.ids.has(i.id) ? "flash" : ""}" data-id="${i.id}" title="Modifiée ${relTime(i.maj_le)}">
       <div class="c-cl">
-        <div class="cl-name"><button type="button" class="lien-client" data-client="${esc(i.client || i.titre)}" title="Voir toutes les sessions et paiements de ${esc(i.client || i.titre)}">${esc(i.client || i.titre)}</button></div>
+        <div class="cl-name"><button type="button" translate="no" class="lien-client" data-client="${esc(i.client || i.titre)}" title="Voir toutes les sessions et paiements de ${esc(i.client || i.titre)}">${esc(i.client || i.titre)}</button></div>
         <div class="cl-sub">${esc([i.client && i.titre !== i.client ? i.titre : "", i.type && i.type !== "Autre" ? i.type : ""].filter(Boolean).join(" · ") || "—")}</div>
       </div>
       <div class="c-rp"><span class="lbl">Responsable</span>
@@ -929,7 +1060,7 @@ function renderListe() {
 
 function renderCalendrier() {
   const y = mois.getFullYear(), m = mois.getMonth();
-  $("cal-title").textContent = mois.toLocaleDateString("fr-CH", { month: "long", year: "numeric" });
+  $("cal-title").textContent = mois.toLocaleDateString(LOC(), { month: "long", year: "numeric" });
   const offset = (new Date(y, m, 1).getDay() + 6) % 7; // lundi en premier
   const nbJours = new Date(y, m + 1, 0).getDate();
   const cases = Math.ceil((offset + nbJours) / 7) * 7;
@@ -943,7 +1074,7 @@ function renderCalendrier() {
   }
 
   const t = today();
-  let html = ["L", "M", "M", "J", "V", "S", "D"].map((d) => `<div class="mini-dow">${d}</div>`).join("");
+  let html = DOWS("mini").map((d) => `<div class="mini-dow">${d}</div>`).join("");
   for (let k = 0; k < cases; k++) {
     const d = new Date(y, m, 1 - offset + k);
     const key = isoDay(d);
@@ -969,7 +1100,7 @@ function renderCalendrier() {
 function renderBigCal() {
   if ($("bigcal").classList.contains("hidden")) return;
   const y = mois.getFullYear(), m = mois.getMonth();
-  $("bc-title").textContent = mois.toLocaleDateString("fr-CH", { month: "long", year: "numeric" });
+  $("bc-title").textContent = mois.toLocaleDateString(LOC(), { month: "long", year: "numeric" });
   $("bc-legend").innerHTML = RESPS.map((r) => `<span><i style="--rc:${r.c}"></i>${r.v}</span>`).join("")
     + `<span><i style="--rc:var(--danger)"></i>À assigner</span>`;
   const voirContacts = $("bc-contacts").checked, voirFins = $("bc-fins").checked;
@@ -984,13 +1115,13 @@ function renderBigCal() {
   }
   const ordre = { session: 0, fin: 1, contact: 2 };
   const t = today();
-  let html = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"].map((d) => `<div class="bc-dow">${d}</div>`).join("");
+  let html = DOWS("long").map((d) => `<div class="bc-dow">${d}</div>`).join("");
   for (let n = 0; n < cases; n++) {
     const d = new Date(y, m, 1 - offset + n), key = isoDay(d);
     const evs = (parJour[key] || []).sort((a, b) => ordre[a.k] - ordre[b.k] || (a.i.resp || "").localeCompare(b.i.resp || ""));
     html += `<div class="bc-day ${evs.length ? "has" : ""} ${d.getMonth() !== m ? "out" : ""} ${key === t ? "today" : ""} ${flash.days.has(key) ? "pulse" : ""}" data-day="${key}">
       <span class="bc-num">${d.getDate()}</span>
-      <span class="bc-full">${d.toLocaleDateString("fr-CH", { weekday: "long", day: "numeric", month: "long" })}${key === t ? " · aujourd'hui" : ""}</span>
+      <span class="bc-full">${d.toLocaleDateString(LOC(), { weekday: "long", day: "numeric", month: "long" })}${key === t ? " · aujourd'hui" : ""}</span>
       ${evs.map(({ i, k }) => {
         const nom = esc(i.client || i.titre), detail = i.titre && i.titre !== i.client ? esc(i.titre) : "";
         const qui = respConnu(i.resp) ? i.resp : "à assigner";
@@ -1043,7 +1174,7 @@ function renderClient() {
   const parJour = {};
   for (const x of sessions) (parJour[x.d] ||= []).push({ ...x, k: "s" });
   for (const i of dem) if (i.date_fin) (parJour[i.date_fin] ||= []).push({ i, d: i.date_fin, k: "f" });
-  let grid = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((d) => `<div class="bc-dow">${d}</div>`).join("");
+  let grid = DOWS("court").map((d) => `<div class="bc-dow">${d}</div>`).join("");
   for (let n = 0; n < cases; n++) {
     const d = new Date(y, m, 1 - offset + n), key = isoDay(d), evs = parJour[key] || [];
     grid += `<div class="bc-day ${evs.length ? "has" : ""} ${d.getMonth() !== m ? "out" : ""} ${key === t ? "today" : ""} ${flash.days.has(key) ? "pulse" : ""}" data-day="${key}"><span class="bc-num">${d.getDate()}</span>`
@@ -1069,7 +1200,7 @@ function renderClient() {
     <div class="cl-cols">
       <div>
         <div class="cl-cal-head">
-          <h3>${clientMois.toLocaleDateString("fr-CH", { month: "long", year: "numeric" })}</h3>
+          <h3>${clientMois.toLocaleDateString(LOC(), { month: "long", year: "numeric" })}</h3>
           <button class="btn small" data-cm="-1" aria-label="Mois précédent">‹</button>
           <button class="btn small" data-cm="0">Aujourd'hui</button>
           <button class="btn small" data-cm="1" aria-label="Mois suivant">›</button>
@@ -1127,8 +1258,8 @@ function renderDetailJour(resa, contact, modif, fin) {
     ...(fin[jourSel] || []).map((i) => ({ i, t: "f", l: "Fin" })),
     ...(modif[jourSel] || []).map((i) => ({ i, t: "m", l: "Modif" })),
   ];
-  box.innerHTML = `<div class="dd-title">${parse(jourSel).toLocaleDateString("fr-CH", { weekday: "long", day: "numeric", month: "long" })}</div>`
-    + (lignes.length ? lignes.map(({ i, t, l }) => `<div class="dd-item s-${i.statut}" data-id="${i.id}"><span class="tag ${t}">${l}</span>${respBadge(i.resp)}<span class="dd-name">${esc(i.client || i.titre)}</span></div>`).join("")
+  box.innerHTML = `<div class="dd-title">${parse(jourSel).toLocaleDateString(LOC(), { weekday: "long", day: "numeric", month: "long" })}</div>`
+    + (lignes.length ? lignes.map(({ i, t, l }) => `<div class="dd-item s-${i.statut}" data-id="${i.id}"><span class="tag ${t}">${l}</span>${respBadge(i.resp)}<span class="dd-name" translate="no">${esc(i.client || i.titre)}</span></div>`).join("")
       : `<div class="none">Rien ce jour-là.</div>`)
     + `<div style="margin-top:8px"><button class="btn small" id="dd-new">+ Session ce jour</button></div>`;
   box.classList.remove("hidden");
@@ -1144,7 +1275,7 @@ function renderPaiements() {
     ? `<div class="none" style="font-size:13px">Aucun prix renseigné. Ajoute-le dans la fiche d'une demande.</div>`
     : `<div class="money"><div><b>${chf(total, false)}</b><small>Facturé</small></div><div><b style="color:var(--ok)">${chf(recu, false)}</b><small>Encaissé</small></div><div><b style="color:var(--danger)">${chf(reste, false)}</b><small>Reste</small></div></div>`
       + `<div class="bar big p-${reste ? "partiel" : "paye"}"><i style="width:${pct}%"></i></div>`
-      + dus.map(({ i, p }) => `<div class="si s-${i.statut}" data-id="${i.id}"><span class="dot"></span><div class="si-main"><div class="si-name">${esc(i.client || i.titre)}</div><div class="si-sub">${chf(p.paye, false)} / ${chf(p.prix)} payés</div></div><span class="si-amt">${chf(p.reste)}</span></div>`).join("");
+      + dus.map(({ i, p }) => `<div class="si s-${i.statut}" data-id="${i.id}"><span class="dot"></span><div class="si-main"><div class="si-name" translate="no">${esc(i.client || i.titre)}</div><div class="si-sub">${chf(p.paye, false)} / ${chf(p.prix)} payés</div></div><span class="si-amt">${chf(p.reste)}</span></div>`).join("");
 }
 
 function renderSide() {
@@ -1155,7 +1286,7 @@ function renderSide() {
   $("upcoming").innerHTML = up.length ? up.map(({ i, d }) => `
     <div class="si s-${i.statut}" data-id="${i.id}">
       <div class="si-date" style="background:color-mix(in srgb, ${respCouleur(i.resp)} 16%, transparent);color:${respCouleur(i.resp)}"><small>${jourSemaine(d)}</small><b>${parse(d).getDate()}</b></div>
-      <div class="si-main"><div class="si-name">${esc(i.client || i.titre)}</div><div class="si-sub">${relJour(d)}${i.titre && i.client && i.titre !== i.client ? " · " + esc(i.titre) : ""}</div></div>
+      <div class="si-main"><div class="si-name" translate="no">${esc(i.client || i.titre)}</div><div class="si-sub">${relJour(d)}${i.titre && i.client && i.titre !== i.client ? " · " + esc(i.titre) : ""}</div></div>
       <span class="dot" title="${statutLabel(i.statut)}"></span>
     </div>`).join("") : `<div class="none" style="font-size:13px">Aucune session à venir.</div>`;
 
@@ -1163,7 +1294,7 @@ function renderSide() {
   $("recent").innerHTML = rec.length ? rec.map((i) => `
     <div class="si s-${i.statut}" data-id="${i.id}">
       <span class="dot"></span>
-      <div class="si-main"><div class="si-name">${esc(i.client || i.titre)}</div><div class="si-sub">${statutLabel(i.statut)} · ${relTime(i.maj_le)}</div></div>
+      <div class="si-main"><div class="si-name" translate="no">${esc(i.client || i.titre)}</div><div class="si-sub">${statutLabel(i.statut)} · ${relTime(i.maj_le)}</div></div>
     </div>`).join("") : `<div class="none" style="font-size:13px">Aucune modification.</div>`;
 }
 
@@ -1244,7 +1375,9 @@ function encaisser() {
   $("e-pay-add").value = "";
   majPaybox();
   const prix = num($("e-prix").value);
-  $("e-update").value = `💰 Paiement reçu : ${chf(m)} (payé ${chf(total, false)}${prix ? " / " + chf(prix) : " CHF"})`;
+  $("e-update").value = LANG === "en"
+    ? `💰 Payment received: ${chf(m)} (paid ${chf(total, false)}${prix ? " / " + chf(prix) : " CHF"})`
+    : `💰 Paiement reçu : ${chf(m)} (payé ${chf(total, false)}${prix ? " / " + chf(prix) : " CHF"})`;
   ajouterUpdate();
   if (!editId) toast("Paiement ajouté — pense à enregistrer");
 }
@@ -1312,15 +1445,15 @@ async function copier(txt) {
 }
 
 // ---------- Champs de date au format jj/mm/aaaa ----------
-const FP_OPTS = { dateFormat: "Y-m-d", altInput: true, altFormat: "d/m/Y", allowInput: true, disableMobile: true };
+const fpLocale = () => (LANG === "en" || !window.flatpickr || !flatpickr.l10ns.fr ? { ...flatpickr.l10ns.default, firstDayOfWeek: 1 } : "fr");
+const FP_BASE = { dateFormat: "Y-m-d", altInput: true, altFormat: "d/m/Y", allowInput: true, disableMobile: true };
 // Écrit une date (aaaa-mm-jj) dans un champ, qu'il soit natif ou flatpickr
 function setD(el, v) {
   el = typeof el === "string" ? $(el) : el;
   if (el._flatpickr) el._flatpickr.setDate(v || null, false); else el.value = v || "";
 }
 if (window.flatpickr) {
-  if (flatpickr.l10ns && flatpickr.l10ns.fr) flatpickr.localize(flatpickr.l10ns.fr);
-  document.querySelectorAll('input[type="date"]').forEach((el) => flatpickr(el, FP_OPTS));
+  document.querySelectorAll('input[type="date"]').forEach((el) => flatpickr(el, { ...FP_BASE, locale: fpLocale() }));
 }
 
 // ---------- Sessions : plusieurs dates par demande ----------
@@ -1351,7 +1484,7 @@ for (const k of ["q", "e"]) {
       setDates(k, copie);
     };
     if (window.flatpickr) {
-      fp = flatpickr(inp, { ...FP_OPTS, defaultDate: dates[k][n], onChange: () => valider(), onClose: () => setTimeout(valider, 0) });
+      fp = flatpickr(inp, { ...FP_BASE, locale: fpLocale(), defaultDate: dates[k][n], onChange: () => valider(), onClose: () => setTimeout(valider, 0) });
       fp.altInput.classList.add("dedit");
       fp.open();
     } else {
@@ -1444,7 +1577,7 @@ $("bc-grid").addEventListener("click", (e) => {
 });
 $("cl-close").onclick = fermerClient;
 $("clientbox").addEventListener("click", (e) => { if (e.target.id === "clientbox") fermerClient(); });
-$("cl-recap").onclick = () => copier(recapClient());
+$("cl-recap").onclick = () => copier(trTexte(recapClient()));
 $("cl-new").onclick = () => { const dem = demandesClient(); ouvrir(null, { client: nomClient(dem), resp: dem[0].resp }); };
 $("cl-body").addEventListener("click", (e) => {
   const nav = e.target.closest("[data-cm]");
@@ -1467,7 +1600,7 @@ $("d-close").onclick = fermer;
 $("d-save").onclick = () => enregistrer();
 $("d-delete").onclick = async () => {
   if (!editId) return;
-  if (!confirm("Supprimer définitivement cette demande ?")) return;
+  if (!confirm(tr("Supprimer définitivement cette demande ?"))) return;
   if (await supprimer(editId)) { fermer(); toast("Demande supprimée"); }
 };
 $("e-update-btn").onclick = ajouterUpdate;
@@ -1484,7 +1617,7 @@ document.addEventListener("keydown", (e) => {
   }
   if ((e.metaKey || e.ctrlKey) && e.key === "s" && !$("drawer").classList.contains("hidden")) { e.preventDefault(); enregistrer(); }
 }, true); // phase de capture : voit le calendrier encore ouvert avant qu'Échap ne le ferme
-$("recap").onclick = () => copier(recap());
+$("recap").onclick = () => copier(trTexte(recap()));
 
 // Rafraîchit les « il y a X min »
 setInterval(() => { if (!$("app").classList.contains("hidden")) { renderListe(); renderSide(); } }, 60000);
@@ -1548,8 +1681,26 @@ function setSession(session) {
 
 $("logout").onclick = async () => { await sb.auth.signOut(); };
 
+// ---------- Langue ----------
+function appliquerLangue(l) {
+  LANG = l;
+  try { localStorage.setItem("noname-lang", l); } catch {}
+  document.documentElement.lang = l;
+  document.querySelectorAll("#langsw button").forEach((b) => b.classList.toggle("on", b.dataset.lang === l));
+  if (window.flatpickr) {
+    document.querySelectorAll("input").forEach((el) => { if (el._flatpickr) el._flatpickr.set("locale", fpLocale()); });
+  }
+  if (l === "en") trNoeud(document.body); else restaurerFR(document.body);
+  document.title = tr("Réservations NONAME");
+  renderChips("q"); if (!$("drawer").classList.contains("hidden")) renderChips("e");
+  if (!$("app").classList.contains("hidden")) render();
+}
+$("langsw").addEventListener("click", (e) => { const b = e.target.closest("[data-lang]"); if (b && b.dataset.lang !== LANG) appliquerLangue(b.dataset.lang); });
+
 // ---------- Démarrage ----------
 try { const t = localStorage.getItem("noname-tri"); if (t && $("sort").querySelector(`option[value="${t}"]`)) { tri = t; $("sort").value = t; } } catch {}
+
+appliquerLangue(LANG);
 
 if (configured && window.supabase) {
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);

@@ -29,6 +29,7 @@ Le site est une seule page (`index.html`), sans installation ni build.
 - Filtres par statut (« Toutes » par défaut), recherche, tri (réservation, modification, contact, client)
 - Bouton « Copier le récap » : résumé à coller dans WhatsApp ou un mail
 - **Dates au format jj/mm/aaaa** partout, avec un calendrier de saisie en français (on peut aussi taper la date au clavier, ex. 15/10/2026)
+- **FR / EN** : bouton en haut à droite pour passer tout le site en anglais (mémorisé sur chaque appareil). Les noms et notes saisis ne sont pas traduits
 - Accès par **un seul mot de passe d'équipe**, synchronisation en temps réel, mode clair / sombre, utilisable sur mobile
 
 ---
@@ -146,6 +147,7 @@ Tout se trouve dans `index.html`. Modifie le fichier directement sur GitHub (ic�
 | Priorités | `const PRIOS = [...]` (+ contrainte `check` dans la table si tu ajoutes une valeur) |
 | Statuts | `const STATUTS = [...]` (+ contrainte `check` dans la table) ; `const CLOS` = statuts considérés comme fermés |
 | Responsables (noms et couleurs) | `const RESPS = [...]` dans le script + variables `--r-johan`, etc. dans `:root` |
+| Traductions anglaises | dictionnaire `const EN = {...}` (texte français → anglais) et `const RULES` (phrases avec chiffres) en haut du script |
 | Couleurs | variables `--accent`, `--bg`, etc. dans `:root` en haut du `<style>` |
 | Titre et sous-titre | balises `<h1>` et `<p class="sub">` |
 
