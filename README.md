@@ -26,6 +26,7 @@ Le site est une seule page (`index.html`), sans installation ni build.
 - Fiche détaillée : coordonnées, type, responsable, budget (CHF), notes, **updates datées et signées**, suppression
 - Filtres par statut, recherche, tri (réservation, modification, contact, client)
 - Bouton « Copier le récap » : résumé à coller dans WhatsApp ou un mail
+- **Dates au format jj/mm/aaaa** partout, avec un calendrier de saisie en français (on peut aussi taper la date au clavier, ex. 15/10/2026)
 - Accès par **un seul mot de passe d'équipe**, synchronisation en temps réel, mode clair / sombre, utilisable sur mobile
 
 ---

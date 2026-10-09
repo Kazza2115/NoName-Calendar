@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Réservations NONAME</title>
 <meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
 <style>
   :root {
     --bg: #f6f5f2;
@@ -136,7 +137,7 @@
   .s-annulee    { --c: var(--danger); }
 
   /* Tableau des demandes */
-  .thead, .row { display: grid; grid-template-columns: minmax(0, 1.8fr) .95fr 1.05fr .95fr 1.15fr 1fr; gap: 12px; align-items: center; padding: 10px 14px; }
+  .thead, .row { display: grid; grid-template-columns: minmax(0, 1.55fr) .95fr 1.25fr 1fr 1.15fr 1fr; gap: 12px; align-items: center; padding: 10px 14px; }
   .thead { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; padding-top: 0; padding-bottom: 6px; }
   .rows { display: grid; gap: 6px; }
   .row { background: var(--card); border: 1px solid var(--line); border-radius: 12px; cursor: pointer; position: relative; overflow: hidden; transition: border-color .15s, transform .15s; }
@@ -147,7 +148,7 @@
   .row.closed .cl-name { text-decoration: line-through; }
   .cl-name { font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .cl-sub { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .date { font-variant-numeric: tabular-nums; font-weight: 550; }
+  .date { font-variant-numeric: tabular-nums; font-weight: 550; white-space: nowrap; }
   .date-rel { font-size: 12px; color: var(--muted); }
   .date-rel.soon { color: var(--accent); font-weight: 600; }
   .date-rel.today { color: var(--ok); font-weight: 700; }
@@ -285,6 +286,17 @@
   .d-info { font-size: 12px; color: var(--muted); margin: 6px 0 14px; }
   .d-actions { display: flex; gap: 8px; justify-content: space-between; margin-top: 14px; }
 
+  /* Calendrier de saisie (flatpickr) aux couleurs du site */
+  .flatpickr-calendar { background: var(--card); border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,.15); border-radius: 12px; z-index: 50 !important; }
+  .flatpickr-calendar.arrowTop::before, .flatpickr-calendar.arrowTop::after { border-bottom-color: var(--line); }
+  .flatpickr-months .flatpickr-month, .flatpickr-current-month .flatpickr-monthDropdown-months, .flatpickr-current-month input.cur-year,
+  .flatpickr-weekday, .flatpickr-months .flatpickr-prev-month, .flatpickr-months .flatpickr-next-month { color: var(--text); fill: var(--text); background: transparent; }
+  .flatpickr-current-month .flatpickr-monthDropdown-months option { background: var(--card); }
+  .flatpickr-day { color: var(--text); border-radius: 8px; }
+  .flatpickr-day:hover { background: var(--soft); border-color: var(--soft); }
+  .flatpickr-day.today { border-color: var(--accent); }
+  .flatpickr-day.selected, .flatpickr-day.selected:hover { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+  .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay { color: var(--muted); opacity: .5; }
   .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; z-index: 40; box-shadow: 0 6px 20px rgba(0,0,0,.2); max-width: calc(100% - 32px); }
 
   @media (max-width: 960px) {
@@ -350,8 +362,8 @@
           <div class="quick-grid">
             <div class="q-client"><label for="q-client">Nom du client *</label><input type="text" id="q-client" required autocomplete="off" placeholder="Artiste, label…"></div>
             <div class="q-titre"><label for="q-titre">Demande</label><input type="text" id="q-titre" autocomplete="off" placeholder="Ex. : session voix 2 titres"></div>
-            <div class="q-sessions"><label for="q-date-add">Sessions studio (une ou plusieurs dates)</label><input type="date" id="q-date-add"><div class="date-chips" id="q-chips"></div></div>
-            <div><label for="q-contact">Contact</label><input type="date" id="q-contact"></div>
+            <div class="q-sessions"><label for="q-date-add">Sessions studio (une ou plusieurs dates)</label><input type="date" placeholder="jj/mm/aaaa" id="q-date-add"><div class="date-chips" id="q-chips"></div></div>
+            <div><label for="q-contact">Contact</label><input type="date" placeholder="jj/mm/aaaa" id="q-contact"></div>
             <div><label for="q-statut">Statut</label><select id="q-statut"></select></div>
             <div><label for="q-resp">Responsable *</label><select id="q-resp" required></select></div>
             <button class="btn primary" type="submit">Ajouter</button>
@@ -426,11 +438,11 @@
   </div>
   <div class="field"><label for="e-client">Nom du client *</label><input type="text" id="e-client"></div>
   <div class="field"><label for="e-titre">Demande</label><input type="text" id="e-titre"></div>
-  <div class="field"><label for="e-date-add">Sessions studio — ajoute autant de dates que nécessaire</label><input type="date" id="e-date-add"><div class="date-chips" id="e-chips"></div></div>
+  <div class="field"><label for="e-date-add">Sessions studio — ajoute autant de dates que nécessaire</label><input type="date" placeholder="jj/mm/aaaa" id="e-date-add"><div class="date-chips" id="e-chips"></div></div>
   <div class="grid2">
-    <div class="field"><label for="e-contact-date">Date de contact</label><input type="date" id="e-contact-date"></div>
+    <div class="field"><label for="e-contact-date">Date de contact</label><input type="date" placeholder="jj/mm/aaaa" id="e-contact-date"></div>
     <div class="field"><label for="e-statut">Statut</label><select id="e-statut"></select></div>
-    <div class="field"><label for="e-fin">Date de fin (terminée le)</label><input type="date" id="e-fin"></div>
+    <div class="field"><label for="e-fin">Date de fin (terminée le)</label><input type="date" placeholder="jj/mm/aaaa" id="e-fin"></div>
     <div class="field"><label for="e-type">Type</label><select id="e-type"></select></div>
     <div class="field"><label for="e-contact">Coordonnées</label><input type="text" id="e-contact" placeholder="tél, e-mail, @insta…"></div>
     <div class="field"><label for="e-resp">Responsable *</label><select id="e-resp"></select></div>
@@ -466,6 +478,8 @@
 <div class="toast hidden" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/fr.min.js"></script>
 <script>
 // ====== CONFIGURATION ======
 const SUPABASE_URL = "https://cmcgdvkobkielgkocmgc.supabase.co";
@@ -519,8 +533,9 @@ const pad = (n) => String(n).padStart(2, "0");
 const isoDay = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const today = () => isoDay(new Date());
 const parse = (s) => new Date(s + "T00:00:00");
-const fmtDate = (s) => { if (!s) return ""; const [y, m, d] = s.split("-"); return `${d}.${m}.${y}`; };
-const fmtShort = (s) => { if (!s) return ""; const [, m, d] = s.split("-"); return `${d}.${m}`; };
+const fmtDate = (s) => { if (!s) return ""; const [y, m, d] = s.split("-"); return `${d}/${m}/${y}`; };
+const fmtShort = fmtDate; // toutes les dates au format jj/mm/aaaa
+const fmtDateHeure = (d) => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 const jourSemaine = (s) => parse(s).toLocaleDateString("fr-CH", { weekday: "short" }).replace(".", "");
 const daysUntil = (s) => Math.round((parse(s) - parse(today())) / 86400000);
 function relJour(s) {
@@ -538,7 +553,7 @@ function relTime(iso) {
   if (diff < 86400) return `il y a ${Math.floor(diff / 3600)} h`;
   if (diff < 7 * 86400) return `il y a ${Math.floor(diff / 86400)} j`;
   const d = new Date(iso);
-  return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${String(d.getFullYear()).slice(2)}`;
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
 }
 const jourModif = (i) => i.maj_le ? isoDay(new Date(i.maj_le)) : null;
 // Toutes les dates de session d'une demande (triées, sans doublon)
@@ -722,8 +737,8 @@ function cellSessions(i) {
   const cls = n === 0 ? "today" : n > 0 && n <= 7 ? "soon" : "";
   const autres = all.length - 1;
   const restant = all.filter((d) => d >= today()).length;
-  return `<div class="date" title="${esc(all.map((d) => jourSemaine(d) + " " + fmtDate(d)).join("\n"))}">${jourSemaine(p)} ${fmtShort(p)}${autres ? `<span class="nb">+${autres}</span>` : ""}</div>`
-    + `<div class="date-rel ${cls}">${relJour(p)}${all.length > 1 ? ` · ${restant}/${all.length}` : ""}</div>`;
+  return `<div class="date" title="${esc(all.map((d) => jourSemaine(d) + " " + fmtDate(d)).join("\n"))}">${fmtDate(p)}${autres ? `<span class="nb">+${autres}</span>` : ""}</div>`
+    + `<div class="date-rel ${cls}">${jourSemaine(p)} · ${relJour(p)}${all.length > 1 ? ` · ${restant}/${all.length}` : ""}</div>`;
 }
 
 function cellPaiement(i) {
@@ -739,7 +754,7 @@ function cellDate(s, kind) {
   const n = daysUntil(s);
   let cls = "";
   if (kind === "resa") cls = n === 0 ? "today" : n > 0 && n <= 7 ? "soon" : "";
-  return `<div class="date">${jourSemaine(s)} ${fmtShort(s)}</div><div class="date-rel ${cls}">${relJour(s)}</div>`;
+  return `<div class="date">${fmtDate(s)}</div><div class="date-rel ${cls}">${jourSemaine(s)} · ${relJour(s)}</div>`;
 }
 
 function renderKpis(anim) {
@@ -889,7 +904,7 @@ function allerAuMois(s) { const d = parse(s); mois = new Date(d.getFullYear(), d
 
 // ---------- Tiroir ----------
 function infoLine(i) {
-  const f = (iso) => { const d = new Date(iso); return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+  const f = (iso) => fmtDateHeure(new Date(iso));
   return `Créée le ${f(i.cree_le)} · modifiée ${relTime(i.maj_le)}`;
 }
 function ouvrir(id, preset = {}) {
@@ -901,9 +916,9 @@ function ouvrir(id, preset = {}) {
   $("e-client").value = i.client || "";
   $("e-titre").value = i.titre && i.titre !== i.client ? i.titre : "";
   dates.e = sessionsDe(i); renderChips("e");
-  $("e-contact-date").value = i.date_contact || "";
+  setD("e-contact-date", i.date_contact);
   $("e-statut").value = i.statut || "nouvelle";
-  $("e-fin").value = i.date_fin || "";
+  setD("e-fin", i.date_fin);
   $("e-type").value = TYPES.includes(i.type) ? i.type : "Autre";
   $("e-contact").value = i.contact || "";
   $("e-resp").innerHTML = respOptions(i.resp, "Choisir un responsable…");
@@ -962,7 +977,7 @@ function ajouterUpdate() {
   if (!txt) return;
   const d = new Date();
   const qui = userEmail ? " · " + userEmail : "";
-  const ligne = `[${pad(d.getDate())}.${pad(d.getMonth() + 1)} ${pad(d.getHours())}:${pad(d.getMinutes())}${qui}] ${txt}`;
+  const ligne = `[${fmtDateHeure(d)}${qui}] ${txt}`;
   const notes = $("e-notes").value;
   $("e-notes").value = ligne + (notes ? "\n" + notes : "");
   $("e-update").value = "";
@@ -983,7 +998,7 @@ async function enregistrer(garderOuvert = false) {
 function recap() {
   const d = new Date();
   const nom = (i) => (i.client || i.titre) + (i.client && i.titre && i.titre !== i.client ? " (" + i.titre + ")" : "") + (respConnu(i.resp) ? " — " + i.resp : " — ⚠ à assigner");
-  let txt = `📋 Réservations NONAME — ${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}\n`;
+  let txt = `📋 Réservations NONAME — ${fmtDate(isoDay(d))}\n`;
   const actives = items.filter((i) => !estClos(i));
   const avenir = actives.flatMap((i) => sessionsDe(i).filter((d) => d >= today()).map((d) => ({ i, d })))
     .sort((a, b) => a.d.localeCompare(b.d));
@@ -1019,6 +1034,18 @@ async function copier(txt) {
   toast("Récap copié — colle-le dans WhatsApp ou un mail");
 }
 
+// ---------- Champs de date au format jj/mm/aaaa ----------
+const FP_OPTS = { dateFormat: "Y-m-d", altInput: true, altFormat: "d/m/Y", allowInput: true, disableMobile: true };
+// Écrit une date (aaaa-mm-jj) dans un champ, qu'il soit natif ou flatpickr
+function setD(el, v) {
+  el = typeof el === "string" ? $(el) : el;
+  if (el._flatpickr) el._flatpickr.setDate(v || null, false); else el.value = v || "";
+}
+if (window.flatpickr) {
+  if (flatpickr.l10ns && flatpickr.l10ns.fr) flatpickr.localize(flatpickr.l10ns.fr);
+  document.querySelectorAll('input[type="date"]').forEach((el) => flatpickr(el, FP_OPTS));
+}
+
 // ---------- Sessions : plusieurs dates par demande ----------
 const dates = { q: [], e: [] };
 function renderChips(k) {
@@ -1029,7 +1056,7 @@ function renderChips(k) {
 }
 function setDates(k, arr) { dates[k] = [...new Set(arr.filter(Boolean))].sort(); renderChips(k); }
 for (const k of ["q", "e"]) {
-  $(k + "-date-add").addEventListener("change", (e) => { if (e.target.value) setDates(k, [...dates[k], e.target.value]); e.target.value = ""; });
+  $(k + "-date-add").addEventListener("change", (e) => { const v = e.target.value; if (!v) return; setDates(k, [...dates[k], v]); setTimeout(() => setD(e.target, ""), 0); });
   $(k + "-chips").addEventListener("click", (e) => {
     const del = e.target.closest("[data-del]");
     if (del) { dates[k].splice(+del.dataset.del, 1); renderChips(k); return; }
@@ -1037,14 +1064,26 @@ for (const k of ["q", "e"]) {
     // Modifier une date : la pastille devient un sélecteur de date
     const chip = lab.closest(".dchip"), n = +chip.dataset.n;
     const inp = document.createElement("input");
-    inp.type = "date"; inp.value = dates[k][n]; inp.className = "dedit";
-    chip.replaceWith(inp); inp.focus();
-    try { inp.showPicker(); } catch {}
-    let fini = false;
-    const valider = () => { if (fini) return; fini = true; const v = inp.value; const copie = [...dates[k]]; if (v) copie[n] = v; setDates(k, copie); };
-    inp.addEventListener("change", valider);
-    inp.addEventListener("keydown", (ev) => { if (ev.key === "Enter") { ev.preventDefault(); valider(); } if (ev.key === "Escape") { ev.stopPropagation(); fini = true; renderChips(k); } });
-    inp.addEventListener("blur", () => setTimeout(valider, 120));
+    inp.type = "date"; inp.value = dates[k][n]; inp.className = "dedit"; inp.placeholder = "jj/mm/aaaa";
+    chip.replaceWith(inp);
+    let fini = false, fp = null;
+    const valider = () => {
+      if (fini) return; fini = true;
+      const v = inp.value; const copie = [...dates[k]]; if (v) copie[n] = v;
+      if (fp) setTimeout(() => fp.destroy(), 0);
+      setDates(k, copie);
+    };
+    if (window.flatpickr) {
+      fp = flatpickr(inp, { ...FP_OPTS, defaultDate: dates[k][n], onChange: () => valider(), onClose: () => setTimeout(valider, 0) });
+      fp.altInput.classList.add("dedit");
+      fp.open();
+    } else {
+      inp.focus();
+      try { inp.showPicker(); } catch {}
+      inp.addEventListener("change", valider);
+      inp.addEventListener("keydown", (ev) => { if (ev.key === "Enter") { ev.preventDefault(); valider(); } if (ev.key === "Escape") { ev.stopPropagation(); fini = true; renderChips(k); } });
+      inp.addEventListener("blur", () => setTimeout(valider, 120));
+    }
   });
 }
 renderChips("q");
@@ -1055,9 +1094,9 @@ $("q-resp").innerHTML = respOptions("", "Choisir…");
 $("f-resp").innerHTML = `<option value="">Tous les responsables</option>` + RESPS.map((r) => `<option value="${r.v}">${r.v}</option>`).join("") + `<option value="aucun">⚠ Non assignées</option>`;
 $("f-resp").onchange = (e) => { filtreResp = e.target.value; renderListe(); };
 // Dans la fiche : passer en « Terminée » propose la date du jour (modifiable)
-$("e-statut").addEventListener("change", (e) => { if (e.target.value === "terminee" && !$("e-fin").value) $("e-fin").value = today(); });
+$("e-statut").addEventListener("change", (e) => { if (e.target.value === "terminee" && !$("e-fin").value) setD("e-fin", today()); });
 fillSelect($("e-type"), TYPES);
-$("q-contact").value = today();
+setD("q-contact", today());
 
 $("quick").onsubmit = async (e) => {
   e.preventDefault();
@@ -1072,7 +1111,7 @@ $("quick").onsubmit = async (e) => {
   });
   if (ok) {
     $("q-client").value = ""; $("q-titre").value = ""; dates.q = []; renderChips("q");
-    $("q-contact").value = today(); $("q-statut").value = "nouvelle"; $("q-resp").innerHTML = respOptions("", "Choisir…");
+    setD("q-contact", today()); $("q-statut").value = "nouvelle"; $("q-resp").innerHTML = respOptions("", "Choisir…");
     $("q-client").focus();
     toast("Demande ajoutée");
   }
@@ -1131,9 +1170,9 @@ $("e-pay-add").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault();
 $("e-update").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); ajouterUpdate(); } };
 $("e-client").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); enregistrer(); } };
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && !$("drawer").classList.contains("hidden")) fermer();
+  if (e.key === "Escape" && !$("drawer").classList.contains("hidden") && !document.querySelector(".flatpickr-calendar.open")) fermer();
   if ((e.metaKey || e.ctrlKey) && e.key === "s" && !$("drawer").classList.contains("hidden")) { e.preventDefault(); enregistrer(); }
-});
+}, true); // phase de capture : voit le calendrier encore ouvert avant qu'Échap ne le ferme
 $("recap").onclick = () => copier(recap());
 
 // Rafraîchit les « il y a X min »
