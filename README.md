@@ -12,17 +12,17 @@ Le site est une seule page (`index.html`), sans installation ni build.
 
 ## Fonctionnalités
 
-- Saisie rapide : titre + Entrée, avec artiste/client, type, priorité et échéance en option
-- Types : enregistrement studio, mix/master, production/beat, co-production label, booking/live, promo/com, admin/contrat, autre
-- Statuts : Nouvelle → En cours → En attente → Terminée (modifiables directement dans la liste)
-- Fiche détaillée : contact, responsable, budget (CHF), notes, suppression
-- Filtres par statut, recherche, compteurs « urgentes » et « en retard »
-- Bouton « Copier le récap » : résumé texte à coller dans WhatsApp ou un mail
-- **Calendrier** mensuel des échéances : clic sur un jour = nouvelle demande à cette date
-- **Updates** : bouton « Ajouter une update » dans chaque fiche (ligne datée et signée ajoutée en haut des notes) + onglet qui affiche les dernières demandes modifiées
-- Synchronisation en temps réel entre tous les membres connectés
-- Mode clair / sombre automatique, utilisable sur mobile
-- **Mode démo** : tant que les clés Supabase ne sont pas remplies, le site fonctionne avec des exemples stockés dans le navigateur (pratique pour tester avant l'installation)
+- **Tableau des demandes** : nom du client, demande, date de réservation, date de contact, statut et dernière modification
+- **Statut modifiable directement dans le tableau** : Nouvelle → En cours → En attente → Confirmée → Terminée / Annulée (pastilles de couleur)
+- **Mini calendrier** : les jours réservés sont surlignés (plus foncé s'il y a plusieurs réservations), un point bleu = contact, un point orange = modifié ce jour-là
+- **Effets visuels** : à chaque ajout ou modification (par toi ou un autre membre en direct), la ligne s'illumine et le jour concerné « pulse » dans le calendrier
+- Clic sur un jour : détail du jour, tableau filtré sur cette date, bouton « + Réservation ce jour »
+- Compteurs : demandes actives, réservations sous 7 jours, réservations du mois, en attente
+- Colonne latérale : prochaines réservations et dernières modifications
+- Fiche détaillée : coordonnées, type, responsable, budget (CHF), notes, **updates datées et signées**, suppression
+- Filtres par statut, recherche, tri (réservation, modification, contact, client)
+- Bouton « Copier le récap » : résumé à coller dans WhatsApp ou un mail
+- Accès par **un seul mot de passe d'équipe**, synchronisation en temps réel, mode clair / sombre, utilisable sur mobile
 
 ---
 
@@ -41,8 +41,10 @@ create table public.demandes (
   client     text default '',
   type       text default 'Autre',
   priorite   text default 'normale' check (priorite in ('basse','normale','haute','urgente')),
-  statut     text default 'nouvelle' check (statut in ('nouvelle','en-cours','en-attente','terminee')),
+  statut     text default 'nouvelle' check (statut in ('nouvelle','en-cours','en-attente','confirmee','terminee','annulee')),
   echeance   date,
+  date_reservation date,
+  date_contact     date,
   contact    text default '',
   notes      text default '',
   resp       text default '',
@@ -131,7 +133,7 @@ Tout se trouve dans `index.html`. Modifie le fichier directement sur GitHub (ic�
 |---|---|
 | Liste des types de demandes | `const TYPES = [...]` dans le script |
 | Priorités | `const PRIOS = [...]` (+ contrainte `check` dans la table si tu ajoutes une valeur) |
-| Statuts | `const STATUTS = [...]` (+ contrainte `check` dans la table) |
+| Statuts | `const STATUTS = [...]` (+ contrainte `check` dans la table) ; `const CLOS` = statuts considérés comme fermés |
 | Couleurs | variables `--accent`, `--bg`, etc. dans `:root` en haut du `<style>` |
 | Titre et sous-titre | balises `<h1>` et `<p class="sub">` |
 

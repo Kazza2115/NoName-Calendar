@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Demandes NONAME</title>
+<title>Réservations NONAME</title>
 <meta name="color-scheme" content="light dark">
 <style>
   :root {
@@ -19,7 +19,8 @@
     --warn: #c77a0a;
     --ok: #1f9d5a;
     --info: #2a6fdb;
-    --radius: 12px;
+    --gray: #7a7a85;
+    --radius: 14px;
     --shadow: 0 1px 2px rgba(0,0,0,.05), 0 4px 16px rgba(0,0,0,.05);
   }
   @media (prefers-color-scheme: dark) {
@@ -36,6 +37,7 @@
       --warn: #f0a640;
       --ok: #4cd18a;
       --info: #6aa3ff;
+      --gray: #8d8d98;
       --shadow: none;
     }
   }
@@ -47,11 +49,11 @@
     -webkit-font-smoothing: antialiased;
   }
   button, input, select, textarea { font: inherit; color: inherit; }
-  .wrap { max-width: 980px; margin: 0 auto; padding: 20px 16px 80px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 20px 16px 80px; }
   .hidden { display: none !important; }
 
   /* En-tête */
-  header { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  header { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
   h1 { margin: 0; font-size: 26px; letter-spacing: -.02em; }
   h1 span { color: var(--accent); }
   .sub { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
@@ -74,7 +76,6 @@
   }
   input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent); }
   label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; font-weight: 500; }
-
   .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
 
   /* Connexion */
@@ -85,90 +86,147 @@
   .msg { font-size: 14px; margin-top: 10px; }
   .msg.ok { color: var(--ok); } .msg.ko { color: var(--danger); }
 
-  /* Saisie rapide */
-  .quick { padding: 12px; margin-bottom: 14px; }
-  .quick-row { display: flex; gap: 8px; }
-  .quick-row input { flex: 1; font-size: 16px; }
-  .quick-opts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
-  .quick-hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
-  .link { background: none; border: none; color: var(--accent); cursor: pointer; padding: 0; font-size: 12px; }
+  /* Mise en page */
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 18px; align-items: start; }
+  .side { position: sticky; top: 16px; display: grid; gap: 14px; }
+  .section-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin: 0 0 10px; }
 
-  /* Onglets */
-  .tabs { display: flex; gap: 4px; background: var(--soft); padding: 4px; border-radius: 12px; width: fit-content; margin-bottom: 14px; }
-  .tab { border: none; background: transparent; padding: 7px 14px; border-radius: 9px; cursor: pointer; color: var(--muted); font-weight: 500; }
-  .tab.active { background: var(--card); color: var(--text); box-shadow: var(--shadow); }
+  /* Nouvelle réservation */
+  .quick { padding: 14px; margin-bottom: 14px; }
+  .quick-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; align-items: end; }
+  .quick-grid .q-client, .quick-grid .q-titre { grid-column: span 2; }
 
-  /* Barre d'outils liste */
+  /* Indicateurs */
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
+  .kpi { padding: 12px 14px; }
+  .kpi .v { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -.02em; display: inline-block; }
+  .kpi .l { font-size: 12px; color: var(--muted); }
+
+  /* Barre d'outils */
   .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
   .chips { display: flex; gap: 6px; flex-wrap: wrap; }
   .chip { border: 1px solid var(--line); background: var(--card); padding: 5px 11px; border-radius: 999px; cursor: pointer; font-size: 13px; }
   .chip .n { color: var(--muted); margin-left: 4px; font-variant-numeric: tabular-nums; }
   .chip.active { background: var(--text); color: var(--bg); border-color: var(--text); }
   .chip.active .n { color: inherit; opacity: .7; }
+  .chip.day { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
   .toolbar .grow { flex: 1; min-width: 160px; }
-  .stats { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
-  .stat { font-size: 13px; padding: 4px 10px; border-radius: 8px; background: var(--soft); color: var(--muted); }
-  .stat b { font-variant-numeric: tabular-nums; }
-  .stat.hot { background: color-mix(in srgb, var(--danger) 14%, transparent); color: var(--danger); }
-  .stat.late { background: color-mix(in srgb, var(--warn) 16%, transparent); color: var(--warn); }
+  .toolbar select { width: auto; }
 
-  /* Liste */
-  .list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
-  .item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; border-left: 4px solid transparent; }
-  .item:hover { border-color: var(--line); }
-  .item.p-urgente { border-left-color: var(--danger); }
-  .item.p-haute { border-left-color: var(--warn); }
-  .item.p-basse { border-left-color: var(--line); }
-  .item.done .titre { text-decoration: line-through; color: var(--muted); }
-  .item-main { flex: 1; min-width: 0; }
-  .titre { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .meta { font-size: 13px; color: var(--muted); display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-top: 2px; }
-  .badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--soft); color: var(--muted); white-space: nowrap; text-transform: uppercase; letter-spacing: .03em; }
-  .badge.urgente { background: color-mix(in srgb, var(--danger) 15%, transparent); color: var(--danger); }
-  .badge.haute { background: color-mix(in srgb, var(--warn) 16%, transparent); color: var(--warn); }
-  .due { font-variant-numeric: tabular-nums; }
-  .due.late { color: var(--danger); font-weight: 600; }
-  .due.soon { color: var(--warn); font-weight: 600; }
-  select.statut { width: auto; padding: 5px 8px; font-size: 13px; border-radius: 8px; }
-  select.statut.s-nouvelle { color: var(--info); }
-  select.statut.s-en-cours { color: var(--accent); }
-  select.statut.s-en-attente { color: var(--warn); }
-  select.statut.s-terminee { color: var(--ok); }
+  /* Couleurs de statut */
+  .s-nouvelle   { --c: var(--info); }
+  .s-en-cours   { --c: var(--accent); }
+  .s-en-attente { --c: var(--warn); }
+  .s-confirmee  { --c: var(--ok); }
+  .s-terminee   { --c: var(--gray); }
+  .s-annulee    { --c: var(--danger); }
+
+  /* Tableau des demandes */
+  .thead, .row { display: grid; grid-template-columns: minmax(0, 2.2fr) 1.15fr 1.15fr 1.25fr .9fr; gap: 12px; align-items: center; padding: 10px 14px; }
+  .thead { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; padding-top: 0; padding-bottom: 6px; }
+  .rows { display: grid; gap: 6px; }
+  .row { background: var(--card); border: 1px solid var(--line); border-radius: 12px; cursor: pointer; position: relative; overflow: hidden; transition: border-color .15s, transform .15s; }
+  .row::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--c); }
+  .row:hover { border-color: color-mix(in srgb, var(--c) 50%, var(--line)); transform: translateY(-1px); }
+  .row.closed { opacity: .62; }
+  .row.closed .cl-name { text-decoration: line-through; }
+  .cl-name { font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cl-sub { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .date { font-variant-numeric: tabular-nums; font-weight: 550; }
+  .date-rel { font-size: 12px; color: var(--muted); }
+  .date-rel.soon { color: var(--accent); font-weight: 600; }
+  .date-rel.today { color: var(--ok); font-weight: 700; }
+  .none { color: var(--muted); }
+  .modif { font-size: 12px; color: var(--muted); text-align: right; }
+  .lbl { display: none; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  select.statut {
+    -webkit-appearance: none; appearance: none; width: auto; max-width: 100%;
+    padding: 5px 28px 5px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer;
+    color: var(--c); border: 1px solid color-mix(in srgb, var(--c) 40%, transparent);
+    background: color-mix(in srgb, var(--c) 14%, var(--card)) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23888' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 10px center;
+    transition: transform .15s;
+  }
+  select.statut:hover { transform: scale(1.04); }
+  select.statut option { color: var(--text); background: var(--card); }
   .empty { text-align: center; color: var(--muted); padding: 40px 16px; }
 
-  /* Calendrier */
-  .cal-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-  .cal-head h2 { margin: 0; font-size: 18px; flex: 1; text-transform: capitalize; }
-  .cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); overflow: hidden; }
-  .cal-dow { padding: 8px; font-size: 12px; color: var(--muted); font-weight: 600; text-align: center; border-bottom: 1px solid var(--line); }
-  .cal-day { min-height: 96px; padding: 6px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); cursor: pointer; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-  .cal-day:nth-child(7n) { border-right: none; }
-  .cal-day:hover { background: var(--soft); }
-  .cal-day.out { color: var(--muted); background: color-mix(in srgb, var(--soft) 50%, transparent); }
-  .cal-day.out .cal-ev { opacity: .6; }
-  .cal-num { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
-  .cal-day.today .cal-num { background: var(--accent); color: var(--accent-text); border-radius: 999px; width: 22px; height: 22px; display: grid; place-items: center; }
-  .cal-ev { font-size: 12px; padding: 2px 6px; border-radius: 6px; background: color-mix(in srgb, var(--accent) 14%, transparent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .cal-ev.p-urgente { background: color-mix(in srgb, var(--danger) 18%, transparent); }
-  .cal-ev.p-haute { background: color-mix(in srgb, var(--warn) 20%, transparent); }
-  .cal-ev.done { text-decoration: line-through; opacity: .55; }
-  .cal-more { font-size: 11px; color: var(--muted); }
-  .cal-note { font-size: 13px; color: var(--muted); margin-top: 10px; }
+  /* Mini calendrier */
+  .mini { padding: 14px; }
+  .mini-head { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+  .mini-head h2 { margin: 0; font-size: 16px; flex: 1; text-transform: capitalize; }
+  .mini-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .mini-dow { font-size: 11px; color: var(--muted); text-align: center; font-weight: 600; padding-bottom: 2px; }
+  .mday {
+    position: relative; aspect-ratio: 1; border: none; border-radius: 10px; background: transparent; cursor: pointer;
+    display: grid; place-items: center; font-size: 13px; font-variant-numeric: tabular-nums; padding: 0;
+    transition: transform .15s ease, background .2s ease;
+  }
+  .mday:hover { background: var(--soft); transform: scale(1.1); z-index: 1; }
+  .mday.out { color: var(--muted); opacity: .4; }
+  .mday.today { box-shadow: inset 0 0 0 1.5px var(--accent); font-weight: 700; }
+  .mday.resa { background: color-mix(in srgb, var(--accent) 20%, transparent); color: var(--accent); font-weight: 700; }
+  .mday.resa.r2 { background: color-mix(in srgb, var(--accent) 34%, transparent); }
+  .mday.resa.r3 { background: color-mix(in srgb, var(--accent) 50%, transparent); color: var(--text); }
+  .mday.sel { background: var(--accent); color: var(--accent-text); transform: scale(1.06); }
+  .mday .cnt { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; background: var(--accent); color: var(--accent-text); font-size: 10px; font-weight: 700; display: grid; place-items: center; border: 2px solid var(--card); }
+  .mday .mk { position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); display: flex; gap: 2px; }
+  .mday .mk i { width: 4px; height: 4px; border-radius: 50%; display: block; }
+  .mk .c { background: var(--info); }
+  .mk .m { background: var(--warn); }
+  .mday.sel .mk i { background: var(--accent-text); }
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-top: 12px; }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .legend .lr { background: color-mix(in srgb, var(--accent) 30%, transparent); }
+  .legend .lc { background: var(--info); border-radius: 50%; width: 6px; height: 6px; }
+  .legend .lm { background: var(--warn); border-radius: 50%; width: 6px; height: 6px; }
+  .day-detail { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; font-size: 13px; }
+  .day-detail .dd-title { font-weight: 650; margin-bottom: 6px; text-transform: capitalize; }
+  .day-detail .dd-item { display: flex; gap: 8px; align-items: center; padding: 4px 0; cursor: pointer; }
+  .day-detail .dd-item:hover .dd-name { color: var(--accent); }
+  .tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; padding: 1px 6px; border-radius: 6px; background: var(--soft); color: var(--muted); flex: none; }
+  .tag.r { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+  .tag.c { background: color-mix(in srgb, var(--info) 16%, transparent); color: var(--info); }
+  .tag.m { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
 
-  /* Activité */
-  .feed h3 { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin: 18px 0 8px; }
-  .feed h3:first-child { margin-top: 0; }
-  .ev { display: flex; gap: 12px; padding: 10px 12px; cursor: pointer; align-items: flex-start; }
-  .ev + .ev { margin-top: 6px; }
-  .dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 6px; flex: none; background: var(--info); }
-  .dot.s-en-cours { background: var(--accent); } .dot.s-en-attente { background: var(--warn); } .dot.s-terminee { background: var(--ok); }
-  .ev-body { flex: 1; min-width: 0; }
-  .ev-last { font-size: 13px; color: var(--muted); margin-top: 3px; white-space: pre-wrap; word-break: break-word; }
-  .ev-time { font-size: 12px; color: var(--muted); white-space: nowrap; }
+  /* Listes latérales */
+  .side-list { padding: 14px; }
+  .si { display: flex; align-items: center; gap: 10px; padding: 7px 0; cursor: pointer; border-top: 1px solid var(--line); }
+  .si:first-of-type { border-top: none; }
+  .si:hover .si-name { color: var(--accent); }
+  .si-date { width: 44px; flex: none; text-align: center; border-radius: 8px; background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); padding: 3px 0; line-height: 1.1; }
+  .si-date b { display: block; font-size: 16px; }
+  .si-date small { font-size: 10px; text-transform: uppercase; }
+  .si-main { flex: 1; min-width: 0; }
+  .si-name { font-weight: 600; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .si-sub { font-size: 12px; color: var(--muted); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c); flex: none; }
+
+  /* Effets visuels */
+  .row.flash { animation: flash 1.8s ease-out; }
+  @keyframes flash {
+    0%   { background: color-mix(in srgb, var(--c) 30%, var(--card)); transform: translateX(6px); }
+    25%  { transform: translateX(0); }
+    100% { background: var(--card); }
+  }
+  .mday.pulse { animation: pulse 1.6s ease-out; }
+  @keyframes pulse {
+    0%   { transform: scale(1);    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 65%, transparent); }
+    25%  { transform: scale(1.28); }
+    60%  { transform: scale(1);    box-shadow: 0 0 0 12px transparent; }
+    100% { box-shadow: 0 0 0 0 transparent; }
+  }
+  .kpi.bump .v { animation: bump .6s ease-out; }
+  @keyframes bump { 40% { transform: scale(1.2); color: var(--accent); } }
+  @media (prefers-reduced-motion: reduce) {
+    .row.flash, .mday.pulse, .kpi.bump .v { animation: none; }
+  }
 
   /* Tiroir */
-  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 20; }
-  .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(460px, 100%); background: var(--card); z-index: 21; overflow-y: auto; padding: 18px 18px 24px; border-left: 1px solid var(--line); box-shadow: -10px 0 30px rgba(0,0,0,.12); }
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 20; animation: fade .2s; }
+  .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(460px, 100%); background: var(--card); z-index: 21; overflow-y: auto; padding: 18px 18px 24px; border-left: 1px solid var(--line); box-shadow: -10px 0 30px rgba(0,0,0,.12); animation: slide .25s ease-out; }
+  @keyframes fade { from { opacity: 0; } }
+  @keyframes slide { from { transform: translateX(40px); opacity: 0; } }
   .drawer h2 { margin: 0; font-size: 18px; flex: 1; }
   .d-head { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -180,16 +238,23 @@
 
   .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; z-index: 40; box-shadow: 0 6px 20px rgba(0,0,0,.2); max-width: calc(100% - 32px); }
 
+  @media (max-width: 960px) {
+    .layout { grid-template-columns: 1fr; }
+    .side { position: static; order: -1; grid-template-columns: 1fr 1fr; }
+  }
   @media (max-width: 680px) {
     h1 { font-size: 22px; }
-    .quick-opts { grid-template-columns: 1fr 1fr; }
-    .item { flex-wrap: wrap; }
-    .item-main { flex-basis: 100%; }
-    .cal-day { min-height: 62px; padding: 4px; }
-    .cal-ev { font-size: 0; padding: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; }
-    .cal-ev.p-urgente { background: var(--danger); } .cal-ev.p-haute { background: var(--warn); }
-    .cal-evs { display: flex; flex-wrap: wrap; gap: 3px; }
-    .cal-more { display: none; }
+    .side { grid-template-columns: 1fr; }
+    .side .side-list { display: none; }
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .quick-grid { grid-template-columns: 1fr 1fr; }
+    .quick-grid button { grid-column: span 2; }
+    .thead { display: none; }
+    .row { grid-template-columns: 1fr 1fr; grid-template-areas: "cl st" "rs ct"; row-gap: 8px; }
+    .row .c-cl { grid-area: cl; } .row .c-st { grid-area: st; justify-self: end; }
+    .row .c-rs { grid-area: rs; } .row .c-ct { grid-area: ct; }
+    .row .c-md { display: none; }
+    .lbl { display: block; }
     .grid2 { grid-template-columns: 1fr; }
   }
 </style>
@@ -198,11 +263,12 @@
 <div class="wrap">
   <header>
     <div>
-      <h1>Demandes <span>NONAME</span></h1>
-      <p class="sub">Studio · Label · Services artistes — notes, calendrier et suivi</p>
+      <h1>Réservations <span>NONAME</span></h1>
+      <p class="sub">Studio · Label · Services artistes — demandes, réservations et suivi</p>
     </div>
     <div class="user hidden" id="userbox">
       <span id="useremail"></span>
+      <button class="btn small" id="recap">Copier le récap</button>
       <button class="btn small" id="logout">Déconnexion</button>
     </div>
   </header>
@@ -227,55 +293,67 @@
 
   <!-- Application -->
   <main class="hidden" id="app">
-    <form class="card quick" id="quick">
-      <div class="quick-row">
-        <input type="text" id="q-titre" placeholder="Nouvelle demande… (Entrée pour ajouter)" autocomplete="off">
-        <button class="btn primary" type="submit">Ajouter</button>
-      </div>
-      <div class="quick-opts hidden" id="quick-opts">
-        <div><label for="q-client">Artiste / client</label><input type="text" id="q-client" autocomplete="off"></div>
-        <div><label for="q-type">Type</label><select id="q-type"></select></div>
-        <div><label for="q-prio">Priorité</label><select id="q-prio"></select></div>
-        <div><label for="q-date">Échéance</label><input type="date" id="q-date"></div>
-      </div>
-      <div class="quick-hint"><button type="button" class="link" id="toggle-opts">+ Options (artiste, type, priorité, échéance)</button></div>
-    </form>
+    <div class="layout">
+      <div>
+        <form class="card quick" id="quick">
+          <p class="section-title">Nouvelle demande</p>
+          <div class="quick-grid">
+            <div class="q-client"><label for="q-client">Nom du client *</label><input type="text" id="q-client" required autocomplete="off" placeholder="Artiste, label…"></div>
+            <div class="q-titre"><label for="q-titre">Demande</label><input type="text" id="q-titre" autocomplete="off" placeholder="Ex. : session voix 2 titres"></div>
+            <div><label for="q-resa">Réservation</label><input type="date" id="q-resa"></div>
+            <div><label for="q-contact">Contact</label><input type="date" id="q-contact"></div>
+            <div><label for="q-statut">Statut</label><select id="q-statut"></select></div>
+            <button class="btn primary" type="submit">Ajouter</button>
+          </div>
+        </form>
 
-    <div class="toolbar" style="justify-content: space-between;">
-      <div class="tabs" role="tablist">
-        <button class="tab active" data-vue="liste">Liste</button>
-        <button class="tab" data-vue="calendrier">Calendrier</button>
-        <button class="tab" data-vue="activite">Updates</button>
+        <div class="kpis" id="kpis"></div>
+
+        <div class="toolbar">
+          <div class="chips" id="chips"></div>
+        </div>
+        <div class="toolbar">
+          <input type="search" class="grow" id="search" placeholder="Rechercher un client, une demande…">
+          <select id="sort" aria-label="Trier">
+            <option value="resa">Tri : réservation la plus proche</option>
+            <option value="modif">Tri : dernière modification</option>
+            <option value="contact">Tri : dernier contact</option>
+            <option value="client">Tri : client A → Z</option>
+          </select>
+        </div>
+
+        <div class="thead"><span>Client</span><span>Réservation</span><span>Contact</span><span>Statut</span><span style="text-align:right">Modifié</span></div>
+        <div class="rows" id="rows"></div>
       </div>
-      <button class="btn small" id="recap">Copier le récap</button>
+
+      <aside class="side">
+        <div class="card mini">
+          <div class="mini-head">
+            <h2 id="cal-title"></h2>
+            <button class="btn small ghost" id="cal-prev" aria-label="Mois précédent">‹</button>
+            <button class="btn small ghost" id="cal-today" title="Aujourd'hui">●</button>
+            <button class="btn small ghost" id="cal-next" aria-label="Mois suivant">›</button>
+          </div>
+          <div class="mini-grid" id="cal"></div>
+          <div class="legend">
+            <span><i class="lr"></i>Réservation</span>
+            <span><i class="lc"></i>Contact</span>
+            <span><i class="lm"></i>Modifié ce jour</span>
+          </div>
+          <div class="day-detail hidden" id="day-detail"></div>
+        </div>
+
+        <div class="card side-list">
+          <p class="section-title">Prochaines réservations</p>
+          <div id="upcoming"></div>
+        </div>
+
+        <div class="card side-list">
+          <p class="section-title">Dernières modifications</p>
+          <div id="recent"></div>
+        </div>
+      </aside>
     </div>
-
-    <!-- Vue liste -->
-    <section id="vue-liste">
-      <div class="toolbar">
-        <div class="chips" id="chips"></div>
-        <input type="search" class="grow" id="search" placeholder="Rechercher…">
-      </div>
-      <div class="stats" id="stats"></div>
-      <ul class="list" id="list"></ul>
-    </section>
-
-    <!-- Vue calendrier -->
-    <section id="vue-calendrier" class="hidden">
-      <div class="cal-head">
-        <h2 id="cal-title"></h2>
-        <button class="btn small" id="cal-prev" aria-label="Mois précédent">‹</button>
-        <button class="btn small" id="cal-today">Aujourd'hui</button>
-        <button class="btn small" id="cal-next" aria-label="Mois suivant">›</button>
-      </div>
-      <div class="card cal" id="cal"></div>
-      <p class="cal-note" id="cal-note"></p>
-    </section>
-
-    <!-- Vue activité -->
-    <section id="vue-activite" class="hidden">
-      <div class="feed" id="feed"></div>
-    </section>
   </main>
 </div>
 
@@ -286,16 +364,16 @@
     <h2 id="d-title">Fiche</h2>
     <button class="btn small ghost" id="d-close" aria-label="Fermer">✕</button>
   </div>
-  <div class="field"><label for="e-titre">Titre</label><input type="text" id="e-titre"></div>
+  <div class="field"><label for="e-client">Nom du client *</label><input type="text" id="e-client"></div>
+  <div class="field"><label for="e-titre">Demande</label><input type="text" id="e-titre"></div>
   <div class="grid2">
-    <div class="field"><label for="e-client">Artiste / client</label><input type="text" id="e-client"></div>
-    <div class="field"><label for="e-type">Type</label><select id="e-type"></select></div>
-    <div class="field"><label for="e-priorite">Priorité</label><select id="e-priorite"></select></div>
+    <div class="field"><label for="e-resa">Date de réservation</label><input type="date" id="e-resa"></div>
+    <div class="field"><label for="e-contact-date">Date de contact</label><input type="date" id="e-contact-date"></div>
     <div class="field"><label for="e-statut">Statut</label><select id="e-statut"></select></div>
-    <div class="field"><label for="e-echeance">Échéance</label><input type="date" id="e-echeance"></div>
-    <div class="field"><label for="e-budget">Budget (CHF)</label><input type="text" id="e-budget" inputmode="decimal"></div>
-    <div class="field"><label for="e-contact">Contact</label><input type="text" id="e-contact" placeholder="tél, e-mail, @insta…"></div>
+    <div class="field"><label for="e-type">Type</label><select id="e-type"></select></div>
+    <div class="field"><label for="e-contact">Coordonnées</label><input type="text" id="e-contact" placeholder="tél, e-mail, @insta…"></div>
     <div class="field"><label for="e-resp">Responsable</label><input type="text" id="e-resp"></div>
+    <div class="field"><label for="e-budget">Budget (CHF)</label><input type="text" id="e-budget" inputmode="decimal"></div>
   </div>
   <div class="field">
     <label for="e-update">Ajouter une update</label>
@@ -327,55 +405,54 @@ const TYPES = [
   "Enregistrement studio", "Mix / master", "Production / beat", "Co-production label",
   "Booking / live", "Promo / com", "Admin / contrat", "Autre"
 ];
-const PRIOS = [
-  { v: "basse", l: "Basse" }, { v: "normale", l: "Normale" },
-  { v: "haute", l: "Haute" }, { v: "urgente", l: "Urgente" }
-];
 const STATUTS = [
   { v: "nouvelle", l: "Nouvelle" }, { v: "en-cours", l: "En cours" },
-  { v: "en-attente", l: "En attente" }, { v: "terminee", l: "Terminée" }
+  { v: "en-attente", l: "En attente" }, { v: "confirmee", l: "Confirmée" },
+  { v: "terminee", l: "Terminée" }, { v: "annulee", l: "Annulée" }
 ];
+const CLOS = ["terminee", "annulee"]; // statuts « fermés »
 // ===========================
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const prioLabel = (v) => (PRIOS.find((p) => p.v === v) || PRIOS[1]).l;
 const statutLabel = (v) => (STATUTS.find((s) => s.v === v) || STATUTS[0]).l;
-const PRIO_RANK = { urgente: 0, haute: 1, normale: 2, basse: 3 };
+const estClos = (i) => CLOS.includes(i.statut);
 
 const configured = !SUPABASE_URL.includes("VOTRE-PROJET") && !SUPABASE_ANON_KEY.includes("VOTRE_CLE");
 let sb = null, channel = null, userEmail = "";
 let items = [];
-let filtre = "toutes", recherche = "", vue = "liste";
+let filtre = "actives", recherche = "", tri = "resa", jourSel = null;
 let mois = new Date(); mois.setDate(1);
-let editId = null; // null = nouvelle demande dans le tiroir
+let editId = null;
+const flash = { ids: new Set(), days: new Set() };
 
 // ---------- Dates ----------
 const pad = (n) => String(n).padStart(2, "0");
 const isoDay = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const today = () => isoDay(new Date());
+const parse = (s) => new Date(s + "T00:00:00");
 const fmtDate = (s) => { if (!s) return ""; const [y, m, d] = s.split("-"); return `${d}.${m}.${y}`; };
 const fmtShort = (s) => { if (!s) return ""; const [, m, d] = s.split("-"); return `${d}.${m}`; };
-const daysUntil = (s) => Math.round((new Date(s + "T00:00:00") - new Date(today() + "T00:00:00")) / 86400000);
+const jourSemaine = (s) => parse(s).toLocaleDateString("fr-CH", { weekday: "short" }).replace(".", "");
+const daysUntil = (s) => Math.round((parse(s) - parse(today())) / 86400000);
+function relJour(s) {
+  const n = daysUntil(s);
+  if (n === 0) return "aujourd'hui";
+  if (n === 1) return "demain";
+  if (n === -1) return "hier";
+  return n > 0 ? `dans ${n} j` : `il y a ${-n} j`;
+}
 function relTime(iso) {
+  if (!iso) return "";
   const diff = (Date.now() - new Date(iso)) / 1000;
   if (diff < 60) return "à l'instant";
   if (diff < 3600) return `il y a ${Math.floor(diff / 60)} min`;
   if (diff < 86400) return `il y a ${Math.floor(diff / 3600)} h`;
+  if (diff < 7 * 86400) return `il y a ${Math.floor(diff / 86400)} j`;
   const d = new Date(iso);
-  return `${pad(d.getDate())}.${pad(d.getMonth() + 1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${String(d.getFullYear()).slice(2)}`;
 }
-function dueHtml(i) {
-  if (!i.echeance) return "";
-  let cls = "";
-  if (i.statut !== "terminee") {
-    const n = daysUntil(i.echeance);
-    if (n < 0) cls = "late"; else if (n <= 2) cls = "soon";
-  }
-  return `<span class="due ${cls}">📅 ${fmtDate(i.echeance)}</span>`;
-}
-const isLate = (i) => i.statut !== "terminee" && i.echeance && i.echeance < today();
-const isUrgent = (i) => i.statut !== "terminee" && i.priorite === "urgente";
+const jourModif = (i) => i.maj_le ? isoDay(new Date(i.maj_le)) : null;
 
 // ---------- Interface utilitaire ----------
 let toastTimer;
@@ -391,19 +468,29 @@ function fillSelect(el, opts) {
 }
 const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
 
+// Effet visuel : la ligne clignote et les jours concernés « pulsent » dans le calendrier
+function marquer(row, ancien) {
+  if (!row) return;
+  flash.ids.add(row.id);
+  [row.date_reservation, row.date_contact, ancien?.date_reservation, jourModif(row)].filter(Boolean).forEach((d) => flash.days.add(d));
+  clearTimeout(marquer.t);
+  marquer.t = setTimeout(() => { flash.ids.clear(); flash.days.clear(); }, 1900);
+}
+
 // ---------- Données (Supabase ou démo locale) ----------
-const DEMO_KEY = "noname-demandes-demo";
+const DEMO_KEY = "noname-reservations-demo";
 function demoLoad() { try { return JSON.parse(localStorage.getItem(DEMO_KEY)) || null; } catch { return null; } }
 function demoSave() { try { localStorage.setItem(DEMO_KEY, JSON.stringify(items)); } catch {} }
 function demoSeed() {
-  const now = new Date().toISOString();
   const plus = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return isoDay(d); };
-  const base = { contact: "", resp: "", budget: "", notes: "", cree_le: now, maj_le: now };
+  const ago = (h) => new Date(Date.now() - h * 3600000).toISOString();
+  const base = { contact: "", resp: "", budget: "", notes: "", priorite: "normale", type: "Autre" };
   return [
-    { ...base, id: uid(), titre: "Session voix — 2 titres", client: "Artiste A", type: "Enregistrement studio", priorite: "haute", statut: "en-cours", echeance: plus(3), resp: "Studio" },
-    { ...base, id: uid(), titre: "Master EP 5 titres", client: "Artiste B", type: "Mix / master", priorite: "urgente", statut: "nouvelle", echeance: plus(1), budget: "600" },
-    { ...base, id: uid(), titre: "Contrat de distribution", client: "Label X", type: "Admin / contrat", priorite: "normale", statut: "en-attente", echeance: plus(-2) },
-    { ...base, id: uid(), titre: "Visuels promo single", client: "Artiste A", type: "Promo / com", priorite: "basse", statut: "terminee", echeance: plus(-5) },
+    { ...base, id: uid(), client: "Artiste A", titre: "Session voix — 2 titres", type: "Enregistrement studio", statut: "confirmee", date_reservation: plus(3), date_contact: plus(-2), cree_le: ago(60), maj_le: ago(2) },
+    { ...base, id: uid(), client: "Artiste B", titre: "Master EP 5 titres", type: "Mix / master", statut: "nouvelle", date_reservation: plus(1), date_contact: plus(0), cree_le: ago(5), maj_le: ago(5) },
+    { ...base, id: uid(), client: "Label X", titre: "Co-prod single", type: "Co-production label", statut: "en-attente", date_reservation: plus(9), date_contact: plus(-6), cree_le: ago(200), maj_le: ago(30) },
+    { ...base, id: uid(), client: "Artiste C", titre: "Beat + topline", type: "Production / beat", statut: "en-cours", date_reservation: plus(3), date_contact: plus(-1), cree_le: ago(48), maj_le: ago(20) },
+    { ...base, id: uid(), client: "Artiste D", titre: "Showcase", type: "Booking / live", statut: "terminee", date_reservation: plus(-4), date_contact: plus(-12), cree_le: ago(400), maj_le: ago(90) },
   ];
 }
 
@@ -427,33 +514,38 @@ async function charger() {
 
 async function ajouter(obj) {
   const now = new Date().toISOString();
+  let row;
   if (sb) {
     const { data, error } = await sb.from("demandes").insert(obj).select().single();
     if (error) { toast("Erreur : " + error.message); return false; }
-    upsertLocal(data);
+    row = data;
   } else {
-    upsertLocal({
-      id: uid(), client: "", type: "Autre", priorite: "normale", statut: "nouvelle", echeance: null,
-      contact: "", notes: "", resp: "", budget: "", ...obj, cree_le: now, maj_le: now
-    });
-    demoSave();
+    row = { id: uid(), titre: "", client: "", type: "Autre", priorite: "normale", statut: "nouvelle",
+      date_reservation: null, date_contact: null, contact: "", notes: "", resp: "", budget: "", ...obj, cree_le: now, maj_le: now };
   }
-  render();
+  upsertLocal(row);
+  if (!sb) demoSave();
+  if (row.date_reservation) allerAuMois(row.date_reservation);
+  marquer(row);
+  render(true);
   return true;
 }
 
 async function modifier(id, patch) {
+  const ancien = { ...items.find((x) => x.id === id) };
   patch = { ...patch, maj_le: new Date().toISOString() };
+  let row;
   if (sb) {
     const { data, error } = await sb.from("demandes").update(patch).eq("id", id).select().single();
-    if (error) { toast("Erreur : " + error.message); return false; }
-    upsertLocal(data);
+    if (error) { toast("Erreur : " + error.message); render(); return false; }
+    row = data;
   } else {
-    const i = items.find((x) => x.id === id);
-    if (i) Object.assign(i, patch);
-    demoSave();
+    row = { ...ancien, ...patch };
   }
-  render();
+  upsertLocal(row);
+  if (!sb) demoSave();
+  marquer(row, ancien);
+  render(true);
   return true;
 }
 
@@ -472,151 +564,185 @@ function abonnerTempsReel() {
   if (!sb || channel) return;
   channel = sb.channel("demandes-live")
     .on("postgres_changes", { event: "*", schema: "public", table: "demandes" }, (p) => {
-      if (p.eventType === "DELETE") items = items.filter((i) => i.id !== p.old.id);
-      else upsertLocal(p.new);
-      render();
-      if (editId && p.new && p.new.id === editId && p.eventType === "UPDATE") $("d-info").textContent = infoLine(p.new) + " · modifiée par un membre";
+      if (p.eventType === "DELETE") { items = items.filter((i) => i.id !== p.old.id); render(); return; }
+      const local = items.find((i) => i.id === p.new.id);
+      if (local && local.maj_le === p.new.maj_le) return; // écho de notre propre modification
+      upsertLocal(p.new);
+      marquer(p.new, local);
+      render(true);
+      if (editId === p.new.id) $("d-info").textContent = infoLine(p.new) + " · modifiée par un membre";
     })
     .subscribe();
 }
 
 // ---------- Rendu ----------
-function filtrees() {
+function correspond(i) {
   const q = recherche.trim().toLowerCase();
-  return items
-    .filter((i) => filtre === "toutes" || i.statut === filtre)
-    .filter((i) => !q || [i.titre, i.client, i.type, i.notes, i.contact, i.resp].join(" ").toLowerCase().includes(q))
-    .sort((a, b) =>
-      (a.statut === "terminee") - (b.statut === "terminee") ||
-      (PRIO_RANK[a.priorite] ?? 2) - (PRIO_RANK[b.priorite] ?? 2) ||
-      (a.echeance || "9999").localeCompare(b.echeance || "9999") ||
-      (b.cree_le || "").localeCompare(a.cree_le || ""));
+  if (q && ![i.client, i.titre, i.type, i.notes, i.contact, i.resp].join(" ").toLowerCase().includes(q)) return false;
+  if (jourSel && i.date_reservation !== jourSel && i.date_contact !== jourSel) return false;
+  if (filtre === "actives") return !estClos(i);
+  if (filtre === "toutes") return true;
+  return i.statut === filtre;
+}
+
+function trier(rows) {
+  const cmp = {
+    resa: (a, b) => estClos(a) - estClos(b) || (a.date_reservation || "9999").localeCompare(b.date_reservation || "9999"),
+    modif: (a, b) => (b.maj_le || "").localeCompare(a.maj_le || ""),
+    contact: (a, b) => (b.date_contact || "").localeCompare(a.date_contact || ""),
+    client: (a, b) => (a.client || a.titre || "").localeCompare(b.client || b.titre || "", "fr"),
+  }[tri] || ((a, b) => 0);
+  return rows.sort(cmp);
+}
+
+function cellDate(s, kind) {
+  if (!s) return `<span class="none">—</span>`;
+  const n = daysUntil(s);
+  let cls = "";
+  if (kind === "resa") cls = n === 0 ? "today" : n > 0 && n <= 7 ? "soon" : "";
+  return `<div class="date">${jourSemaine(s)} ${fmtShort(s)}</div><div class="date-rel ${cls}">${relJour(s)}</div>`;
+}
+
+function renderKpis(anim) {
+  const t = today();
+  const m = isoDay(mois).slice(0, 7);
+  const vals = [
+    { v: items.filter((i) => !estClos(i)).length, l: "Demandes actives" },
+    { v: items.filter((i) => i.date_reservation && i.date_reservation >= t && daysUntil(i.date_reservation) <= 7 && !estClos(i)).length, l: "Réservations sous 7 jours" },
+    { v: items.filter((i) => (i.date_reservation || "").startsWith(m) && i.statut !== "annulee").length, l: "Réservations · " + mois.toLocaleDateString("fr-CH", { month: "long" }) },
+    { v: items.filter((i) => i.statut === "en-attente").length, l: "En attente" },
+  ];
+  const prev = renderKpis.prev || [];
+  $("kpis").innerHTML = vals.map((k, n) => `<div class="card kpi ${anim && prev[n] !== undefined && prev[n] !== k.v ? "bump" : ""}"><div class="v">${k.v}</div><div class="l">${esc(k.l)}</div></div>`).join("");
+  renderKpis.prev = vals.map((k) => k.v);
 }
 
 function renderListe() {
   const counts = Object.fromEntries(STATUTS.map((s) => [s.v, items.filter((i) => i.statut === s.v).length]));
-  $("chips").innerHTML = [{ v: "toutes", l: "Toutes", n: items.length }, ...STATUTS.map((s) => ({ ...s, n: counts[s.v] }))]
-    .map((c) => `<button class="chip ${filtre === c.v ? "active" : ""}" data-f="${c.v}">${esc(c.l)}<span class="n">${c.n}</span></button>`).join("");
+  const chips = [
+    { v: "actives", l: "Actives", n: items.filter((i) => !estClos(i)).length },
+    { v: "toutes", l: "Toutes", n: items.length },
+    ...STATUTS.map((s) => ({ ...s, n: counts[s.v] })),
+  ];
+  $("chips").innerHTML = chips.map((c) => `<button class="chip ${filtre === c.v ? "active" : ""}" data-f="${c.v}">${esc(c.l)}<span class="n">${c.n}</span></button>`).join("")
+    + (jourSel ? `<button class="chip day" data-clear-day>📅 ${fmtDate(jourSel)} ✕</button>` : "");
 
-  const nUrg = items.filter(isUrgent).length, nLate = items.filter(isLate).length;
-  $("stats").innerHTML =
-    `<span class="stat ${nUrg ? "hot" : ""}">Urgentes : <b>${nUrg}</b></span>` +
-    `<span class="stat ${nLate ? "late" : ""}">En retard : <b>${nLate}</b></span>`;
-
-  const rows = filtrees();
-  $("list").innerHTML = rows.length ? rows.map((i) => `
-    <li class="card item p-${i.priorite} ${i.statut === "terminee" ? "done" : ""}" data-id="${i.id}">
-      <div class="item-main">
-        <div class="titre">${esc(i.titre)}</div>
-        <div class="meta">
-          ${i.client ? `<span>${esc(i.client)}</span><span>·</span>` : ""}
-          <span>${esc(i.type || "Autre")}</span>
-          ${i.echeance ? `<span>·</span>${dueHtml(i)}` : ""}
-          ${i.resp ? `<span>·</span><span>👤 ${esc(i.resp)}</span>` : ""}
-        </div>
+  const rows = trier(items.filter(correspond));
+  $("rows").innerHTML = rows.length ? rows.map((i) => `
+    <div class="row s-${i.statut} ${estClos(i) ? "closed" : ""} ${flash.ids.has(i.id) ? "flash" : ""}" data-id="${i.id}">
+      <div class="c-cl">
+        <div class="cl-name">${esc(i.client || i.titre)}</div>
+        <div class="cl-sub">${esc([i.client && i.titre !== i.client ? i.titre : "", i.type && i.type !== "Autre" ? i.type : ""].filter(Boolean).join(" · ") || "—")}</div>
       </div>
-      ${i.priorite === "urgente" || i.priorite === "haute" ? `<span class="badge ${i.priorite}">${prioLabel(i.priorite)}</span>` : ""}
-      <select class="statut s-${i.statut}" data-id="${i.id}" aria-label="Statut">
-        ${STATUTS.map((s) => `<option value="${s.v}" ${s.v === i.statut ? "selected" : ""}>${s.l}</option>`).join("")}
-      </select>
-    </li>`).join("")
-    : `<li class="empty">${items.length ? "Aucune demande ne correspond." : "Aucune demande pour l'instant. Tape un titre ci-dessus et appuie sur Entrée."}</li>`;
+      <div class="c-rs"><span class="lbl">Réservation</span>${cellDate(i.date_reservation, "resa")}</div>
+      <div class="c-ct"><span class="lbl">Contact</span>${cellDate(i.date_contact, "contact")}</div>
+      <div class="c-st">
+        <select class="statut s-${i.statut}" data-id="${i.id}" aria-label="Statut">
+          ${STATUTS.map((s) => `<option value="${s.v}" ${s.v === i.statut ? "selected" : ""}>${s.l}</option>`).join("")}
+        </select>
+      </div>
+      <div class="c-md modif" title="${i.maj_le ? new Date(i.maj_le).toLocaleString("fr-CH") : ""}">${relTime(i.maj_le)}</div>
+    </div>`).join("")
+    : `<div class="empty">${items.length ? "Aucune demande ne correspond." : "Aucune demande pour l'instant. Remplis le formulaire ci-dessus pour commencer."}</div>`;
 }
 
 function renderCalendrier() {
   const y = mois.getFullYear(), m = mois.getMonth();
   $("cal-title").textContent = mois.toLocaleDateString("fr-CH", { month: "long", year: "numeric" });
-  const first = new Date(y, m, 1);
-  const start = new Date(y, m, 1 - ((first.getDay() + 6) % 7)); // lundi
-  const lastDay = new Date(y, m + 1, 0);
-  const weeks = Math.ceil((((first.getDay() + 6) % 7) + lastDay.getDate()) / 7);
+  const offset = (new Date(y, m, 1).getDay() + 6) % 7; // lundi en premier
+  const nbJours = new Date(y, m + 1, 0).getDate();
+  const cases = Math.ceil((offset + nbJours) / 7) * 7;
 
-  const parJour = {};
-  for (const i of items) if (i.echeance) (parJour[i.echeance] ||= []).push(i);
-  for (const k in parJour) parJour[k].sort((a, b) => (a.statut === "terminee") - (b.statut === "terminee") || (PRIO_RANK[a.priorite] ?? 2) - (PRIO_RANK[b.priorite] ?? 2));
+  const resa = {}, contact = {}, modif = {};
+  for (const i of items) {
+    if (i.date_reservation && i.statut !== "annulee") (resa[i.date_reservation] ||= []).push(i);
+    if (i.date_contact) (contact[i.date_contact] ||= []).push(i);
+    const dm = jourModif(i); if (dm) (modif[dm] ||= []).push(i);
+  }
 
-  let html = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((d) => `<div class="cal-dow">${d}</div>`).join("");
   const t = today();
-  for (let k = 0; k < weeks * 7; k++) {
-    const d = new Date(start); d.setDate(start.getDate() + k);
+  let html = ["L", "M", "M", "J", "V", "S", "D"].map((d) => `<div class="mini-dow">${d}</div>`).join("");
+  for (let k = 0; k < cases; k++) {
+    const d = new Date(y, m, 1 - offset + k);
     const key = isoDay(d);
-    const evs = parJour[key] || [];
-    const shown = evs.slice(0, 3);
-    html += `<div class="cal-day ${d.getMonth() !== m ? "out" : ""} ${key === t ? "today" : ""}" data-day="${key}">
-      <span class="cal-num">${d.getDate()}</span>
-      <div class="cal-evs">${evs.map((i, n) => `<div class="cal-ev p-${i.priorite} ${i.statut === "terminee" ? "done" : ""}" data-id="${i.id}" title="${esc(i.titre)}${i.client ? " — " + esc(i.client) : ""}" ${n >= 3 ? 'style="display:none"' : ""}>${esc(i.titre)}</div>`).join("")}</div>
-      ${evs.length > shown.length ? `<span class="cal-more">+${evs.length - shown.length} autre(s)</span>` : ""}
-    </div>`;
+    const r = resa[key]?.length || 0, c = contact[key]?.length || 0, md = modif[key]?.length || 0;
+    const cls = ["mday",
+      d.getMonth() !== m && "out", key === t && "today", r && "resa", r === 2 && "r2", r >= 3 && "r3",
+      key === jourSel && "sel", flash.days.has(key) && "pulse"].filter(Boolean).join(" ");
+    const tip = [
+      r && `Réservations : ${resa[key].map((i) => i.client || i.titre).join(", ")}`,
+      c && `Contacts : ${contact[key].map((i) => i.client || i.titre).join(", ")}`,
+      md && `${md} modification(s)`,
+    ].filter(Boolean).join("\n");
+    html += `<button class="${cls}" data-day="${key}" title="${esc(tip)}">${d.getDate()}`
+      + (r > 1 ? `<span class="cnt">${r}</span>` : "")
+      + (c || md ? `<span class="mk">${c ? '<i class="c"></i>' : ""}${md ? '<i class="m"></i>' : ""}</span>` : "")
+      + `</button>`;
   }
   $("cal").innerHTML = html;
-  const sans = items.filter((i) => !i.echeance && i.statut !== "terminee").length;
-  $("cal-note").textContent = `Clique sur un jour pour créer une demande à cette date.${sans ? ` ${sans} demande(s) en cours sans échéance.` : ""}`;
+  renderDetailJour(resa, contact, modif);
 }
 
-function derniereUpdate(notes) {
-  const line = (notes || "").split("\n").find((l) => l.trim());
-  return line ? line.trim() : "";
+function renderDetailJour(resa, contact, modif) {
+  const box = $("day-detail");
+  if (!jourSel) { box.classList.add("hidden"); return; }
+  const lignes = [
+    ...(resa[jourSel] || []).map((i) => ({ i, t: "r", l: "Résa" })),
+    ...(contact[jourSel] || []).map((i) => ({ i, t: "c", l: "Contact" })),
+    ...(modif[jourSel] || []).map((i) => ({ i, t: "m", l: "Modif" })),
+  ];
+  box.innerHTML = `<div class="dd-title">${parse(jourSel).toLocaleDateString("fr-CH", { weekday: "long", day: "numeric", month: "long" })}</div>`
+    + (lignes.length ? lignes.map(({ i, t, l }) => `<div class="dd-item s-${i.statut}" data-id="${i.id}"><span class="tag ${t}">${l}</span><span class="dot"></span><span class="dd-name">${esc(i.client || i.titre)}</span></div>`).join("")
+      : `<div class="none">Rien ce jour-là.</div>`)
+    + `<div style="margin-top:8px"><button class="btn small" id="dd-new">+ Réservation ce jour</button></div>`;
+  box.classList.remove("hidden");
 }
 
-function renderActivite() {
-  const rows = [...items].sort((a, b) => (b.maj_le || "").localeCompare(a.maj_le || "")).slice(0, 60);
-  if (!rows.length) { $("feed").innerHTML = `<div class="empty">Aucune activité pour l'instant.</div>`; return; }
-  const hier = new Date(); hier.setDate(hier.getDate() - 1);
-  const groupe = (iso) => {
-    const k = isoDay(new Date(iso));
-    if (k === today()) return "Aujourd'hui";
-    if (k === isoDay(hier)) return "Hier";
-    return new Date(iso).toLocaleDateString("fr-CH", { weekday: "long", day: "numeric", month: "long" });
-  };
-  let html = "", cur = "";
-  for (const i of rows) {
-    const g = groupe(i.maj_le || i.cree_le);
-    if (g !== cur) { html += `<h3>${esc(g)}</h3>`; cur = g; }
-    const nouveau = Math.abs(new Date(i.maj_le) - new Date(i.cree_le)) < 3000;
-    const last = derniereUpdate(i.notes);
-    html += `<div class="card ev" data-id="${i.id}">
-      <span class="dot s-${i.statut}"></span>
-      <div class="ev-body">
-        <div><b>${esc(i.titre)}</b>${i.client ? ` <span style="color:var(--muted)">· ${esc(i.client)}</span>` : ""}</div>
-        <div class="meta"><span>${nouveau ? "Créée" : "Mise à jour"}</span><span>·</span><span>${statutLabel(i.statut)}</span>${i.echeance ? `<span>·</span>${dueHtml(i)}` : ""}</div>
-        ${last ? `<div class="ev-last">${esc(last)}</div>` : ""}
-      </div>
-      <span class="ev-time">${relTime(i.maj_le || i.cree_le)}</span>
-    </div>`;
-  }
-  $("feed").innerHTML = html;
+function renderSide() {
+  const t = today();
+  const up = items.filter((i) => i.date_reservation && i.date_reservation >= t && !estClos(i))
+    .sort((a, b) => a.date_reservation.localeCompare(b.date_reservation)).slice(0, 5);
+  $("upcoming").innerHTML = up.length ? up.map((i) => `
+    <div class="si s-${i.statut}" data-id="${i.id}">
+      <div class="si-date"><small>${jourSemaine(i.date_reservation)}</small><b>${parse(i.date_reservation).getDate()}</b></div>
+      <div class="si-main"><div class="si-name">${esc(i.client || i.titre)}</div><div class="si-sub">${relJour(i.date_reservation)}${i.titre && i.client && i.titre !== i.client ? " · " + esc(i.titre) : ""}</div></div>
+      <span class="dot" title="${statutLabel(i.statut)}"></span>
+    </div>`).join("") : `<div class="none" style="font-size:13px">Aucune réservation à venir.</div>`;
+
+  const rec = [...items].sort((a, b) => (b.maj_le || "").localeCompare(a.maj_le || "")).slice(0, 6);
+  $("recent").innerHTML = rec.length ? rec.map((i) => `
+    <div class="si s-${i.statut}" data-id="${i.id}">
+      <span class="dot"></span>
+      <div class="si-main"><div class="si-name">${esc(i.client || i.titre)}</div><div class="si-sub">${statutLabel(i.statut)} · ${relTime(i.maj_le)}</div></div>
+    </div>`).join("") : `<div class="none" style="font-size:13px">Aucune modification.</div>`;
 }
 
-function render() {
-  if (vue === "liste") renderListe();
-  else if (vue === "calendrier") renderCalendrier();
-  else renderActivite();
+function render(anim = false) {
+  renderKpis(anim);
+  renderListe();
+  renderCalendrier();
+  renderSide();
 }
 
-function setVue(v) {
-  vue = v;
-  document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("active", t.dataset.vue === v));
-  ["liste", "calendrier", "activite"].forEach((k) => $("vue-" + k).classList.toggle("hidden", k !== v));
-  try { localStorage.setItem("noname-vue", v); } catch {}
-  render();
-}
+function allerAuMois(s) { const d = parse(s); mois = new Date(d.getFullYear(), d.getMonth(), 1); }
 
 // ---------- Tiroir ----------
 function infoLine(i) {
   const f = (iso) => { const d = new Date(iso); return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
-  return `Créée le ${f(i.cree_le)} · mise à jour ${relTime(i.maj_le)}`;
+  return `Créée le ${f(i.cree_le)} · modifiée ${relTime(i.maj_le)}`;
 }
 function ouvrir(id, preset = {}) {
-  const i = id ? items.find((x) => x.id === id) : { titre: "", client: "", type: "Autre", priorite: "normale", statut: "nouvelle", echeance: "", contact: "", resp: "", budget: "", notes: "", ...preset };
+  const i = id ? items.find((x) => x.id === id)
+    : { client: "", titre: "", type: "Autre", statut: "nouvelle", date_reservation: "", date_contact: today(), contact: "", resp: "", budget: "", notes: "", ...preset };
   if (!i) return;
   editId = id || null;
-  $("d-title").textContent = id ? "Fiche demande" : "Nouvelle demande";
-  $("e-titre").value = i.titre || "";
+  $("d-title").textContent = id ? (i.client || "Fiche demande") : "Nouvelle demande";
   $("e-client").value = i.client || "";
-  $("e-type").value = TYPES.includes(i.type) ? i.type : "Autre";
-  $("e-priorite").value = i.priorite || "normale";
+  $("e-titre").value = i.titre && i.titre !== i.client ? i.titre : "";
+  $("e-resa").value = i.date_reservation || "";
+  $("e-contact-date").value = i.date_contact || "";
   $("e-statut").value = i.statut || "nouvelle";
-  $("e-echeance").value = i.echeance || "";
+  $("e-type").value = TYPES.includes(i.type) ? i.type : "Autre";
   $("e-contact").value = i.contact || "";
   $("e-resp").value = i.resp || "";
   $("e-budget").value = i.budget || "";
@@ -626,17 +752,18 @@ function ouvrir(id, preset = {}) {
   $("d-delete").classList.toggle("hidden", !id);
   $("overlay").classList.remove("hidden");
   $("drawer").classList.remove("hidden");
-  setTimeout(() => (id ? $("e-update") : $("e-titre")).focus(), 30);
+  setTimeout(() => (id ? $("e-update") : $("e-client")).focus(), 30);
 }
 function fermer() { $("overlay").classList.add("hidden"); $("drawer").classList.add("hidden"); editId = null; }
 function lireTiroir() {
+  const client = $("e-client").value.trim();
   return {
-    titre: $("e-titre").value.trim(),
-    client: $("e-client").value.trim(),
-    type: $("e-type").value,
-    priorite: $("e-priorite").value,
+    client,
+    titre: $("e-titre").value.trim() || client,
+    date_reservation: $("e-resa").value || null,
+    date_contact: $("e-contact-date").value || null,
     statut: $("e-statut").value,
-    echeance: $("e-echeance").value || null,
+    type: $("e-type").value,
     contact: $("e-contact").value.trim(),
     resp: $("e-resp").value.trim(),
     budget: $("e-budget").value.trim(),
@@ -656,7 +783,7 @@ function ajouterUpdate() {
 }
 async function enregistrer(garderOuvert = false) {
   const data = lireTiroir();
-  if (!data.titre) { toast("Le titre est obligatoire."); $("e-titre").focus(); return; }
+  if (!data.client) { toast("Le nom du client est obligatoire."); $("e-client").focus(); return; }
   const ok = editId ? await modifier(editId, data) : await ajouter(data);
   if (!ok) return;
   if (garderOuvert && editId) { $("d-info").textContent = infoLine(items.find((x) => x.id === editId)); toast("Update ajoutée"); }
@@ -666,20 +793,21 @@ async function enregistrer(garderOuvert = false) {
 // ---------- Récap ----------
 function recap() {
   const d = new Date();
-  let txt = `📋 Demandes NONAME — ${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}\n`;
-  const nUrg = items.filter(isUrgent).length, nLate = items.filter(isLate).length;
-  if (nUrg || nLate) txt += `🔴 ${nUrg} urgente(s) · ⏰ ${nLate} en retard\n`;
-  for (const s of STATUTS.filter((s) => s.v !== "terminee")) {
-    const rows = items.filter((i) => i.statut === s.v).sort((a, b) => (PRIO_RANK[a.priorite] ?? 2) - (PRIO_RANK[b.priorite] ?? 2) || (a.echeance || "9999").localeCompare(b.echeance || "9999"));
-    if (!rows.length) continue;
-    txt += `\n*${s.l}* (${rows.length})\n`;
-    for (const i of rows) {
-      const bits = [i.client, i.type, i.echeance ? "éch. " + fmtShort(i.echeance) + (isLate(i) ? " ⚠️" : "") : "", i.priorite === "urgente" || i.priorite === "haute" ? prioLabel(i.priorite).toLowerCase() : ""].filter(Boolean);
-      txt += `• ${i.titre}${bits.length ? " — " + bits.join(" · ") : ""}\n`;
-    }
+  const nom = (i) => (i.client || i.titre) + (i.client && i.titre && i.titre !== i.client ? " (" + i.titre + ")" : "");
+  let txt = `📋 Réservations NONAME — ${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}\n`;
+  const actives = items.filter((i) => !estClos(i));
+  const avenir = actives.filter((i) => i.date_reservation && i.date_reservation >= today())
+    .sort((a, b) => a.date_reservation.localeCompare(b.date_reservation));
+  if (avenir.length) {
+    txt += `\n*📅 À venir* (${avenir.length})\n`;
+    for (const i of avenir) txt += `• ${jourSemaine(i.date_reservation)} ${fmtShort(i.date_reservation)} — ${nom(i)} · ${statutLabel(i.statut)}\n`;
   }
-  const nDone = items.filter((i) => i.statut === "terminee").length;
-  if (nDone) txt += `\n✅ ${nDone} terminée(s)\n`;
+  const aPlanifier = actives.filter((i) => !i.date_reservation || i.date_reservation < today());
+  if (aPlanifier.length) {
+    txt += `\n*🗂️ À planifier / à relancer* (${aPlanifier.length})\n`;
+    for (const i of aPlanifier) txt += `• ${nom(i)} · ${statutLabel(i.statut)}${i.date_contact ? " · contact " + fmtShort(i.date_contact) : ""}\n`;
+  }
+  if (!actives.length) txt += "\nAucune demande active.\n";
   return txt;
 }
 async function copier(txt) {
@@ -692,55 +820,58 @@ async function copier(txt) {
 }
 
 // ---------- Événements ----------
-fillSelect($("q-type"), TYPES); fillSelect($("e-type"), TYPES);
-fillSelect($("q-prio"), PRIOS); fillSelect($("e-priorite"), PRIOS);
-fillSelect($("e-statut"), STATUTS);
-$("q-type").value = "Autre"; $("q-prio").value = "normale";
+fillSelect($("q-statut"), STATUTS); fillSelect($("e-statut"), STATUTS);
+fillSelect($("e-type"), TYPES);
+$("q-contact").value = today();
 
-$("toggle-opts").onclick = () => {
-  const hidden = $("quick-opts").classList.toggle("hidden");
-  $("toggle-opts").textContent = hidden ? "+ Options (artiste, type, priorité, échéance)" : "− Masquer les options";
-};
 $("quick").onsubmit = async (e) => {
   e.preventDefault();
-  const titre = $("q-titre").value.trim();
-  if (!titre) return;
+  const client = $("q-client").value.trim();
+  if (!client) return;
   const ok = await ajouter({
-    titre, client: $("q-client").value.trim(), type: $("q-type").value,
-    priorite: $("q-prio").value, echeance: $("q-date").value || null
+    client, titre: $("q-titre").value.trim() || client,
+    date_reservation: $("q-resa").value || null, date_contact: $("q-contact").value || null,
+    statut: $("q-statut").value,
   });
   if (ok) {
-    $("q-titre").value = ""; $("q-client").value = ""; $("q-date").value = "";
-    $("q-type").value = "Autre"; $("q-prio").value = "normale";
+    $("q-client").value = ""; $("q-titre").value = ""; $("q-resa").value = "";
+    $("q-contact").value = today(); $("q-statut").value = "nouvelle";
+    $("q-client").focus();
     toast("Demande ajoutée");
   }
 };
 
-document.querySelectorAll(".tab").forEach((t) => (t.onclick = () => setVue(t.dataset.vue)));
-$("chips").onclick = (e) => { const c = e.target.closest(".chip"); if (c) { filtre = c.dataset.f; renderListe(); } };
+$("chips").onclick = (e) => {
+  if (e.target.closest("[data-clear-day]")) { jourSel = null; render(); return; }
+  const c = e.target.closest(".chip"); if (c) { filtre = c.dataset.f; renderListe(); }
+};
 $("search").oninput = (e) => { recherche = e.target.value; renderListe(); };
-$("list").addEventListener("change", (e) => {
-  if (e.target.matches("select.statut")) modifier(e.target.dataset.id, { statut: e.target.value });
-});
-$("list").addEventListener("click", (e) => {
-  if (e.target.closest("select")) return;
-  const li = e.target.closest(".item"); if (li) ouvrir(li.dataset.id);
-});
-$("cal").addEventListener("click", (e) => {
-  const ev = e.target.closest(".cal-ev");
-  if (ev) return ouvrir(ev.dataset.id);
-  const day = e.target.closest(".cal-day");
-  if (day) {
-    const evs = items.filter((i) => i.echeance === day.dataset.day);
-    // Sur mobile (points), un clic sur un jour avec une seule demande l'ouvre
-    if (evs.length === 1 && window.matchMedia("(max-width: 680px)").matches) return ouvrir(evs[0].id);
-    ouvrir(null, { echeance: day.dataset.day });
+$("sort").onchange = (e) => { tri = e.target.value; try { localStorage.setItem("noname-tri", tri); } catch {} renderListe(); };
+$("rows").addEventListener("change", (e) => {
+  if (e.target.matches("select.statut")) {
+    const s = statutLabel(e.target.value);
+    modifier(e.target.dataset.id, { statut: e.target.value }).then((ok) => ok && toast("Statut : " + s));
   }
 });
-$("cal-prev").onclick = () => { mois.setMonth(mois.getMonth() - 1); renderCalendrier(); };
-$("cal-next").onclick = () => { mois.setMonth(mois.getMonth() + 1); renderCalendrier(); };
-$("cal-today").onclick = () => { mois = new Date(); mois.setDate(1); renderCalendrier(); };
-$("feed").addEventListener("click", (e) => { const ev = e.target.closest(".ev"); if (ev) ouvrir(ev.dataset.id); });
+$("rows").addEventListener("click", (e) => {
+  if (e.target.closest("select")) return;
+  const r = e.target.closest(".row"); if (r) ouvrir(r.dataset.id);
+});
+$("cal").addEventListener("click", (e) => {
+  const day = e.target.closest(".mday"); if (!day) return;
+  jourSel = jourSel === day.dataset.day ? null : day.dataset.day;
+  if (jourSel && filtre !== "toutes" && !items.some(correspond)) filtre = "toutes";
+  render();
+});
+$("day-detail").addEventListener("click", (e) => {
+  if (e.target.id === "dd-new") return ouvrir(null, { date_reservation: jourSel });
+  const it = e.target.closest(".dd-item"); if (it) ouvrir(it.dataset.id);
+});
+$("upcoming").addEventListener("click", (e) => { const s = e.target.closest(".si"); if (s) ouvrir(s.dataset.id); });
+$("recent").addEventListener("click", (e) => { const s = e.target.closest(".si"); if (s) ouvrir(s.dataset.id); });
+$("cal-prev").onclick = () => { mois.setMonth(mois.getMonth() - 1); renderCalendrier(); renderKpis(); };
+$("cal-next").onclick = () => { mois.setMonth(mois.getMonth() + 1); renderCalendrier(); renderKpis(); };
+$("cal-today").onclick = () => { mois = new Date(); mois.setDate(1); renderCalendrier(); renderKpis(); };
 
 $("overlay").onclick = fermer;
 $("d-close").onclick = fermer;
@@ -752,15 +883,15 @@ $("d-delete").onclick = async () => {
 };
 $("e-update-btn").onclick = ajouterUpdate;
 $("e-update").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); ajouterUpdate(); } };
-$("e-titre").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); enregistrer(); } };
+$("e-client").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); enregistrer(); } };
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && !$("drawer").classList.contains("hidden")) fermer();
   if ((e.metaKey || e.ctrlKey) && e.key === "s" && !$("drawer").classList.contains("hidden")) { e.preventDefault(); enregistrer(); }
 });
 $("recap").onclick = () => copier(recap());
 
-// Rafraîchit les « il y a X min » de temps en temps
-setInterval(() => { if (vue === "activite") renderActivite(); }, 60000);
+// Rafraîchit les « il y a X min »
+setInterval(() => { if (!$("app").classList.contains("hidden")) { renderListe(); renderSide(); } }, 60000);
 
 // ---------- Connexion ----------
 // Un seul compte partagé par toute l'équipe : seul le mot de passe est demandé.
@@ -794,7 +925,8 @@ function afficherApp(connecte) {
   userEmail = connecte ? prenom() : "";
   $("login").classList.add("hidden");
   $("app").classList.remove("hidden");
-  $("userbox").classList.toggle("hidden", !connecte);
+  $("userbox").classList.remove("hidden");
+  $("logout").classList.toggle("hidden", !connecte);
   $("useremail").textContent = userEmail ? "Connecté·e : " + userEmail : "";
 }
 
@@ -821,8 +953,7 @@ function setSession(session) {
 $("logout").onclick = async () => { await sb.auth.signOut(); };
 
 // ---------- Démarrage ----------
-try { const v = localStorage.getItem("noname-vue"); if (v && ["liste", "calendrier", "activite"].includes(v)) vue = v; } catch {}
-setVue(vue);
+try { const t = localStorage.getItem("noname-tri"); if (t && $("sort").querySelector(`option[value="${t}"]`)) { tri = t; $("sort").value = t; } } catch {}
 
 if (configured && window.supabase) {
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -833,7 +964,7 @@ if (configured && window.supabase) {
 } else {
   if (configured && !window.supabase) showError("<b>Impossible de charger Supabase.</b> Vérifie ta connexion internet.");
   $("banner-config").classList.toggle("hidden", configured);
-  afficherApp("");
+  afficherApp(false);
   charger();
 }
 </script>
