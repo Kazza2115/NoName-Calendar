@@ -106,7 +106,7 @@ Ainsi, personne ne peut se créer un compte seul : seuls les membres invités ac
 Dans **Project Settings** → **API** (ou **Data API**), copie :
 
 - **Project URL** → ex. `https://abcdxyz.supabase.co`
-- **anon / publishable key** (la clé publique, **jamais** la `service_role`)
+- **anon / publishable key** (la clé publique)
 
 Ouvre `index.html` et remplace en haut du script :
 
@@ -114,8 +114,6 @@ Ouvre `index.html` et remplace en haut du script :
 const SUPABASE_URL = "https://VOTRE-PROJET.supabase.co";
 const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON_PUBLIQUE";
 ```
-
-> La clé `anon` peut être publique sur GitHub : c'est la sécurité côté base (RLS, étape 1) qui protège les données. Ne publie jamais la clé `service_role`.
 
 ### 4. Mettre en ligne sur GitHub Pages
 
