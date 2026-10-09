@@ -18,9 +18,12 @@ Le site est une seule page (`index.html`), sans installation ni build.
 - **Date de fin** : quand une demande passe en « Terminée », la date du jour est notée automatiquement (modifiable dans la fiche, champ « Date de fin »). Elle s'affiche sous le statut (« ✓ le 12.10 »), apparaît dans le calendrier (point vert) et dans le récap
 - **Responsable obligatoire** : Johan, Michael, Arnaud ou Wiliam, chacun avec sa couleur (pastille dans le tableau, modifiable directement). Une demande sans responsable est signalée « ⚠ À assigner » ; filtre par responsable
 - **Prix & paiements** (à remplir plus tard, depuis la fiche) : prix total, montant déjà payé, barre de progression, reste à payer. Bouton « + Encaisser » : ajoute le montant reçu et l'inscrit dans le journal. Colonne « Paiement » (Non payé / Acompte / Payé), filtre « À encaisser », carte « Paiements » (facturé / encaissé / reste) et section « À encaisser » dans le récap
+- **Horaires des sessions** : menus « 🕐 de … à … » à côté du champ date (ex. 14h–16h, 18h30–19h) ; bouton 🕐 sur chaque pastille pour changer l'horaire. Affichés dans le tableau, les calendriers, la fiche client et les récaps
+- **Saisie des dates fiable** : une date tapée (jj/mm/aaaa) est enregistrée même sans appuyer sur Entrée ; une date impossible (ex. 45/13/2026) est refusée avec un message
+- **Profils & connectés** : à la connexion, chacun choisit son profil (Johan, Michael, Arnaud, Wiliam, Invité). Le profil **Michael** voit en haut « 🟢 N en ligne » et la liste des personnes connectées en ce moment (profil, appareil, depuis quand)
 - **Mini calendrier** : chaque jour de session est surligné (plus foncé s'il y a plusieurs réservations), un point bleu = contact, un point vert = terminée ce jour-là, un point orange = modifié ce jour-là
 - **Effets visuels** : à chaque ajout ou modification (par toi ou un autre membre en direct), la ligne s'illumine et le jour concerné « pulse » dans le calendrier
-- **Grand calendrier** (bouton « 📅 Grand calendrier » en haut, ou « Ouvrir le grand calendrier » sous le mini calendrier) : mois entier en plein écran, nom de chaque session écrit dans la case, couleur du responsable ; fins (✓) et contacts (☎) affichables ; clic sur une session = fiche, clic sur un jour = nouvelle session. Sur téléphone : vue agenda jour par jour
+- **Grand calendrier** — affiche sessions, contacts et fins ; vue « Mois » ou « Tout » (tous les événements passés et à venir), alerte des demandes sans date de session (bouton « 📅 Grand calendrier » en haut, ou « Ouvrir le grand calendrier » sous le mini calendrier) : mois entier en plein écran, nom de chaque session écrit dans la case, couleur du responsable ; fins (✓) et contacts (☎) affichables ; clic sur une session = fiche, clic sur un jour = nouvelle session. Sur téléphone : vue agenda jour par jour
 - **Fiche client** : clic sur le nom d'un client dans le tableau (ou bouton « 👤 Fiche client » dans une fiche) → toutes ses demandes, un calendrier de ses sessions uniquement, la liste de ses sessions, ce qu'il/elle doit (facturé / payé / reste) et un bouton « Copier son récap » à lui envoyer
 - Clic sur un jour : détail du jour, tableau filtré sur cette date, bouton « + Réservation ce jour »
 - Compteurs : demandes actives, réservations sous 7 jours, réservations du mois, en attente
@@ -54,6 +57,7 @@ create table public.demandes (
   date_reservation date,          -- première session (compatibilité / tri)
   sessions   date[] not null default '{}',  -- toutes les dates de session studio
   date_fin   date,                          -- date à laquelle la demande s'est terminée
+  horaires   jsonb not null default '{}',   -- horaires par session : {"2026-10-15": {"d": "14:00", "f": "16:00"}}
   prix       numeric(10,2) check (prix is null or prix >= 0),  -- prix total (CHF)
   paye       numeric(10,2) not null default 0 check (paye >= 0),  -- montant déjà payé (CHF)
   date_contact     date,

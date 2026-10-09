@@ -283,6 +283,15 @@
   .field { margin-bottom: 10px; }
   .drawer textarea { min-height: 140px; resize: vertical; }
   .update-row { display: flex; gap: 8px; }
+  .update-row > input, .update-row > .flatpickr-input { flex: 1; min-width: 0; }
+  .hrow { display: flex; align-items: center; gap: 6px; margin-top: 6px; flex-wrap: wrap; font-size: 15px; color: var(--muted); }
+  .hrow select { width: auto; padding: 5px 8px; }
+  .hrow .hint { font-size: 13px; }
+  .dchip .dh { font-weight: 800; }
+  .dchip .hbtn { font-size: 13px; }
+  .hedit { display: inline-flex; gap: 4px; align-items: center; padding: 3px 6px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 14%, transparent); font-size: 14px; }
+  .hedit select { width: auto; padding: 2px 4px; font-size: 14px; border-radius: 6px; }
+  .bc-ev .hh { font-weight: 800; margin-right: 4px; }
   .d-info { font-size: 14px; color: var(--muted); margin: 6px 0 14px; }
   .d-actions { display: flex; gap: 8px; justify-content: space-between; margin-top: 14px; }
 
@@ -347,6 +356,21 @@
     .bc-add { display: none; }
     .bc-empty { display: block !important; }
   }
+  .bc-alert { padding: 10px 20px; background: color-mix(in srgb, var(--warn) 14%, var(--card)); border-bottom: 1px solid var(--line); font-size: 15px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .bc-alert b { color: var(--warn); margin-right: 4px; }
+  .bc-alert button { border: 1px solid color-mix(in srgb, var(--warn) 45%, transparent); background: var(--card); border-radius: 999px; padding: 3px 11px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .bc-alert button:hover { border-color: var(--warn); }
+  /* Vue « Tout » : liste chronologique de tous les événements */
+  .bc-grid.agenda { display: block; min-width: 0; }
+  .bc-grid.agenda .bc-month { position: sticky; top: 0; z-index: 2; background: var(--card); padding: 12px 20px 8px; font-size: 20px; font-weight: 800; text-transform: capitalize; border-bottom: 2px solid var(--line); }
+  .bc-grid.agenda .bc-day { display: grid; grid-template-columns: 240px 1fr; gap: 6px 14px; border-right: none; padding: 10px 20px; cursor: default; }
+  .bc-grid.agenda .bc-day.past { opacity: .62; }
+  .bc-grid.agenda .bc-num { display: none; }
+  .bc-grid.agenda .bc-full { display: block; font-size: 16px; font-weight: 700; text-transform: capitalize; grid-row: span 20; }
+  .bc-grid.agenda .bc-day.today .bc-full { color: var(--accent); }
+  .bc-grid.agenda .bc-ev { white-space: normal; }
+  .bc-grid.agenda .bc-add { display: none; }
+  @media (max-width: 680px) { .bc-grid.agenda .bc-day { grid-template-columns: 1fr; padding: 10px 12px; } .bc-grid.agenda .bc-full { grid-row: auto; } .bc-grid.agenda .bc-day { display: grid !important; } }
   .bc-empty { display: none; padding: 30px 16px; text-align: center; color: var(--muted); }
   /* Fiche client */
   .lien-client { background: none; border: none; padding: 0; font: inherit; font-weight: 650; color: inherit; cursor: pointer; text-align: left; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--accent) 35%, transparent); text-underline-offset: 3px; }
@@ -388,6 +412,15 @@
   .langsw { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-left: auto; background: var(--card); }
   .langsw button { border: none; background: transparent; padding: 7px 14px; font-weight: 700; font-size: 15px; cursor: pointer; color: var(--muted); }
   .langsw button.on { background: var(--accent); color: var(--accent-text); }
+  /* Personnes connectées (profil Michael) */
+  .online { position: relative; }
+  #online-btn b { font-variant-numeric: tabular-nums; }
+  .online-pop { position: absolute; left: 0; top: calc(100% + 6px); max-width: calc(100vw - 32px); z-index: 25; min-width: 260px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.15); padding: 10px; color: var(--text); }
+  .online-pop h4 { margin: 0 0 8px; font-size: 15px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  .op-row { display: flex; align-items: center; gap: 10px; padding: 7px 4px; border-top: 1px solid var(--line); font-size: 16px; }
+  .op-row:first-of-type { border-top: none; }
+  .op-row small { color: var(--muted); font-size: 14px; margin-left: auto; white-space: nowrap; }
+  .op-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 25%, transparent); }
   .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 16px; z-index: 70; box-shadow: 0 6px 20px rgba(0,0,0,.2); max-width: calc(100% - 32px); }
 
   @media (max-width: 960px) {
@@ -423,6 +456,7 @@
       <button type="button" data-lang="fr">FR</button><button type="button" data-lang="en">EN</button>
     </div>
     <div class="user hidden" id="userbox">
+      <span class="online hidden" id="online"><button type="button" class="btn small" id="online-btn">🟢 <b id="online-n">1</b> <span>en ligne</span></button><div class="online-pop hidden" id="online-pop"></div></span>
       <span id="useremail"></span>
       <button class="btn small primary" id="cal-open2">📅 Grand calendrier</button>
       <button class="btn small" id="recap">Copier le récap</button>
@@ -442,7 +476,7 @@
     <p>Entre le mot de passe de l'équipe NONAME.</p>
     <form id="login-form">
       <div><label for="login-pwd">Mot de passe</label><input type="password" id="login-pwd" required autocomplete="current-password"></div>
-      <div><label for="login-nom">Ton prénom (pour signer tes updates)</label><input type="text" id="login-nom" autocomplete="given-name" placeholder="Facultatif"></div>
+      <div><label for="login-nom">Ton profil</label><select id="login-nom" required><option value="" disabled selected>Choisir ton profil…</option><option value="Johan">Johan</option><option value="Michael">Michael</option><option value="Arnaud">Arnaud</option><option value="Wiliam">Wiliam</option><option value="Invité">Invité</option></select></div>
       <button class="btn primary" type="submit" id="login-btn">Entrer</button>
     </form>
     <div class="msg" id="login-msg"></div>
@@ -457,7 +491,8 @@
           <div class="quick-grid">
             <div class="q-client"><label for="q-client">Nom du client *</label><input type="text" id="q-client" required autocomplete="off" placeholder="Artiste, label…"></div>
             <div class="q-titre"><label for="q-titre">Demande</label><input type="text" id="q-titre" autocomplete="off" placeholder="Ex. : session voix 2 titres"></div>
-            <div class="q-sessions"><label for="q-date-add">Sessions studio (une ou plusieurs dates)</label><input type="date" placeholder="jj/mm/aaaa" id="q-date-add"><div class="date-chips" id="q-chips"></div></div>
+            <div class="q-sessions"><label for="q-date-add">Sessions studio (une ou plusieurs dates)</label><div class="update-row"><input type="date" placeholder="jj/mm/aaaa" id="q-date-add"><button type="button" class="btn small" id="q-date-btn">+ Ajouter</button></div>
+              <div class="hrow"><span>🕐 de</span><select id="q-h-d" aria-label="Heure de début"></select><span>à</span><select id="q-h-f" aria-label="Heure de fin"></select><span class="hint">(facultatif, appliqué à la date ajoutée)</span></div><div class="date-chips" id="q-chips"></div></div>
             <div><label for="q-contact">Contact</label><input type="date" placeholder="jj/mm/aaaa" id="q-contact"></div>
             <div><label for="q-statut">Statut</label><select id="q-statut"></select></div>
             <div><label for="q-resp">Responsable *</label><select id="q-resp" required></select></div>
@@ -534,12 +569,14 @@
       <button class="btn" id="bc-today">Aujourd'hui</button>
       <button class="btn" id="bc-next" aria-label="Mois suivant">›</button>
       <div class="bc-opts">
-        <label><input type="checkbox" id="bc-contacts"> Contacts</label>
+        <span class="langsw" id="bc-vue" style="margin:0"><button type="button" data-vue="mois" class="on">Mois</button><button type="button" data-vue="tout">Tout</button></span>
+        <label><input type="checkbox" id="bc-contacts" checked> Contacts</label>
         <label><input type="checkbox" id="bc-fins" checked> Fins</label>
       </div>
       <div class="bc-legend" id="bc-legend"></div>
       <button class="btn" id="bc-close" aria-label="Fermer">✕ Fermer</button>
     </div>
+    <div class="bc-alert hidden" id="bc-alert"></div>
     <div class="bc-scroll"><div class="bc-grid" id="bc-grid"></div></div>
   </div>
 </div>
@@ -567,7 +604,8 @@
   </div>
   <div class="field"><label for="e-client">Nom du client *</label><input type="text" id="e-client"></div>
   <div class="field"><label for="e-titre">Demande</label><input type="text" id="e-titre"></div>
-  <div class="field"><label for="e-date-add">Sessions studio — ajoute autant de dates que nécessaire</label><input type="date" placeholder="jj/mm/aaaa" id="e-date-add"><div class="date-chips" id="e-chips"></div></div>
+  <div class="field"><label for="e-date-add">Sessions studio — ajoute autant de dates que nécessaire</label><div class="update-row"><input type="date" placeholder="jj/mm/aaaa" id="e-date-add"><button type="button" class="btn small" id="e-date-btn">+ Ajouter</button></div>
+              <div class="hrow"><span>🕐 de</span><select id="e-h-d" aria-label="Heure de début"></select><span>à</span><select id="e-h-f" aria-label="Heure de fin"></select><span class="hint">(facultatif, appliqué à la date ajoutée)</span></div><div class="date-chips" id="e-chips"></div></div>
   <div class="grid2">
     <div class="field"><label for="e-contact-date">Date de contact</label><input type="date" placeholder="jj/mm/aaaa" id="e-contact-date"></div>
     <div class="field"><label for="e-statut">Statut</label><select id="e-statut"></select></div>
@@ -652,7 +690,10 @@ const EN = {
   "Enregistrement studio": "Studio recording", "Mix / master": "Mix / master", "Production / beat": "Production / beat", "Co-production label": "Label co-production", "Booking / live": "Booking / live", "Promo / com": "Promo / PR", "Admin / contrat": "Admin / contract", "Autre": "Other",
   "Cliquer pour modifier la date": "Click to change the date", "Retirer cette date": "Remove this date", "Fermer": "Close", "✕ Fermer": "✕ Close", "Mois précédent": "Previous month", "Mois suivant": "Next month", "Aujourd'hui": "Today", "Grand calendrier": "Big calendar", "+ session": "+ session", "Aucune session ce mois-ci.": "No sessions this month.",
   "Copier son récap": "Copy their summary", "+ Nouvelle demande": "+ New request", "Total facturé": "Total invoiced", "Déjà payé": "Already paid", "Reste à payer": "Amount due", "Tout est payé": "All paid", "Aucune session.": "No sessions.",
-  "jj/mm/aaaa": "dd/mm/yyyy", "Langue / Language": "Language",
+  "jj/mm/aaaa": "dd/mm/yyyy", "🕐 de": "🕐 from", "à": "to", "(facultatif, appliqué à la date ajoutée)": "(optional, applied to the date you add)", "Heure de début": "Start time", "Heure de fin": "End time", "Modifier l'horaire": "Change the time",
+  "Ton profil": "Your profile", "Choisir ton profil…": "Choose your profile…", "Invité": "Guest", "en ligne": "online", "Personne": "Nobody", "+ Ajouter": "+ Add", "Mois": "Month", "Tout": "All", "Tous les événements": "All events", "Aucun événement pour l'instant.": "No events yet.",
+  "Rien ce mois-ci — passe en vue « Tout » pour voir tous les événements.": "Nothing this month — switch to the “All” view to see every event.",
+  "Date de session invalide : écris-la au format jj/mm/aaaa": "Invalid session date: write it as dd/mm/yyyy", "Date invalide : écris-la au format jj/mm/aaaa": "Invalid date: write it as dd/mm/yyyy", "Langue / Language": "Language",
   "Demande ajoutée": "Request added", "Demande supprimée": "Request deleted", "Enregistré": "Saved", "Update ajoutée": "Update added",
   "Le nom du client est obligatoire.": "The client name is required.", "Choisis un responsable : chaque demande doit être assignée.": "Choose an owner: every request must be assigned.",
   "Indique le montant reçu, ex. 200": "Enter the amount received, e.g. 200", "Montant invalide : écris un nombre, ex. 600 ou 1250.50": "Invalid amount: type a number, e.g. 600 or 1250.50",
@@ -666,13 +707,15 @@ const EN = {
 const RULES = [
   [/^Session(s?) à venir · (\d+) au total$/, (m, s, n) => `Upcoming session${s} · ${n} in total`],
   [/^Demandes \((\d+)\)$/, "Requests ($1)"],
+  [/^⚠ (\d+) demandes? sans date de session :$/, (m, n) => `⚠ ${n} request${n > 1 ? "s" : ""} without a session date:`],
   [/^Sessions · /, "Sessions · "],
   [/\bil y a (\d+) min\b/g, "$1 min ago"], [/\bil y a (\d+) h\b/g, "$1 h ago"], [/\bil y a (\d+) j\b/g, "$1 d ago"],
   [/\bdans (\d+) j\b/g, "in $1 d"], [/aujourd'hui/g, "today"], [/Aujourd'hui/g, "Today"], [/\bdemain\b/g, "tomorrow"], [/\bhier\b/g, "yesterday"], [/à l'instant/g, "just now"],
   [/^Créée le /, "Created on "], [/ · modifiée /, " · updated "], [/ · modifiée par un membre/, " · changed by a member"], [/^Modifiée /, "Updated "],
   [/ payés\b/g, " paid"], [/(\d+) modification\(s\)/, "$1 change(s)"],
   [/^Contacts : /, "Contacts: "], [/^Contact : /, "Contact: "], [/^Sessions : /, "Sessions: "], [/^Terminées : /, "Finished: "], [/^Terminée : /, "Finished: "],
-  [/^Voir toutes les sessions et paiements de /, "See all sessions and payments for "], [/^Connecté·e : /, "Signed in: "],
+  [/^Voir toutes les sessions et paiements de /, "See all sessions and payments for "], [/^Connecté·e : /, "Signed in: "], [/^Profil : /, "Profile: "], [/^Connectés maintenant \((\d+)\)$/, "Online now ($1)"], [/ · depuis (\d)/, " · since $1"],
+  [/\bdès (\d)/g, "from $1"], [/\bjusqu'à (\d)/g, "until $1"],
   [/\breste (?=[\d])/g, "due "], [/^✓ le /, "✓ on "], [/^Statut : /, "Status: "], [/^Responsable : /, "Owner: "], [/^Erreur : /, "Error: "],
   [/^Liste indisponible\./, "List unavailable."], [/le projet Supabase est peut-être en pause\./, "the Supabase project may be paused."],
   // récap
@@ -835,7 +878,17 @@ function avecFin(patch, ancien) {
   const fin = patch.date_fin !== undefined ? patch.date_fin : ancien?.date_fin;
   return patch.statut === "terminee" && !fin ? { ...patch, date_fin: today() } : patch;
 }
-const sessionsPayload = (arr) => { const s = [...new Set(arr)].sort(); return { sessions: s, date_reservation: s[0] || null }; };
+const sessionsPayload = (arr, h = {}) => {
+  const s = [...new Set(arr)].sort(), horaires = {};
+  for (const d of s) if (h[d] && (h[d].d || h[d].f)) horaires[d] = { d: h[d].d || "", f: h[d].f || "" };
+  return { sessions: s, date_reservation: s[0] || null, horaires };
+};
+// Horaires : « 14h–16h », « 18h30–19h » (FR) ou « 14:00–16:00 » (EN)
+const fmtH = (h) => { if (!h) return ""; const [hh, mm] = h.split(":"); return LANG === "en" ? `${hh}:${mm}` : `${+hh}h${mm !== "00" ? mm : ""}`; };
+const plage = (h) => !h || (!h.d && !h.f) ? "" : h.d && h.f ? `${fmtH(h.d)}–${fmtH(h.f)}` : h.d ? (LANG === "en" ? "from " : "dès ") + fmtH(h.d) : (LANG === "en" ? "until " : "jusqu'à ") + fmtH(h.f);
+const horaireDe = (i, d) => (i.horaires && i.horaires[d]) || null;
+const plageDe = (i, d) => plage(horaireDe(i, d));
+const OPTIONS_H = (() => { let o = `<option value="">—</option>`; for (let h = 0; h < 24; h++) for (const m of ["00", "30"]) { const v = `${String(h).padStart(2, "0")}:${m}`; o += `<option value="${v}">${v}</option>`; } return o; })();
 
 // ---------- Interface utilitaire ----------
 let toastTimer;
@@ -869,7 +922,7 @@ function demoSeed() {
   const ago = (h) => new Date(Date.now() - h * 3600000).toISOString();
   const base = { contact: "", resp: "", budget: "", notes: "", priorite: "normale", type: "Autre" };
   return [
-    { ...base, id: uid(), client: "Artiste A", resp: "Johan", titre: "Session voix — 2 titres", type: "Enregistrement studio", statut: "confirmee", prix: 900, paye: 300, sessions: [plus(3), plus(4), plus(10)], date_contact: plus(-2), cree_le: ago(60), maj_le: ago(2) },
+    { ...base, id: uid(), client: "Artiste A", resp: "Johan", titre: "Session voix — 2 titres", type: "Enregistrement studio", statut: "confirmee", prix: 900, paye: 300, sessions: [plus(3), plus(4), plus(10)], horaires: { [plus(3)]: { d: "14:00", f: "16:00" }, [plus(4)]: { d: "18:00", f: "19:00" } }, date_contact: plus(-2), cree_le: ago(60), maj_le: ago(2) },
     { ...base, id: uid(), client: "Artiste B", resp: "Michael", titre: "Master EP 5 titres", type: "Mix / master", statut: "nouvelle", sessions: [plus(1)], date_contact: plus(0), cree_le: ago(5), maj_le: ago(5) },
     { ...base, id: uid(), client: "Label X", resp: "Arnaud", titre: "Co-prod single", type: "Co-production label", statut: "en-attente", prix: 1200, paye: 0, sessions: [plus(9)], date_contact: plus(-6), cree_le: ago(200), maj_le: ago(30) },
     { ...base, id: uid(), client: "Artiste C", resp: "Wiliam", titre: "Beat + topline", type: "Production / beat", statut: "en-cours", sessions: [plus(3), plus(17)], date_contact: plus(-1), cree_le: ago(48), maj_le: ago(20) },
@@ -905,7 +958,7 @@ async function ajouter(obj) {
     row = data;
   } else {
     row = { id: uid(), titre: "", client: "", type: "Autre", priorite: "normale", statut: "nouvelle",
-      sessions: [], date_reservation: null, date_contact: null, date_fin: null, prix: null, paye: 0, contact: "", notes: "", resp: "", budget: "", ...obj, cree_le: now, maj_le: now };
+      sessions: [], date_reservation: null, date_contact: null, date_fin: null, prix: null, paye: 0, horaires: {}, contact: "", notes: "", resp: "", budget: "", ...obj, cree_le: now, maj_le: now };
   }
   upsertLocal(row);
   if (!sb) demoSave();
@@ -991,7 +1044,7 @@ function cellSessions(i) {
   const autres = all.length - 1;
   const restant = all.filter((d) => d >= today()).length;
   return `<div class="date" title="${esc(all.map((d) => jourSemaine(d) + " " + fmtDate(d)).join("\n"))}">${fmtDate(p)}${autres ? `<span class="nb">+${autres}</span>` : ""}</div>`
-    + `<div class="date-rel ${cls}">${jourSemaine(p)} · ${relJour(p)}${all.length > 1 ? ` · ${restant}/${all.length}` : ""}</div>`;
+    + `<div class="date-rel ${cls}">${jourSemaine(p)}${plageDe(i, p) ? " · " + plageDe(i, p) : ""} · ${relJour(p)}${all.length > 1 ? ` · ${restant}/${all.length}` : ""}</div>`;
 }
 
 function cellPaiement(i) {
@@ -1097,43 +1150,82 @@ function renderCalendrier() {
   renderDetailJour(resa, contact, modif, fin);
 }
 
-function renderBigCal() {
-  if ($("bigcal").classList.contains("hidden")) return;
-  const y = mois.getFullYear(), m = mois.getMonth();
-  $("bc-title").textContent = mois.toLocaleDateString(LOC(), { month: "long", year: "numeric" });
-  $("bc-legend").innerHTML = RESPS.map((r) => `<span><i style="--rc:${r.c}"></i>${r.v}</span>`).join("")
-    + `<span><i style="--rc:var(--danger)"></i>À assigner</span>`;
+let bcVue = "mois";
+function evenementsParJour() {
   const voirContacts = $("bc-contacts").checked, voirFins = $("bc-fins").checked;
-  const offset = (new Date(y, m, 1).getDay() + 6) % 7;
-  const cases = Math.ceil((offset + new Date(y, m + 1, 0).getDate()) / 7) * 7;
   const parJour = {};
   const push = (d, e) => (parJour[d] ||= []).push(e);
   for (const i of items) {
-    for (const d of sessionsDe(i)) push(d, { i, k: "session" });
+    for (const d of sessionsDe(i)) push(d, { i, k: "session", d });
     if (voirFins && i.date_fin) push(i.date_fin, { i, k: "fin" });
     if (voirContacts && i.date_contact) push(i.date_contact, { i, k: "contact" });
   }
   const ordre = { session: 0, fin: 1, contact: 2 };
+  const hDebut = (e) => (e.k === "session" && horaireDe(e.i, e.d)?.d) || "99";
+  for (const k in parJour) parJour[k].sort((a, b) => ordre[a.k] - ordre[b.k] || hDebut(a).localeCompare(hDebut(b)) || (a.i.resp || "").localeCompare(b.i.resp || ""));
+  return parJour;
+}
+function evHtml({ i, k, d }) {
+  const pl = k === "session" ? plageDe(i, d) : "";
+  const nom = esc(i.client || i.titre), detail = i.titre && i.titre !== i.client ? esc(i.titre) : "";
+  const qui = respConnu(i.resp) ? i.resp : "à assigner";
+  if (k === "fin") return `<div class="bc-ev fin" data-id="${i.id}" title="Terminée : ${nom}">✓ ${nom}</div>`;
+  if (k === "contact") return `<div class="bc-ev contact" data-id="${i.id}" title="Contact : ${nom}">☎ ${nom}</div>`;
+  return `<div class="bc-ev ${estClos(i) ? "closed" : ""} ${i.statut === "annulee" ? "annulee" : ""}" style="--rc:${respCouleur(i.resp)}" data-id="${i.id}" title="${pl ? pl + " · " : ""}${nom}${detail ? " — " + detail : ""} · ${esc(qui)} · ${statutLabel(i.statut)}">${pl ? `<span class="hh">${pl}</span>` : ""}${nom}<small>${detail ? detail + " · " : ""}${esc(qui)}</small></div>`;
+}
+function renderAlerteSansDate() {
+  const sans = items.filter((i) => !estClos(i) && !sessionsDe(i).length);
+  $("bc-alert").classList.toggle("hidden", !sans.length);
+  $("bc-alert").innerHTML = sans.length
+    ? `<b>⚠ ${sans.length} demande${sans.length > 1 ? "s" : ""} sans date de session :</b>` + sans.map((i) => `<button type="button" data-id="${i.id}" translate="no">${esc(i.client || i.titre)}</button>`).join("")
+    : "";
+}
+function renderAgenda() {
+  const parJour = evenementsParJour(), t = today();
+  const jours = Object.keys(parJour).sort();
+  if (!jours.length) { $("bc-grid").innerHTML = `<div class="bc-empty" style="display:block">Aucun événement pour l'instant.</div>`; return; }
+  let html = "", moisCourant = "";
+  for (const key of jours) {
+    const d = parse(key), mk = key.slice(0, 7);
+    if (mk !== moisCourant) { moisCourant = mk; html += `<div class="bc-month">${d.toLocaleDateString(LOC(), { month: "long", year: "numeric" })}</div>`; }
+    html += `<div class="bc-day has ${key < t ? "past" : ""} ${key === t ? "today" : ""} ${flash.days.has(key) ? "pulse" : ""}" data-day="${key}" ${key >= t && !html.includes('id="bc-next-day"') ? 'id="bc-next-day"' : ""}>
+      <span class="bc-full">${d.toLocaleDateString(LOC(), { weekday: "long", day: "numeric", month: "long" })}${key === t ? " · aujourd'hui" : ""}</span>
+      ${parJour[key].map(evHtml).join("")}</div>`;
+  }
+  $("bc-grid").innerHTML = html;
+}
+function renderBigCal() {
+  if ($("bigcal").classList.contains("hidden")) return;
+  renderAlerteSansDate();
+  $("bc-grid").classList.toggle("agenda", bcVue === "tout");
+  document.querySelectorAll("#bc-vue button").forEach((b) => b.classList.toggle("on", b.dataset.vue === bcVue));
+  ["bc-prev", "bc-today", "bc-next"].forEach((id) => $(id).classList.toggle("hidden", bcVue === "tout"));
+  if (bcVue === "tout") {
+    $("bc-title").textContent = "Tous les événements";
+    $("bc-legend").innerHTML = RESPS.map((r) => `<span><i style="--rc:${r.c}"></i>${r.v}</span>`).join("") + `<span><i style="--rc:var(--danger)"></i>À assigner</span>`;
+    return renderAgenda();
+  }
+  const y = mois.getFullYear(), m = mois.getMonth();
+  $("bc-title").textContent = mois.toLocaleDateString(LOC(), { month: "long", year: "numeric" });
+  $("bc-legend").innerHTML = RESPS.map((r) => `<span><i style="--rc:${r.c}"></i>${r.v}</span>`).join("")
+    + `<span><i style="--rc:var(--danger)"></i>À assigner</span>`;
+  const offset = (new Date(y, m, 1).getDay() + 6) % 7;
+  const cases = Math.ceil((offset + new Date(y, m + 1, 0).getDate()) / 7) * 7;
+  const parJour = evenementsParJour();
   const t = today();
   let html = DOWS("long").map((d) => `<div class="bc-dow">${d}</div>`).join("");
   for (let n = 0; n < cases; n++) {
     const d = new Date(y, m, 1 - offset + n), key = isoDay(d);
-    const evs = (parJour[key] || []).sort((a, b) => ordre[a.k] - ordre[b.k] || (a.i.resp || "").localeCompare(b.i.resp || ""));
+    const evs = parJour[key] || [];
     html += `<div class="bc-day ${evs.length ? "has" : ""} ${d.getMonth() !== m ? "out" : ""} ${key === t ? "today" : ""} ${flash.days.has(key) ? "pulse" : ""}" data-day="${key}">
       <span class="bc-num">${d.getDate()}</span>
       <span class="bc-full">${d.toLocaleDateString(LOC(), { weekday: "long", day: "numeric", month: "long" })}${key === t ? " · aujourd'hui" : ""}</span>
-      ${evs.map(({ i, k }) => {
-        const nom = esc(i.client || i.titre), detail = i.titre && i.titre !== i.client ? esc(i.titre) : "";
-        const qui = respConnu(i.resp) ? i.resp : "à assigner";
-        if (k === "fin") return `<div class="bc-ev fin" data-id="${i.id}" title="Terminée : ${nom}">✓ ${nom}</div>`;
-        if (k === "contact") return `<div class="bc-ev contact" data-id="${i.id}" title="Contact : ${nom}">☎ ${nom}</div>`;
-        return `<div class="bc-ev ${estClos(i) ? "closed" : ""} ${i.statut === "annulee" ? "annulee" : ""}" style="--rc:${respCouleur(i.resp)}" data-id="${i.id}" title="${nom}${detail ? " — " + detail : ""} · ${esc(qui)} · ${statutLabel(i.statut)}">${nom}<small>${detail ? detail + " · " : ""}${esc(qui)}</small></div>`;
-      }).join("")}
+      ${evs.map(evHtml).join("")}
       <span class="bc-add">+ session</span>
     </div>`;
   }
-  const vide = !items.some((i) => sessionsDe(i).some((d) => d.startsWith(isoDay(mois).slice(0, 7))));
-  $("bc-grid").innerHTML = html + (vide ? `<div class="bc-empty">Aucune session ce mois-ci.</div>` : "");
+  const vide = !Object.keys(parJour).some((d) => d.startsWith(isoDay(mois).slice(0, 7)));
+  $("bc-grid").innerHTML = html + (vide ? `<div class="bc-empty">Rien ce mois-ci — passe en vue « Tout » pour voir tous les événements.</div>` : "");
 }
 // ---------- Fiche client ----------
 let clientSel = null, clientMois = null;
@@ -1180,7 +1272,7 @@ function renderClient() {
     grid += `<div class="bc-day ${evs.length ? "has" : ""} ${d.getMonth() !== m ? "out" : ""} ${key === t ? "today" : ""} ${flash.days.has(key) ? "pulse" : ""}" data-day="${key}"><span class="bc-num">${d.getDate()}</span>`
       + evs.map(({ i, k }) => k === "f"
         ? `<div class="bc-ev fin" data-id="${i.id}" title="Terminée">✓ Fin</div>`
-        : `<div class="bc-ev ${estClos(i) ? "closed" : ""}" style="--rc:${respCouleur(i.resp)}" data-id="${i.id}" title="${esc(i.titre || "")} · ${esc(i.resp || "à assigner")}">${esc(i.titre && i.titre !== i.client ? i.titre : "Session")}</div>`).join("")
+        : `<div class="bc-ev ${estClos(i) ? "closed" : ""}" style="--rc:${respCouleur(i.resp)}" data-id="${i.id}" title="${esc(i.titre || "")} · ${esc(i.resp || "à assigner")}">${plageDe(i, key) ? `<span class="hh">${plageDe(i, key)}</span>` : ""}${esc(i.titre && i.titre !== i.client ? i.titre : "Session")}</div>`).join("")
       + `</div>`;
   }
 
@@ -1212,7 +1304,7 @@ function renderClient() {
         <div class="cl-list">${sessions.length ? sessions.map(({ i, d }) => `
           <div class="cl-sess ${d < t ? "past" : ""}" data-id="${i.id}" data-goto="${d}">
             <span class="rbadge" style="--rc:${respCouleur(i.resp)}">${esc((i.resp || "?")[0])}</span>
-            <b>${fmtDate(d)}</b><span>${jourSemaine(d)} · ${relJour(d)}${i.titre && i.titre !== i.client ? " · " + esc(i.titre) : ""}</span>
+            <b>${fmtDate(d)}</b><span>${jourSemaine(d)}${plageDe(i, d) ? " · <b>" + plageDe(i, d) + "</b>" : ""} · ${relJour(d)}${i.titre && i.titre !== i.client ? " · " + esc(i.titre) : ""}</span>
           </div>`).join("") : `<div class="none">Aucune session.</div>`}</div>
       </div>
     </div>
@@ -1235,7 +1327,7 @@ function recapClient() {
   const nom = nomClient(dem);
   let txt = `🎙️ ${nom} — récap au ${fmtDate(t)}\n`;
   const aVenir = dem.filter((i) => i.statut !== "annulee").flatMap((i) => sessionsDe(i).filter((d) => d >= t).map((d) => ({ i, d }))).sort((a, b) => a.d.localeCompare(b.d));
-  if (aVenir.length) { txt += `\n*Sessions à venir*\n`; for (const { i, d } of aVenir) txt += `• ${jourSemaine(d)} ${fmtDate(d)}${i.titre && i.titre !== i.client ? " — " + i.titre : ""}\n`; }
+  if (aVenir.length) { txt += `\n*Sessions à venir*\n`; for (const { i, d } of aVenir) txt += `• ${jourSemaine(d)} ${fmtDate(d)}${plageDe(i, d) ? " " + plageDe(i, d) : ""}${i.titre && i.titre !== i.client ? " — " + i.titre : ""}\n`; }
   const pays = dem.filter((i) => i.statut !== "annulee").map((i) => ({ i, p: paiement(i) })).filter((x) => x.p.etat !== "aucun");
   if (pays.length) {
     txt += `\n*Paiement*\n`;
@@ -1253,7 +1345,7 @@ function renderDetailJour(resa, contact, modif, fin) {
   const box = $("day-detail");
   if (!jourSel) { box.classList.add("hidden"); return; }
   const lignes = [
-    ...(resa[jourSel] || []).map((i) => ({ i, t: "r", l: "Session" })),
+    ...(resa[jourSel] || []).map((i) => ({ i, t: "r", l: plageDe(i, jourSel) || "Session" })),
     ...(contact[jourSel] || []).map((i) => ({ i, t: "c", l: "Contact" })),
     ...(fin[jourSel] || []).map((i) => ({ i, t: "f", l: "Fin" })),
     ...(modif[jourSel] || []).map((i) => ({ i, t: "m", l: "Modif" })),
@@ -1286,7 +1378,7 @@ function renderSide() {
   $("upcoming").innerHTML = up.length ? up.map(({ i, d }) => `
     <div class="si s-${i.statut}" data-id="${i.id}">
       <div class="si-date" style="background:color-mix(in srgb, ${respCouleur(i.resp)} 16%, transparent);color:${respCouleur(i.resp)}"><small>${jourSemaine(d)}</small><b>${parse(d).getDate()}</b></div>
-      <div class="si-main"><div class="si-name" translate="no">${esc(i.client || i.titre)}</div><div class="si-sub">${relJour(d)}${i.titre && i.client && i.titre !== i.client ? " · " + esc(i.titre) : ""}</div></div>
+      <div class="si-main"><div class="si-name" translate="no">${esc(i.client || i.titre)}</div><div class="si-sub">${relJour(d)}${plageDe(i, d) ? " · " + plageDe(i, d) : ""}${i.titre && i.client && i.titre !== i.client ? " · " + esc(i.titre) : ""}</div></div>
       <span class="dot" title="${statutLabel(i.statut)}"></span>
     </div>`).join("") : `<div class="none" style="font-size:13px">Aucune session à venir.</div>`;
 
@@ -1322,7 +1414,7 @@ function ouvrir(id, preset = {}) {
   $("d-title").textContent = id ? (i.client || "Fiche demande") : "Nouvelle demande";
   $("e-client").value = i.client || "";
   $("e-titre").value = i.titre && i.titre !== i.client ? i.titre : "";
-  dates.e = sessionsDe(i); renderChips("e");
+  dates.e = sessionsDe(i); heures.e = JSON.parse(JSON.stringify(i.horaires || {})); renderChips("e");
   setD("e-contact-date", i.date_contact);
   $("e-statut").value = i.statut || "nouvelle";
   setD("e-fin", i.date_fin);
@@ -1348,7 +1440,7 @@ function lireTiroir() {
   return {
     client,
     titre: $("e-titre").value.trim() || client,
-    ...sessionsPayload(dates.e),
+    ...sessionsPayload(dates.e, heures.e),
     date_contact: $("e-contact-date").value || null,
     statut: $("e-statut").value,
     date_fin: $("e-fin").value || null,
@@ -1394,6 +1486,7 @@ function ajouterUpdate() {
   if (editId) enregistrer(true);
 }
 async function enregistrer(garderOuvert = false) {
+  if (!validerSaisie("e")) return;
   const data = lireTiroir();
   if (Number.isNaN(data.prix) || Number.isNaN(num($("e-paye").value))) { toast("Montant invalide : écris un nombre, ex. 600 ou 1250.50"); return; }
   if (!data.client) { toast("Le nom du client est obligatoire."); $("e-client").focus(); return; }
@@ -1414,7 +1507,7 @@ function recap() {
     .sort((a, b) => a.d.localeCompare(b.d));
   if (avenir.length) {
     txt += `\n*🎙️ Sessions à venir* (${avenir.length})\n`;
-    for (const { i, d } of avenir) txt += `• ${jourSemaine(d)} ${fmtShort(d)} — ${nom(i)} · ${statutLabel(i.statut)}\n`;
+    for (const { i, d } of avenir) txt += `• ${jourSemaine(d)} ${fmtShort(d)}${plageDe(i, d) ? " " + plageDe(i, d) : ""} — ${nom(i)} · ${statutLabel(i.statut)}\n`;
   }
   const aPlanifier = actives.filter((i) => !sessionsDe(i).some((d) => d >= today()));
   if (aPlanifier.length) {
@@ -1446,12 +1539,29 @@ async function copier(txt) {
 
 // ---------- Champs de date au format jj/mm/aaaa ----------
 const fpLocale = () => (LANG === "en" || !window.flatpickr || !flatpickr.l10ns.fr ? { ...flatpickr.l10ns.default, firstDayOfWeek: 1 } : "fr");
-const FP_BASE = { dateFormat: "Y-m-d", altInput: true, altFormat: "d/m/Y", allowInput: true, disableMobile: true };
+let dateRefusee = false; // une date tapée vient d'être refusée par le calendrier
+let derniereFrappe = null; // dernier texte tapé dans un champ de date (remis en place si la date est refusée)
+// Lecture stricte d'une date : aaaa-mm-jj ou jj/mm/aaaa (aussi jj.mm.aaaa, jj-mm-aa) ; null si impossible (ex. 45/13/2026)
+function dateStricte(str) {
+  str = String(str || "").trim();
+  let a, mo, j, m;
+  if ((m = str.match(/^(\d{4})-(\d{2})-(\d{2})$/))) [a, mo, j] = [+m[1], +m[2], +m[3]];
+  else if ((m = str.match(/^(\d{1,2})[\/.\-\s](\d{1,2})[\/.\-\s](\d{2}|\d{4})$/))) [j, mo, a] = [+m[1], +m[2], m[3].length === 2 ? 2000 + +m[3] : +m[3]];
+  else return null;
+  const d = new Date(a, mo - 1, j);
+  return d.getFullYear() === a && d.getMonth() === mo - 1 && d.getDate() === j ? d : null;
+}
+const FP_BASE = {
+  dateFormat: "Y-m-d", altInput: true, altFormat: "d/m/Y", allowInput: true, disableMobile: true,
+  parseDate: (str) => dateStricte(str) || undefined,
+  errorHandler: () => { dateRefusee = true; const f = derniereFrappe; toast(tr("Date invalide : écris-la au format jj/mm/aaaa")); if (f) setTimeout(() => { if (!f.el.value) f.el.value = f.v; }, 0); },
+};
 // Écrit une date (aaaa-mm-jj) dans un champ, qu'il soit natif ou flatpickr
 function setD(el, v) {
   el = typeof el === "string" ? $(el) : el;
   if (el._flatpickr) el._flatpickr.setDate(v || null, false); else el.value = v || "";
 }
+document.addEventListener("input", (e) => { if (e.target.matches?.(".flatpickr-input, input.input, .dedit")) derniereFrappe = { el: e.target, v: e.target.value }; }, true);
 if (window.flatpickr) {
   document.querySelectorAll('input[type="date"]').forEach((el) => flatpickr(el, { ...FP_BASE, locale: fpLocale() }));
 }
@@ -1461,15 +1571,69 @@ const dates = { q: [], e: [] };
 function renderChips(k) {
   const t = today();
   $(k + "-chips").innerHTML = dates[k].length
-    ? dates[k].map((d, n) => `<span class="dchip ${d < t ? "past" : ""}" data-n="${n}"><span class="dlabel" title="Cliquer pour modifier la date" style="cursor:pointer">${jourSemaine(d)} ${fmtDate(d)}</span><button type="button" data-del="${n}" aria-label="Retirer cette date">×</button></span>`).join("")
+    ? dates[k].map((d, n) => `<span class="dchip ${d < t ? "past" : ""}" data-n="${n}"><span class="dlabel" title="Cliquer pour modifier la date" style="cursor:pointer">${jourSemaine(d)} ${fmtDate(d)}${plage(heures[k][d]) ? ` · <span class="dh">${plage(heures[k][d])}</span>` : ""}</span><button type="button" class="hbtn" data-h="${n}" title="Modifier l'horaire">🕐</button><button type="button" data-del="${n}" aria-label="Retirer cette date">×</button></span>`).join("")
     : `<span class="hint">Aucune date — choisis-en une ci-dessus (tu peux en ajouter plusieurs)</span>`;
 }
-function setDates(k, arr) { dates[k] = [...new Set(arr.filter(Boolean))].sort(); renderChips(k); }
+// Date tapée au clavier (jj/mm/aaaa, jj.mm.aaaa, jj-mm-aaaa) → aaaa-mm-jj ; null si vide, false si invalide
+function lireSaisie(k) {
+  const el = $(k + "-date-add"), champ = el._flatpickr?.altInput || el;
+  const brut = champ.value.trim();
+  if (!brut) return null;
+  const d = dateStricte(brut);
+  return d ? isoDay(d) : false;
+}
+// Ajoute la date en attente dans le champ ; renvoie false si elle est invalide
+function validerSaisie(k) {
+  if (dateRefusee) { dateRefusee = false; toast("Date de session invalide : écris-la au format jj/mm/aaaa"); return false; }
+  const v = lireSaisie(k);
+  if (v === false) { toast("Date de session invalide : écris-la au format jj/mm/aaaa"); return false; }
+  if (v) { ajouterDate(k, v); setD(k + "-date-add", ""); const el = $(k + "-date-add"); if (el._flatpickr) el._flatpickr.altInput.value = ""; }
+  return true;
+}
+const heures = { q: {}, e: {} };
+function setDates(k, arr) {
+  dates[k] = [...new Set(arr.filter(Boolean))].sort();
+  for (const d of Object.keys(heures[k])) if (!dates[k].includes(d)) delete heures[k][d];
+  renderChips(k);
+}
+// Ajoute une date avec l'horaire choisi dans les menus « de / à »
+function ajouterDate(k, v) {
+  const hd = $(k + "-h-d").value, hf = $(k + "-h-f").value;
+  if (hd || hf) heures[k][v] = { d: hd, f: hf };
+  setDates(k, [...dates[k], v]);
+}
 for (const k of ["q", "e"]) {
-  $(k + "-date-add").addEventListener("change", (e) => { const v = e.target.value; if (!v) return; setDates(k, [...dates[k], v]); setTimeout(() => setD(e.target, ""), 0); });
+  $(k + "-date-btn").addEventListener("click", () => { if (!lireSaisie(k)) { const el = $(k + "-date-add"); if (el._flatpickr) el._flatpickr.open(); else el.focus(); return; } validerSaisie(k); });
+  // en quittant le champ, une date tapée est ajoutée automatiquement
+  const champSaisie = () => $(k + "-date-add")._flatpickr?.altInput || $(k + "-date-add");
+  setTimeout(() => {
+
+    champSaisie().addEventListener("blur", () => setTimeout(() => { if (lireSaisie(k)) validerSaisie(k); }, 150));
+    champSaisie().addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); validerSaisie(k); } });
+  }, 0);
+  $(k + "-h-d").innerHTML = OPTIONS_H; $(k + "-h-f").innerHTML = OPTIONS_H;
+  $(k + "-date-add").addEventListener("change", (e) => { const v = e.target.value; if (!v) return; ajouterDate(k, v); setTimeout(() => setD(e.target, ""), 0); });
   $(k + "-chips").addEventListener("click", (e) => {
     const del = e.target.closest("[data-del]");
-    if (del) { dates[k].splice(+del.dataset.del, 1); renderChips(k); return; }
+    if (del) { setDates(k, dates[k].filter((_, n) => n !== +del.dataset.del)); return; }
+    const hb = e.target.closest("[data-h]");
+    if (hb) {
+      // Modifier l'horaire d'une date : deux menus « de / à » + ✓
+      const n = +hb.dataset.h, d = dates[k][n], h = heures[k][d] || {};
+      const box = document.createElement("span");
+      box.className = "hedit";
+      box.innerHTML = `<b>${fmtDate(d)}</b> <select data-hd>${OPTIONS_H}</select> – <select data-hf>${OPTIONS_H}</select> <button type="button" class="btn small" data-ok>✓</button>`;
+      box.querySelector("[data-hd]").value = h.d || ""; box.querySelector("[data-hf]").value = h.f || "";
+      hb.closest(".dchip").replaceWith(box);
+      box.querySelector("[data-ok]").onclick = (ev) => {
+        ev.stopPropagation();
+        const hd = box.querySelector("[data-hd]").value, hf = box.querySelector("[data-hf]").value;
+        if (hd || hf) heures[k][d] = { d: hd, f: hf }; else delete heures[k][d];
+        renderChips(k);
+      };
+      return;
+    }
+    if (e.target.closest(".hedit")) return;
     const lab = e.target.closest(".dlabel"); if (!lab) return;
     // Modifier une date : la pastille devient un sélecteur de date
     const chip = lab.closest(".dchip"), n = +chip.dataset.n;
@@ -1479,7 +1643,8 @@ for (const k of ["q", "e"]) {
     let fini = false, fp = null;
     const valider = () => {
       if (fini) return; fini = true;
-      const v = inp.value; const copie = [...dates[k]]; if (v) copie[n] = v;
+      const v = inp.value, ancienne = dates[k][n]; const copie = [...dates[k]]; if (v) copie[n] = v;
+      if (v && v !== ancienne && heures[k][ancienne]) { heures[k][v] = heures[k][ancienne]; delete heures[k][ancienne]; }
       if (fp) setTimeout(() => fp.destroy(), 0);
       setDates(k, copie);
     };
@@ -1512,15 +1677,16 @@ $("quick").onsubmit = async (e) => {
   e.preventDefault();
   const client = $("q-client").value.trim();
   if (!client) return;
+  if (!validerSaisie("q")) return;
   if (!respConnu($("q-resp").value)) { toast("Choisis un responsable : chaque demande doit être assignée."); $("q-resp").focus(); return; }
   const ok = await ajouter({
     client, titre: $("q-titre").value.trim() || client,
-    ...sessionsPayload(dates.q), date_contact: $("q-contact").value || null,
+    ...sessionsPayload(dates.q, heures.q), date_contact: $("q-contact").value || null,
     statut: $("q-statut").value,
     resp: $("q-resp").value,
   });
   if (ok) {
-    $("q-client").value = ""; $("q-titre").value = ""; dates.q = []; renderChips("q");
+    $("q-client").value = ""; $("q-titre").value = ""; dates.q = []; heures.q = {}; renderChips("q");
     setD("q-contact", today()); $("q-statut").value = "nouvelle"; $("q-resp").innerHTML = respOptions("", "Choisir…");
     $("q-client").focus();
     toast("Demande ajoutée");
@@ -1570,10 +1736,16 @@ $("bc-prev").onclick = () => { mois.setMonth(mois.getMonth() - 1); render(); };
 $("bc-next").onclick = () => { mois.setMonth(mois.getMonth() + 1); render(); };
 $("bc-today").onclick = () => { mois = new Date(); mois.setDate(1); render(); };
 $("bc-contacts").onchange = renderBigCal;
+$("bc-vue").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-vue]"); if (!b) return;
+  bcVue = b.dataset.vue; renderBigCal();
+  if (bcVue === "tout") setTimeout(() => $("bc-next-day")?.scrollIntoView({ block: "start" }), 0);
+});
+$("bc-alert").addEventListener("click", (e) => { const b = e.target.closest("[data-id]"); if (b) ouvrir(b.dataset.id); });
 $("bc-fins").onchange = renderBigCal;
 $("bc-grid").addEventListener("click", (e) => {
   const ev = e.target.closest(".bc-ev"); if (ev) return ouvrir(ev.dataset.id);
-  const day = e.target.closest(".bc-day"); if (day) ouvrir(null, { sessions: [day.dataset.day] });
+  const day = e.target.closest(".bc-day"); if (day && bcVue === "mois") ouvrir(null, { sessions: [day.dataset.day] });
 });
 $("cl-close").onclick = fermerClient;
 $("clientbox").addEventListener("click", (e) => { if (e.target.id === "clientbox") fermerClient(); });
@@ -1625,7 +1797,7 @@ setInterval(() => { if (!$("app").classList.contains("hidden")) { renderListe();
 // ---------- Connexion ----------
 // Un seul compte partagé par toute l'équipe : seul le mot de passe est demandé.
 const NOM_KEY = "noname-prenom";
-try { $("login-nom").value = localStorage.getItem(NOM_KEY) || ""; } catch {}
+try { const n = localStorage.getItem(NOM_KEY); if (n && [...$("login-nom").options].some((o) => o.value === n)) $("login-nom").value = n; } catch {}
 
 $("login-form").onsubmit = async (e) => {
   e.preventDefault();
@@ -1656,8 +1828,39 @@ function afficherApp(connecte) {
   $("app").classList.remove("hidden");
   $("userbox").classList.remove("hidden");
   $("logout").classList.toggle("hidden", !connecte);
-  $("useremail").textContent = userEmail ? "Connecté·e : " + userEmail : "";
+  $("useremail").textContent = userEmail ? "Profil : " + userEmail : "";
 }
+
+// ---------- Présence : qui est connecté en ce moment (affiché pour le profil Michael) ----------
+const PROFIL_ADMIN = "Michael";
+let presence = null, enLigne = [];
+const ONGLET = uid();
+function appareil() { const u = navigator.userAgent; return /iPhone|iPad/.test(u) ? "iPhone/iPad" : /Android/.test(u) ? "Android" : /Mac/.test(u) ? "Mac" : /Windows/.test(u) ? "PC" : "Navigateur"; }
+function rejoindrePresence() {
+  if (!sb || presence) return;
+  presence = sb.channel("presence-equipe", { config: { presence: { key: ONGLET } } });
+  presence.on("presence", { event: "sync" }, () => {
+    const st = presence.presenceState();
+    enLigne = Object.values(st).map((l) => l[0]).filter(Boolean);
+    renderPresence();
+  });
+  presence.subscribe(async (statut) => {
+    if (statut === "SUBSCRIBED") await presence.track({ nom: userEmail || "Invité", depuis: new Date().toISOString(), appareil: appareil() });
+  });
+}
+function quitterPresence() { if (presence) { sb.removeChannel(presence); presence = null; } enLigne = []; renderPresence(); }
+function renderPresence() {
+  const visible = !!sb && userEmail === PROFIL_ADMIN && !$("app").classList.contains("hidden");
+  $("online").classList.toggle("hidden", !visible);
+  if (!visible) return;
+  const liste = [...enLigne].sort((a, b) => (a.nom || "").localeCompare(b.nom || ""));
+  $("online-n").textContent = liste.length;
+  const f = (iso) => { const d = new Date(iso); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+  $("online-pop").innerHTML = `<h4>Connectés maintenant (${liste.length})</h4>`
+    + (liste.length ? liste.map((x) => `<div class="op-row"><span class="op-dot"></span><b translate="no">${esc(x.nom || "Invité")}</b> <small>${esc(x.appareil || "")} · depuis ${f(x.depuis)}</small></div>`).join("") : `<div class="none">Personne</div>`);
+}
+$("online-btn").onclick = (e) => { e.stopPropagation(); $("online-pop").classList.toggle("hidden"); };
+document.addEventListener("click", (e) => { if (!e.target.closest("#online")) $("online-pop").classList.add("hidden"); });
 
 let sessionUserId = null;
 function setSession(session) {
@@ -1668,9 +1871,12 @@ function setSession(session) {
     afficherApp(true);
     charger();
     abonnerTempsReel();
+    rejoindrePresence();
+    renderPresence();
   } else {
     sessionUserId = null;
     if (channel) { sb.removeChannel(channel); channel = null; }
+    quitterPresence();
     items = [];
     $("app").classList.add("hidden");
     $("userbox").classList.add("hidden");
