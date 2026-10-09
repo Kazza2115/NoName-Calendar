@@ -8,6 +8,19 @@
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="referrer" content="no-referrer">
 <script>try { const t = localStorage.getItem("noname-theme"); if (t) document.documentElement.dataset.theme = t; } catch {}</script>
+<script>
+// Téléphone : par défaut, même mise en page que sur ordinateur (écran « dézoomé », on peut zoomer avec deux doigts)
+try {
+  const tel = Math.min(screen.width, screen.height) < 700 && matchMedia("(pointer: coarse)").matches;
+  if (tel) {
+    document.documentElement.classList.add("tel");
+    if (localStorage.getItem("noname-vue") !== "mobile") {
+      document.querySelector('meta[name="viewport"]').setAttribute("content", "width=1080");
+      document.documentElement.classList.add("vue-pc");
+    }
+  }
+} catch {}
+</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
 <style>
   :root {
@@ -69,6 +82,7 @@
   :root[data-theme="dark"] { color-scheme: dark; }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   body {
     background: var(--bg); color: var(--text);
     font: 17px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -83,7 +97,7 @@
   h1 { margin: 0; font-size: 30px; letter-spacing: -.02em; }
   h1 span { color: var(--accent); }
   .sub { margin: 2px 0 0; color: var(--muted); font-size: 16px; }
-  .user { display: flex; align-items: center; gap: 8px; font-size: 15px; color: var(--muted); }
+  .user { display: flex; align-items: center; gap: 8px; font-size: 15px; color: var(--muted); flex-wrap: wrap; max-width: 100%; }
 
   .banner { background: color-mix(in srgb, var(--warn) 14%, var(--card)); border: 1px solid color-mix(in srgb, var(--warn) 40%, transparent); padding: 10px 14px; border-radius: var(--radius); margin-bottom: 16px; font-size: 16px; }
   .banner b { color: var(--warn); }
@@ -556,8 +570,42 @@
   .bigcal-box { max-height: 100%; min-height: 0; }
   .bc-scroll, .cl-body { min-height: 0; }
   .bigcal-box, .bc-scroll, .cl-body, .drawer, .online-pop, .flatpickr-calendar { overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; }
+  /* Registre des paiements (fiche) */
+  .pay-liste { margin: 4px 0 10px; display: grid; gap: 4px; }
+  .pay-l { display: flex; gap: 8px; align-items: center; font-size: 14px; padding: 5px 8px; border-radius: 8px; background: var(--card); border: 1px solid var(--line); }
+  .pay-l b { font-variant-numeric: tabular-nums; min-width: 80px; }
+  .pay-l small { color: var(--muted); margin-left: auto; white-space: nowrap; }
+  .pay-l button { border: none; background: none; color: var(--danger); cursor: pointer; font-size: 15px; }
+  .pay-add { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  #e-paye[readonly] { background: var(--bg); color: var(--muted); cursor: not-allowed; }
+  .pay-add > * { min-width: 0; }
+  /* Comptabilité */
+  .cpt-root { --series-1: #2a78d6; --series-2: #eb6834; }
+  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) .cpt-root { --series-1: #3987e5; --series-2: #d95926; } }
+  :root[data-theme="dark"] .cpt-root { --series-1: #3987e5; --series-2: #d95926; }
+  .cpt-legend { display: flex; gap: 16px; font-size: 14px; color: var(--muted); align-items: center; }
+  .cpt-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .cpt-chart { position: relative; width: 100%; }
+  .cpt-chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .cpt-chart .grid line { stroke: var(--line); stroke-width: 1; }
+  .cpt-chart .axis text { fill: var(--muted); font-size: 11px; font-family: inherit; }
+  .cpt-chart .hit { fill: transparent; cursor: pointer; }
+  .cpt-chart .hit:hover { fill: color-mix(in srgb, var(--text) 5%, transparent); }
+  .cpt-tip { position: absolute; pointer-events: none; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; font-size: 13px; box-shadow: 0 6px 20px rgba(0,0,0,.15); z-index: 5; white-space: nowrap; color: var(--text); }
+  .cpt-tip i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; }
+  .cpt-table td.neg { color: var(--danger); }
+  .cpt-part { height: 8px; border-radius: 4px; background: var(--series-1); }
+  .watch { display: flex; gap: 8px; align-items: center; padding: 7px 4px; border-top: 1px solid var(--line); font-size: 15px; flex-wrap: wrap; }
+  .watch:first-of-type { border-top: none; }
+  .watch .n { font-weight: 800; min-width: 26px; text-align: center; border-radius: 999px; background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); padding: 0 6px; }
+  .watch .who { color: var(--muted); font-size: 14px; }
+  .watch .who a { cursor: pointer; color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
   .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 16px; z-index: 70; box-shadow: 0 6px 20px rgba(0,0,0,.2); max-width: calc(100% - 32px); }
 
+  .tel-only { display: none; }
+  html.tel .tel-only { display: inline-flex; }
+  html.tel #vue-btn + #themesw { margin-left: 0 !important; }
+  html.vue-pc .layout { grid-template-columns: minmax(0, 1fr) 310px; }
   @media (max-width: 960px) {
     .layout { grid-template-columns: 1fr; }
     .side { position: static; order: -1; grid-template-columns: 1fr 1fr; }
@@ -586,6 +634,7 @@
     <div>
       <h1>Réservations <span>NONAME</span></h1>
     </div>
+    <button type="button" class="btn small tel-only" id="vue-btn" style="margin-left:auto"></button>
     <div class="langsw" id="themesw" role="group" aria-label="Thème" style="margin-left:auto">
       <button type="button" data-theme-btn="light">☀️ Clair</button><button type="button" data-theme-btn="dark">🌙 Sombre</button>
     </div>
@@ -745,7 +794,7 @@
     <div class="bc-head">
       <h2>🛡️ Panel admin</h2>
       <span class="ad-badge">Michael</span>
-      <span class="langsw" id="ad-tabs" style="margin:0"><button type="button" data-tab="apercu" class="on">Vue d'ensemble</button><button type="button" data-tab="logs">📜 Logs</button><button type="button" data-tab="acces">🔐 Connexions & comptes</button></span>
+      <span class="langsw" id="ad-tabs" style="margin:0"><button type="button" data-tab="apercu" class="on">Vue d'ensemble</button><button type="button" data-tab="compta">💰 Comptabilité</button><button type="button" data-tab="logs">📜 Logs</button><button type="button" data-tab="acces">🔐 Connexions & comptes</button></span>
       <button class="btn" id="ad-refresh" title="Actualiser">↻</button>
       <button class="btn" id="ad-csv">⬇ Exporter (CSV)</button>
       <button class="btn" id="ad-close" style="margin-left:auto">✕ Fermer</button>
@@ -796,9 +845,12 @@
     </div>
     <div class="bar big" id="e-bar"><i></i></div>
     <div class="pay-sum"><span id="e-pay-etat"></span><span>Reste à payer : <b id="e-reste">—</b></span></div>
-    <div class="update-row">
-      <input type="text" id="e-pay-add" inputmode="decimal" placeholder="Paiement reçu (CHF)">
-      <button class="btn small" id="e-pay-btn" type="button">+ Encaisser</button>
+    <div class="pay-liste" id="e-pay-liste"></div>
+    <div class="pay-add">
+      <input type="text" id="e-pay-add" inputmode="decimal" placeholder="Montant reçu (CHF)">
+      <input type="date" id="e-pay-date" placeholder="jj/mm/aaaa" aria-label="Date du paiement">
+      <select id="e-pay-mode" aria-label="Mode de paiement"><option value="twint">TWINT</option><option value="especes">Espèces</option><option value="virement">Virement</option><option value="carte">Carte</option><option value="autre">Autre</option></select>
+      <button class="btn small primary" id="e-pay-btn" type="button">+ Encaisser</button>
     </div>
   </div>
   <div class="field">
@@ -864,7 +916,7 @@ const EN = {
   "Enregistrement studio": "Studio recording", "Mix / master": "Mix / master", "Production / beat": "Production / beat", "Co-production label": "Label co-production", "Booking / live": "Booking / live", "Promo / com": "Promo / PR", "Admin / contrat": "Admin / contract", "Autre": "Other",
   "Cliquer pour modifier la date": "Click to change the date", "Retirer cette date": "Remove this date", "Fermer": "Close", "✕ Fermer": "✕ Close", "Mois précédent": "Previous month", "Mois suivant": "Next month", "Aujourd'hui": "Today", "Grand calendrier": "Big calendar", "+ session": "+ session", "Aucune session ce mois-ci.": "No sessions this month.",
   "Copier son récap": "Copy their summary", "+ Nouvelle demande": "+ New request", "Total facturé": "Total invoiced", "Déjà payé": "Already paid", "Reste à payer": "Amount due", "Tout est payé": "All paid", "Aucune session.": "No sessions.",
-  "jj/mm/aaaa": "dd/mm/yyyy", "Annulée": "Cancelled", "Vue d'ensemble": "Overview", "📜 Logs": "📜 Logs", "🔐 Connexions & comptes": "🔐 Logins & accounts", "Actualiser": "Refresh", "Actualisé": "Refreshed", "Tous les profils": "All profiles", "Toutes les actions": "All actions", "7 derniers jours": "Last 7 days", "30 derniers jours": "Last 30 days", "Rechercher (client, profil…)": "Search (client, profile…)", "⬇ Logs (CSV)": "⬇ Logs (CSV)", "Création": "Created", "Modification": "Changed", "Suppression": "Deleted", "Connexion": "Login", "↩ Restaurer": "↩ Restore", "Restaurer cette demande supprimée ?": "Restore this deleted request?", "Demande restaurée": "Request restored", "Chargement…": "Loading…", "Aucune entrée pour ces filtres.": "No entries for these filters.", "Comptes Supabase": "Supabase accounts", "Compte": "Account", "Rôle": "Role", "Dernière connexion": "Last login", "Équipe": "Team", "Admin": "Admin", "🔒 Sécurité": "🔒 Security", "Aucune connexion enregistrée pour l'instant.": "No logins recorded yet.", "Aucune": "None", "Semaine": "Week", "Sans horaire": "No time", "🕐 Voir la journée": "🕐 See the day", "Journée": "Day", "Jour précédent": "Previous day", "Jour suivant": "Next day", "Aussi ce jour-là": "Also that day", "✓ Terminée": "✓ Finished", "☎ Contact": "☎ Contact", "🕐 détail": "🕐 details", "☀️ Clair": "☀️ Light", "🌙 Sombre": "🌙 Dark", "Thème": "Theme", "Catégorie": "Category", "Cliquer pour afficher / masquer": "Click to show / hide", "🕐 de": "🕐 from", "à": "to", "(facultatif, appliqué à la date ajoutée)": "(optional, applied to the date you add)", "Heure de début": "Start time", "Heure de fin": "End time", "Modifier l'horaire": "Change the time",
+  "jj/mm/aaaa": "dd/mm/yyyy", "💰 Comptabilité": "💰 Accounting", "📱 Vue mobile": "📱 Mobile view", "🖥 Vue ordinateur": "🖥 Desktop view", "Par mois": "By month", "Par semaine": "By week", "⬇ Registre des paiements (CSV)": "⬇ Payment ledger (CSV)", "⬇ Synthèse (CSV)": "⬇ Summary (CSV)", "Facturé sur la période": "Invoiced in period", "Reste à encaisser (total)": "Left to collect (total)", "Sessions · heures de studio": "Sessions · studio hours", "Facturé": "Invoiced", "Encaissé": "Collected", "Mois": "Month", "Semaine": "Week", "Heures": "Hours", "Écart": "Difference", "Encaissé par mode de paiement": "Collected by payment method", "Aucun paiement sur la période.": "No payments in this period.", "Rien sur la période.": "Nothing in this period.", "Tout est encaissé 🎉": "Everything collected 🎉", "Date": "Date", "Mode": "Method", "Saisi par": "Entered by", "Montant": "Amount", "Espèces": "Cash", "Virement": "Transfer", "Carte": "Card", "Montant reçu (CHF)": "Amount received (CHF)", "Date du paiement": "Payment date", "Mode de paiement": "Payment method", "Enregistre la demande pour pouvoir encaisser.": "Save the request to record payments.", "Enregistre d'abord la demande, puis encaisse.": "Save the request first, then record the payment.", "encaissés": "collected", "Supprimer ce paiement du registre ?": "Delete this payment from the ledger?", "Calculé automatiquement à partir des paiements enregistrés": "Calculated automatically from recorded payments", "Facturé ce mois-ci": "Invoiced this month", "Encaissé ce mois-ci": "Collected this month", "Sessions · heures ce mois-ci": "Sessions · hours this month", "Sessions · heures cette semaine": "Sessions · hours this week", "⚠ À surveiller": "⚠ To watch", "Sans prix": "No price", "Sans date de session": "No session date", "Sessions à venir sans horaire": "Upcoming sessions without a time", "Sessions passées, demande pas encore clôturée": "Past sessions, request not closed yet", "Sans responsable": "No owner", "Pas de contact depuis plus de 14 jours": "No contact for more than 14 days", "Impayés depuis plus de 30 jours": "Unpaid for more than 30 days", "Rien à signaler 👌": "Nothing to report 👌", "🏆 Meilleurs clients (facturé)": "🏆 Top clients (invoiced)", "Activité par profil (7 jours)": "Activity by profile (7 days)", "Annulée": "Cancelled", "Vue d'ensemble": "Overview", "📜 Logs": "📜 Logs", "🔐 Connexions & comptes": "🔐 Logins & accounts", "Actualiser": "Refresh", "Actualisé": "Refreshed", "Tous les profils": "All profiles", "Toutes les actions": "All actions", "7 derniers jours": "Last 7 days", "30 derniers jours": "Last 30 days", "Rechercher (client, profil…)": "Search (client, profile…)", "⬇ Logs (CSV)": "⬇ Logs (CSV)", "Création": "Created", "Modification": "Changed", "Suppression": "Deleted", "Connexion": "Login", "↩ Restaurer": "↩ Restore", "Restaurer cette demande supprimée ?": "Restore this deleted request?", "Demande restaurée": "Request restored", "Chargement…": "Loading…", "Aucune entrée pour ces filtres.": "No entries for these filters.", "Comptes Supabase": "Supabase accounts", "Compte": "Account", "Rôle": "Role", "Dernière connexion": "Last login", "Équipe": "Team", "Admin": "Admin", "🔒 Sécurité": "🔒 Security", "Aucune connexion enregistrée pour l'instant.": "No logins recorded yet.", "Aucune": "None", "Semaine": "Week", "Sans horaire": "No time", "🕐 Voir la journée": "🕐 See the day", "Journée": "Day", "Jour précédent": "Previous day", "Jour suivant": "Next day", "Aussi ce jour-là": "Also that day", "✓ Terminée": "✓ Finished", "☎ Contact": "☎ Contact", "🕐 détail": "🕐 details", "☀️ Clair": "☀️ Light", "🌙 Sombre": "🌙 Dark", "Thème": "Theme", "Catégorie": "Category", "Cliquer pour afficher / masquer": "Click to show / hide", "🕐 de": "🕐 from", "à": "to", "(facultatif, appliqué à la date ajoutée)": "(optional, applied to the date you add)", "Heure de début": "Start time", "Heure de fin": "End time", "Modifier l'horaire": "Change the time",
   "Ton profil": "Your profile", "🛡️ Admin": "🛡️ Admin", "🛡️ Panel admin": "🛡️ Admin panel", "Panel admin": "Admin panel", "⬇ Exporter (CSV)": "⬇ Export (CSV)", "Connectés maintenant": "Online now", "Demandes actives / total": "Active / total requests",
   "Par responsable": "By owner", "Actives": "Active", "Encaissé": "Collected", "Activité récente": "Recent activity", "Total": "Total", "Choisir ton profil…": "Choose your profile…", "Invité": "Guest", "➕ Nouveau profil…": "➕ New profile…", "Écris le nom de ton profil": "Type your profile name", "Écris le nom de ton profil.": "Type your profile name.", "Choisis ton profil.": "Choose your profile.", "Autres profils": "Other profiles", "Aucun profil créé pour l'instant.": "No profiles created yet.", "Supprimer ce profil": "Delete this profile", "Supprimer ce profil de la liste ?": "Remove this profile from the list?", "Profil supprimé": "Profile deleted", "en ligne": "online", "Personne": "Nobody", "+ Ajouter": "+ Add", "Mois": "Month", "Tout": "All", "Tous les événements": "All events", "Aucun événement pour l'instant.": "No events yet.",
   "Rien ce mois-ci.": "Nothing this month.",
@@ -889,7 +941,7 @@ const RULES = [
   [/^Créée le /, "Created on "], [/ · modifiée /, " · updated "], [/ · modifiée par un membre/, " · changed by a member"], [/^Modifiée /, "Updated "],
   [/ payés\b/g, " paid"], [/(\d+) modification\(s\)/, "$1 change(s)"],
   [/^Contacts : /, "Contacts: "], [/^Contact : /, "Contact: "], [/^Sessions : /, "Sessions: "], [/^Terminées : /, "Finished: "], [/^Terminée : /, "Finished: "],
-  [/^Voir toutes les sessions et paiements de /, "See all sessions and payments for "], [/^Connecté·e : /, "Signed in: "], [/^Profil : /, "Profile: "], [/^(\d+) entrées?$/, (m, n) => `${n} entr${n > 1 ? "ies" : "y"}`], [/^Connexions sur 7 jours \((\d+)\)$/, "Logins over 7 days ($1)"], [/^Historique des connexions \((\d+)\)$/, "Login history ($1)"], [/(≈ )?placée le (\S+ \S+)( par (.+))?$/, (m, a, d, p, n) => `${a || ""}booked on ${d}${n ? " by " + n : ""}`], [/^Planning \((\d+)\)$/, "Schedule ($1)"], [/^Sessions sans horaire \((\d+)\)$/, "Sessions without a time ($1)"], [/^Profils créés \((\d+)\)$/, "Created profiles ($1)"], [/^Sessions du mois \((\d+)\)$/, "Sessions this month ($1)"], [/^Encaissé sur (.+) facturés$/, "Collected out of $1 invoiced"], [/^🟢 Connectés maintenant \((\d+)\)$/, "🟢 Online now ($1)"], [/^Connectés maintenant \((\d+)\)$/, "Online now ($1)"], [/ · depuis (\d)/, " · since $1"],
+  [/^Voir toutes les sessions et paiements de /, "See all sessions and payments for "], [/^Connecté·e : /, "Signed in: "], [/^Profil : /, "Profile: "], [/^Encaissé sur la période · (\d+)%$/, "Collected in period · $1%"], [/^Facturé et encaissé par (mois|semaine)$/, (m, x) => `Invoiced and collected by ${x === "mois" ? "month" : "week"}`], [/^Impayés \((\d+)\) — total (.+)$/, "Unpaid ($1) — total $2"], [/^Paiements de la période \((\d+)\)$/, "Payments in period ($1)"], [/^(\d+) modifications?$/, (m, n) => `${n} change${n > 1 ? "s" : ""}`], [/^(\d+) entrées?$/, (m, n) => `${n} entr${n > 1 ? "ies" : "y"}`], [/^Connexions sur 7 jours \((\d+)\)$/, "Logins over 7 days ($1)"], [/^Historique des connexions \((\d+)\)$/, "Login history ($1)"], [/(≈ )?placée le (\S+ \S+)( par (.+))?$/, (m, a, d, p, n) => `${a || ""}booked on ${d}${n ? " by " + n : ""}`], [/^Planning \((\d+)\)$/, "Schedule ($1)"], [/^Sessions sans horaire \((\d+)\)$/, "Sessions without a time ($1)"], [/^Profils créés \((\d+)\)$/, "Created profiles ($1)"], [/^Sessions du mois \((\d+)\)$/, "Sessions this month ($1)"], [/^Encaissé sur (.+) facturés$/, "Collected out of $1 invoiced"], [/^🟢 Connectés maintenant \((\d+)\)$/, "🟢 Online now ($1)"], [/^Connectés maintenant \((\d+)\)$/, "Online now ($1)"], [/ · depuis (\d)/, " · since $1"],
   [/\bdès (\d)/g, "from $1"], [/\bjusqu'à (\d)/g, "until $1"],
   [/\breste (?=[\d])/g, "due "], [/^✓ le /, "✓ on "], [/^Statut : /, "Status: "], [/^Responsable : /, "Owner: "], [/^Erreur : /, "Error: "],
   [/^Liste indisponible\./, "List unavailable."], [/le projet Supabase est peut-être en pause\./, "the Supabase project may be paused."],
@@ -1124,6 +1176,15 @@ function upsertLocal(row) {
   if (idx >= 0) items[idx] = row; else items.unshift(row);
 }
 
+// Registre des paiements (table « paiements » ; le total payé de chaque demande est recalculé par la base)
+let paiements = [];
+const MODES = { twint: "TWINT", especes: "Espèces", virement: "Virement", carte: "Carte", autre: "Autre" };
+const demoPaiements = () => items.filter((i) => num(i.paye) > 0).map((i) => ({ id: "d-" + i.id, demande_id: i.id, client: i.client, montant: num(i.paye), date_paiement: isoDay(new Date(i.maj_le || Date.now())), mode: "autre", note: "", saisi_par: "" }));
+async function chargerPaiements() {
+  if (!sb) { paiements = demoPaiements(); return; }
+  const { data, error } = await sb.from("paiements").select("*").order("date_paiement");
+  if (!error) paiements = data || [];
+}
 async function charger() {
   if (sb) {
     const { data, error } = await sb.from("demandes").select("*").order("cree_le", { ascending: false });
@@ -1134,6 +1195,7 @@ async function charger() {
     items = demoLoad() || demoSeed();
     demoSave();
   }
+  await chargerPaiements();
   render();
 }
 
@@ -1194,11 +1256,16 @@ function abonnerTempsReel() {
     .on("postgres_changes", { event: "*", schema: "public", table: "demandes" }, (p) => {
       if (p.eventType === "DELETE") { items = items.filter((i) => i.id !== p.old.id); render(); return; }
       const local = items.find((i) => i.id === p.new.id);
-      if (local && local.maj_le === p.new.maj_le) return; // écho de notre propre modification
+      if (local && local.maj_le === p.new.maj_le && String(local.paye) === String(p.new.paye)) return; // écho de notre propre modification
       upsertLocal(p.new);
       marquer(p.new, local);
       render(true);
-      if (editId === p.new.id) $("d-info").textContent = infoLine(p.new) + " · modifiée par un membre";
+      if (editId === p.new.id) { $("d-info").textContent = infoLine(p.new) + " · modifiée par un membre"; $("e-paye").value = num(p.new.paye) || ""; majPaybox(); }
+    })
+    .on("postgres_changes", { event: "*", schema: "public", table: "paiements" }, (p) => {
+      if (p.eventType === "DELETE") paiements = paiements.filter((x) => x.id !== p.old.id);
+      else { const k = paiements.findIndex((x) => x.id === p.new.id); if (k >= 0) paiements[k] = p.new; else paiements.push(p.new); }
+      renderPaiementsFiche(); renderAdmin();
     })
     .subscribe();
 }
@@ -1233,9 +1300,8 @@ function cellSessions(i) {
   const n = daysUntil(p);
   const cls = n === 0 ? "today" : n > 0 && n <= 7 ? "soon" : "";
   const autres = all.length - 1;
-  const restant = all.filter((d) => d >= today()).length;
-  return `<div class="date" title="${esc(all.map((d) => jourSemaine(d) + " " + fmtDate(d)).join("\n"))}">${fmtDate(p)}${autres ? `<span class="nb">+${autres}</span>` : ""}</div>`
-    + `<div class="date-rel ${cls}">${jourSemaine(p)}${plageDe(i, p) ? " · " + plageDe(i, p) : ""} · ${relJour(p)}${all.length > 1 ? ` · ${restant}/${all.length}` : ""}</div>`;
+  return `<div class="date" title="${esc(all.map((d) => jourSemaine(d) + " " + fmtDate(d) + (plageDe(i, d) ? " · " + plageDe(i, d) : "")).join("\n"))}">${fmtDate(p)}${autres ? `<span class="nb">+${autres}</span>` : ""}</div>`
+    + `<div class="date-rel ${cls}">${relJour(p)}</div>`;
 }
 
 function cellPaiement(i) {
@@ -1251,7 +1317,7 @@ function cellDate(s, kind) {
   const n = daysUntil(s);
   let cls = "";
   if (kind === "resa") cls = n === 0 ? "today" : n > 0 && n <= 7 ? "soon" : "";
-  return `<div class="date">${fmtDate(s)}</div><div class="date-rel ${cls}">${jourSemaine(s)} · ${relJour(s)}</div>`;
+  return `<div class="date">${fmtDate(s)}</div><div class="date-rel ${cls}">${relJour(s)}</div>`;
 }
 
 function renderKpis(anim) {
@@ -1788,8 +1854,10 @@ function ouvrir(id, preset = {}) {
   $("e-resp").innerHTML = respOptions(i.resp, "Choisir un responsable…");
   $("e-prix").value = i.prix ?? (num(i.budget) > 0 ? num(i.budget) : "");
   $("e-paye").value = num(i.paye) ? num(i.paye) : "";
+  $("e-paye").readOnly = !!sb; $("e-paye").title = sb ? tr("Calculé automatiquement à partir des paiements enregistrés") : "";
+  setD("e-pay-date", today());
   $("e-pay-add").value = "";
-  majPaybox();
+  majPaybox(); renderPaiementsFiche();
   $("e-notes").value = i.notes || "";
   $("e-update").value = "";
   $("d-info").textContent = id ? infoLine(i) : "";
@@ -1813,7 +1881,7 @@ function lireTiroir() {
     contact: $("e-contact").value.trim(),
     resp: $("e-resp").value,
     prix: num($("e-prix").value),
-    paye: num($("e-paye").value) || 0,
+    ...(sb ? {} : { paye: num($("e-paye").value) || 0 }), // avec Supabase, le total payé vient du registre
     notes: $("e-notes").value,
   };
 }
@@ -1824,9 +1892,32 @@ function majPaybox() {
   $("e-pay-etat").innerHTML = `<span class="pay-etat" style="margin:0">${ETATS_PAY[p.etat]}</span>`;
   $("e-reste").textContent = p.etat === "aucun" ? "—" : chf(p.reste);
 }
-function encaisser() {
+function renderPaiementsFiche() {
+  const box = $("e-pay-liste"); if (!box) return;
+  if (!editId) { box.innerHTML = sb ? `<div class="none" style="font-size:14px">Enregistre la demande pour pouvoir encaisser.</div>` : ""; return; }
+  const liste = paiements.filter((x) => x.demande_id === editId).sort((a, b) => a.date_paiement.localeCompare(b.date_paiement));
+  box.innerHTML = liste.map((x) => `<div class="pay-l"><b>${chf(num(x.montant))}</b><span>${fmtDate(x.date_paiement)} · ${MODES[x.mode] || x.mode}</span><small>${x.saisi_par ? "par " + esc(x.saisi_par) : esc(x.note || "")}</small>${estAdmin && sb ? `<button type="button" data-suppr-pay="${x.id}" title="Supprimer ce paiement (admin)">✕</button>` : ""}</div>`).join("");
+}
+async function rafraichirDemande(id) {
+  const { data } = await sb.from("demandes").select("*").eq("id", id).single();
+  if (data) { upsertLocal(data); if (editId === id) { $("e-paye").value = num(data.paye) || ""; majPaybox(); } render(true); }
+}
+async function encaisser() {
   const m = num($("e-pay-add").value);
-  if (!m) { toast("Indique le montant reçu, ex. 200"); $("e-pay-add").focus(); return; }
+  if (!m || Number.isNaN(m)) { toast("Indique le montant reçu, ex. 200"); $("e-pay-add").focus(); return; }
+  if (sb) {
+    if (!editId) { toast("Enregistre d'abord la demande, puis encaisse."); return; }
+    const date = $("e-pay-date").value || today(), mode = $("e-pay-mode").value;
+    const i = items.find((x) => x.id === editId);
+    const { data, error } = await sb.from("paiements").insert({ demande_id: editId, client: i?.client || $("e-client").value.trim(), montant: m, date_paiement: date, mode, saisi_par: userEmail || "" }).select().single();
+    if (error) { toast("Erreur : " + error.message); return; }
+    if (!paiements.some((x) => x.id === data.id)) paiements.push(data);
+    $("e-pay-add").value = "";
+    renderPaiementsFiche();
+    await rafraichirDemande(editId);
+    toast(`💰 ${chf(m)} ${tr("encaissés")} · ${MODES[mode]} · ${fmtDate(date)}`);
+    return;
+  }
   const total = Math.round(((num($("e-paye").value) || 0) + m) * 100) / 100;
   $("e-paye").value = total;
   $("e-pay-add").value = "";
@@ -2174,6 +2265,14 @@ $("d-delete").onclick = async () => {
 $("e-update-btn").onclick = ajouterUpdate;
 $("e-prix").oninput = majPaybox; $("e-paye").oninput = majPaybox;
 $("e-pay-btn").onclick = encaisser;
+$("e-pay-liste").addEventListener("click", async (e) => {
+  const b = e.target.closest("[data-suppr-pay]"); if (!b || !estAdmin) return;
+  const x = paiements.find((y) => y.id === b.dataset.supprPay); if (!x) return;
+  if (!confirm(tr("Supprimer ce paiement du registre ?") + `\n${chf(num(x.montant))} · ${fmtDate(x.date_paiement)}`)) return;
+  const { error } = await sb.from("paiements").delete().eq("id", x.id);
+  if (error) return toast("Erreur : " + error.message);
+  paiements = paiements.filter((y) => y.id !== x.id); renderPaiementsFiche(); await rafraichirDemande(x.demande_id);
+});
 $("e-pay-add").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); encaisser(); } };
 $("e-update").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); ajouterUpdate(); } };
 $("e-client").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); enregistrer(); } };
@@ -2327,6 +2426,7 @@ function renderAdmin() {
   document.querySelectorAll("#ad-tabs [data-tab]").forEach((b) => b.classList.toggle("on", b.dataset.tab === adOnglet));
   if (adOnglet === "logs") return renderLogs();
   if (adOnglet === "acces") return renderAcces();
+  if (adOnglet === "compta") return renderCompta();
   renderApercu();
 }
 // ---------- Logs : toutes les modifications, qui et quand ----------
@@ -2466,6 +2566,159 @@ function renderAcces() {
       </ul>
     </div>`;
 }
+// ---------- Comptabilité ----------
+const cpt = { vue: "mois", annee: new Date().getFullYear(), finSemaine: lundiDe(today()) };
+// Date de rattachement d'une demande : 1re session, sinon date de fin, sinon création
+const dateRef = (i) => sessionsDe(i)[0] || i.date_fin || isoDay(new Date(i.cree_le || Date.now()));
+const dureeMin = (i, d) => { const x = bornes(i, d); return x.a === null ? 0 : x.b - x.a; };
+function periodesCompta() {
+  if (cpt.vue === "mois") return [...Array(12)].map((_, m) => {
+    const debut = `${cpt.annee}-${pad(m + 1)}-01`, fin = isoDay(new Date(cpt.annee, m + 1, 0));
+    return { debut, fin, court: new Date(cpt.annee, m, 1).toLocaleDateString(LOC(), { month: "short" }).replace(".", ""), long: new Date(cpt.annee, m, 1).toLocaleDateString(LOC(), { month: "long", year: "numeric" }) };
+  });
+  return [...Array(12)].map((_, n) => {
+    const x = parse(cpt.finSemaine); x.setDate(x.getDate() - 7 * (11 - n));
+    const debut = isoDay(x); const y = new Date(x); y.setDate(y.getDate() + 6); const fin = isoDay(y);
+    const num_ = (() => { const t = new Date(x); t.setDate(t.getDate() + 3); const j1 = new Date(t.getFullYear(), 0, 4); return 1 + Math.round(((t - j1) / 86400000 - 3 + (j1.getDay() + 6) % 7) / 7); })();
+    return { debut, fin, court: (LANG === "en" ? "W" : "S") + num_, long: `${fmtDate(debut)} – ${fmtDate(fin)}` };
+  });
+}
+function chiffresPeriode(debut, fin) {
+  const dans = (d) => d && d >= debut && d <= fin;
+  const valides = items.filter((i) => i.statut !== "annulee");
+  const factures = valides.filter((i) => num(i.prix) > 0 && dans(dateRef(i)));
+  const pay = paiements.filter((x) => dans(x.date_paiement));
+  let sessions = 0, minutes_ = 0;
+  for (const i of valides) for (const d of sessionsDe(i)) if (dans(d)) { sessions++; minutes_ += dureeMin(i, d); }
+  return { facture: factures.reduce((a, i) => a + num(i.prix), 0), encaisse: pay.reduce((a, x) => a + num(x.montant), 0), sessions, heures: minutes_ / 60, nbFactures: factures.length, pay, factures };
+}
+function graphiqueCompta(per, data) {
+  const W = 720, H = 230, G = 46, B = 26, T = 10, n = per.length, cw = (W - G) / n, bw = Math.min(18, cw / 2 - 4);
+  const max = Math.max(100, ...data.map((d) => Math.max(d.facture, d.encaisse)));
+  const pas = [100, 200, 250, 500, 1000, 2000, 2500, 5000, 10000, 20000, 50000].find((p) => max / p <= 4) || Math.ceil(max / 4);
+  const top = Math.ceil(max / pas) * pas, y = (v) => T + (H - T - B) * (1 - v / top);
+  const barre = (x, v, c) => { if (!v) return ""; const h = Math.max(2, (H - B) - y(v)), r = Math.min(4, h, bw / 2), y0 = H - B, y1 = y0 - h;
+    return `<path d="M${x},${y0} V${y1 + r} Q${x},${y1} ${x + r},${y1} H${x + bw - r} Q${x + bw},${y1} ${x + bw},${y1 + r} V${y0} Z" fill="var(${c})"/>`; };
+  let g = `<g class="grid">`, ax = `<g class="axis">`;
+  for (let v = 0; v <= top; v += pas) { g += `<line x1="${G}" x2="${W}" y1="${y(v)}" y2="${y(v)}"/>`; ax += `<text x="${G - 6}" y="${y(v) + 4}" text-anchor="end">${v >= 1000 ? (v / 1000).toLocaleString(LOC()) + "k" : v}</text>`; }
+  let bars = "", hits = "";
+  per.forEach((p, k) => {
+    const x0 = G + k * cw + cw / 2 - bw - 1;
+    bars += barre(x0, data[k].facture, "--series-1") + barre(x0 + bw + 2, data[k].encaisse, "--series-2");
+    ax += `<text x="${G + k * cw + cw / 2}" y="${H - 8}" text-anchor="middle">${esc(p.court)}</text>`;
+    hits += `<rect class="hit" data-k="${k}" x="${G + k * cw}" y="${T}" width="${cw}" height="${H - T - B}" rx="6"/>`;
+  });
+  return `<div class="cpt-chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Facturé et encaissé par période">${g}</g>${ax}</g>${bars}${hits}</svg><div class="cpt-tip hidden" id="cpt-tip"></div></div>`;
+}
+function renderCompta() {
+  const per = periodesCompta(), data = per.map((p) => chiffresPeriode(p.debut, p.fin));
+  const tot = chiffresPeriode(per[0].debut, per[per.length - 1].fin);
+  const resteGlobal = items.filter((i) => i.statut !== "annulee").reduce((a, i) => a + paiement(i).reste, 0);
+  const taux = tot.facture ? Math.round(Math.min(tot.encaisse, tot.facture) / tot.facture * 100) : 0;
+  const parMode = Object.keys(MODES).map((m) => ({ m, v: tot.pay.filter((x) => x.mode === m).reduce((a, x) => a + num(x.montant), 0) })).filter((x) => x.v);
+  const totMode = parMode.reduce((a, x) => a + x.v, 0) || 1;
+  const parResp = [...RESPS.map((r) => r.v), ""].map((r) => {
+    const l = tot.factures.filter((i) => (r ? i.resp === r : !respConnu(i.resp)));
+    const ids = new Set(items.filter((i) => (r ? i.resp === r : !respConnu(i.resp))).map((i) => i.id));
+    return { r: r || "À assigner", c: r ? respCouleur(r) : "var(--danger)", f: l.reduce((a, i) => a + num(i.prix), 0), e: tot.pay.filter((x) => ids.has(x.demande_id)).reduce((a, x) => a + num(x.montant), 0) };
+  }).filter((x) => x.f || x.e);
+  const impayes = items.filter(aEncaisser).map((i) => ({ i, p: paiement(i), j: -daysUntil(dateRef(i)) })).sort((a, b) => b.j - a.j);
+  const titre = cpt.vue === "mois" ? String(cpt.annee) : `${per[0].long.split(" – ")[0]} – ${per[11].long.split(" – ")[1]}`;
+  $("ad-body").innerHTML = `<div class="cpt-root">
+    <div class="toolbar">
+      <span class="langsw" style="margin:0" id="cpt-vue"><button type="button" data-cv="mois" class="${cpt.vue === "mois" ? "on" : ""}">Par mois</button><button type="button" data-cv="semaine" class="${cpt.vue === "semaine" ? "on" : ""}">Par semaine</button></span>
+      <button class="btn small" data-cnav="-1" aria-label="Précédent">‹</button><b style="font-size:18px">${esc(titre)}</b><button class="btn small" data-cnav="1" aria-label="Suivant">›</button>
+      <span style="flex:1"></span>
+      <button class="btn small" id="cpt-csv-pay">⬇ Registre des paiements (CSV)</button>
+      <button class="btn small" id="cpt-csv-synth">⬇ Synthèse (CSV)</button>
+    </div>
+    <div class="cl-sum">
+      <div class="card kpi"><div class="v">${chf(tot.facture)}</div><div class="l">Facturé sur la période</div></div>
+      <div class="card kpi"><div class="v green">${chf(tot.encaisse)}</div><div class="l">Encaissé sur la période · ${taux}%</div></div>
+      <div class="card kpi"><div class="v ${resteGlobal ? "red" : "green"}">${chf(resteGlobal)}</div><div class="l">Reste à encaisser (total)</div></div>
+      <div class="card kpi"><div class="v">${tot.sessions}${tot.heures ? " · " + tot.heures.toLocaleString(LOC(), { maximumFractionDigits: 1 }) + " h" : ""}</div><div class="l">Sessions · heures de studio</div></div>
+    </div>
+    <div class="card side-list">
+      <div class="toolbar" style="justify-content:space-between"><p class="section-title" style="margin:0">Facturé et encaissé ${cpt.vue === "mois" ? "par mois" : "par semaine"}</p>
+        <div class="cpt-legend"><span><i style="background:var(--series-1)"></i>Facturé</span><span><i style="background:var(--series-2)"></i>Encaissé</span></div></div>
+      ${graphiqueCompta(per, data)}
+      <table class="ad-table cpt-table" style="margin-top:10px"><thead><tr><th>${cpt.vue === "mois" ? "Mois" : "Semaine"}</th><th class="n">Sessions</th><th class="n">Heures</th><th class="n">Facturé</th><th class="n">Encaissé</th><th class="n">Écart</th></tr></thead>
+      <tbody>${per.map((p, k) => { const d = data[k], ec = d.encaisse - d.facture; return `<tr><td style="text-transform:capitalize">${esc(p.long)}</td><td class="n">${d.sessions || "·"}</td><td class="n">${d.heures ? d.heures.toLocaleString(LOC(), { maximumFractionDigits: 1 }) : "·"}</td><td class="n">${d.facture ? chf(d.facture, false) : "·"}</td><td class="n">${d.encaisse ? chf(d.encaisse, false) : "·"}</td><td class="n ${ec < 0 ? "neg" : ""}">${d.facture || d.encaisse ? (ec > 0 ? "+" : "") + chf(ec, false) : "·"}</td></tr>`; }).join("")}</tbody>
+      <tfoot><tr><td>Total</td><td class="n">${tot.sessions}</td><td class="n">${tot.heures.toLocaleString(LOC(), { maximumFractionDigits: 1 })}</td><td class="n">${chf(tot.facture, false)}</td><td class="n">${chf(tot.encaisse, false)}</td><td class="n ${tot.encaisse - tot.facture < 0 ? "neg" : ""}">${chf(tot.encaisse - tot.facture)}</td></tr></tfoot></table>
+      <p class="lg-note">Facturé = prix des demandes (hors annulées), rattachées à leur 1re session, sinon à leur date de fin, sinon à leur création. Encaissé = paiements du registre, à leur date de paiement.</p>
+    </div>
+    <div class="ad-grid">
+      <div class="card side-list">
+        <p class="section-title">Encaissé par mode de paiement</p>
+        ${parMode.length ? `<table class="ad-table"><tbody>${parMode.map((x) => `<tr><td>${MODES[x.m]}</td><td style="width:45%"><div class="cpt-part" style="width:${Math.max(2, x.v / totMode * 100)}%"></div></td><td class="n">${chf(x.v, false)}</td><td class="n">${Math.round(x.v / totMode * 100)}%</td></tr>`).join("")}</tbody></table>` : `<div class="none">Aucun paiement sur la période.</div>`}
+        <p class="section-title" style="margin-top:16px">Par responsable</p>
+        ${parResp.length ? `<table class="ad-table"><thead><tr><th>Responsable</th><th class="n">Facturé</th><th class="n">Encaissé</th></tr></thead><tbody>${parResp.map((x) => `<tr><td><span class="pill r" style="--rc:${x.c}">${esc(x.r)}</span></td><td class="n">${chf(x.f, false)}</td><td class="n">${chf(x.e, false)}</td></tr>`).join("")}</tbody></table>` : `<div class="none">Rien sur la période.</div>`}
+      </div>
+      <div class="card side-list">
+        <p class="section-title">Impayés (${impayes.length}) — total ${chf(resteGlobal)}</p>
+        ${impayes.length ? impayes.map(({ i, p, j }) => `<div class="si s-${i.statut}" data-id="${i.id}"><span class="dot"></span><div class="si-main"><div class="si-name" translate="no">${esc(i.client || i.titre)}</div><div class="si-sub">${chf(p.paye, false)} / ${chf(p.prix)} payés · ${j > 0 ? (LANG === "en" ? `${j} d ago` : `depuis ${j} j`) : relJour(dateRef(i))}${j > 30 ? " · ⚠" : ""}</div></div><span class="si-amt">${chf(p.reste)}</span></div>`).join("") : `<div class="none">Tout est encaissé 🎉</div>`}
+      </div>
+    </div>
+    <div class="card side-list">
+      <p class="section-title">Paiements de la période (${tot.pay.length})</p>
+      ${tot.pay.length ? `<table class="ad-table"><thead><tr><th>Date</th><th>Client</th><th>Mode</th><th>Saisi par</th><th class="n">Montant</th></tr></thead><tbody>${[...tot.pay].sort((a, b) => b.date_paiement.localeCompare(a.date_paiement)).map((x) => `<tr data-id="${x.demande_id || ""}" style="cursor:pointer"><td>${fmtDate(x.date_paiement)}</td><td translate="no">${esc(x.client)}</td><td>${MODES[x.mode] || x.mode}</td><td>${esc(x.saisi_par || x.note || "")}</td><td class="n">${chf(num(x.montant), false)}</td></tr>`).join("")}</tbody></table>` : `<div class="none">Aucun paiement sur la période.</div>`}
+    </div></div>`;
+  renderCompta.data = { per, data };
+}
+function csv(nom, entetes, lignes) {
+  const cell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const blob = new Blob(["\ufeff" + entetes.map(cell).join(";") + "\n" + lignes.map((l) => l.map(cell).join(";")).join("\n")], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = nom; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+function exporterPaiements() {
+  const titre = (id) => { const i = items.find((x) => x.id === id); return i ? i.titre : "(demande supprimée)"; };
+  csv(`noname-paiements-${today()}.csv`, ["Date", "Client", "Demande", "Montant (CHF)", "Mode", "Saisi par", "Note"],
+    [...paiements].sort((a, b) => a.date_paiement.localeCompare(b.date_paiement)).map((x) => [fmtDate(x.date_paiement), x.client, titre(x.demande_id), num(x.montant).toFixed(2), MODES[x.mode] || x.mode, x.saisi_par, x.note]));
+}
+function exporterSynthese() {
+  const { per, data } = renderCompta.data || {}; if (!per) return;
+  csv(`noname-synthese-${cpt.vue}-${today()}.csv`, ["Période", "Sessions", "Heures", "Facturé (CHF)", "Encaissé (CHF)", "Écart (CHF)"],
+    per.map((p, k) => [p.long, data[k].sessions, data[k].heures.toFixed(1), data[k].facture.toFixed(2), data[k].encaisse.toFixed(2), (data[k].encaisse - data[k].facture).toFixed(2)]));
+}
+
+// ---------- Vue d'ensemble : chiffres du mois / de la semaine, à surveiller, meilleurs clients ----------
+function apercuPlus() {
+  const t = today(), m0 = t.slice(0, 8) + "01", m1 = isoDay(new Date(+t.slice(0, 4), +t.slice(5, 7), 0));
+  const s0 = lundiDe(t), s1 = (() => { const x = parse(s0); x.setDate(x.getDate() + 6); return isoDay(x); })();
+  const M = chiffresPeriode(m0, m1), S = chiffresPeriode(s0, s1);
+  const actives = items.filter((i) => !estClos(i));
+  const lien = (l) => l.slice(0, 8).map((i) => `<a data-id="${i.id}" translate="no">${esc(i.client || i.titre)}</a>`).join(", ") + (l.length > 8 ? ` +${l.length - 8}` : "");
+  const surv = [
+    ["Sans prix", actives.filter((i) => !(num(i.prix) > 0))],
+    ["Sans date de session", actives.filter((i) => !sessionsDe(i).length)],
+    ["Sessions à venir sans horaire", actives.filter((i) => sessionsDe(i).some((d) => d >= t && !plageDe(i, d)))],
+    ["Sessions passées, demande pas encore clôturée", actives.filter((i) => sessionsDe(i).length && sessionsDe(i).every((d) => d < t))],
+    ["Sans responsable", actives.filter((i) => !respConnu(i.resp))],
+    ["Pas de contact depuis plus de 14 jours", actives.filter((i) => i.date_contact && daysUntil(i.date_contact) < -14)],
+    ["Impayés depuis plus de 30 jours", items.filter((i) => aEncaisser(i) && -daysUntil(dateRef(i)) > 30)],
+  ].filter(([, l]) => l.length);
+  const parClient = {};
+  for (const i of items.filter((x) => x.statut !== "annulee")) { const k = (i.client || i.titre || "").trim().toLowerCase(); (parClient[k] ||= { nom: (i.client || i.titre || "").trim(), f: 0, e: 0, n: 0 }); parClient[k].f += num(i.prix) || 0; parClient[k].e += num(i.paye) || 0; parClient[k].n++; }
+  const top = Object.values(parClient).filter((x) => x.f).sort((a, b) => b.f - a.f).slice(0, 5);
+  const activite = {};
+  for (const e of journalData.filter((x) => x.action !== "CONNEXION" && Date.now() - new Date(x.le) < 7 * 86400000)) activite[e.profil || "?"] = (activite[e.profil || "?"] || 0) + 1;
+  const h = (x) => x.toLocaleString(LOC(), { maximumFractionDigits: 1 });
+  return `<div class="cl-sum">
+      <div class="card kpi"><div class="v">${chf(M.facture)}</div><div class="l">Facturé ce mois-ci</div></div>
+      <div class="card kpi"><div class="v green">${chf(M.encaisse)}</div><div class="l">Encaissé ce mois-ci</div></div>
+      <div class="card kpi"><div class="v">${M.sessions}${M.heures ? " · " + h(M.heures) + " h" : ""}</div><div class="l">Sessions · heures ce mois-ci</div></div>
+      <div class="card kpi"><div class="v">${S.sessions}${S.heures ? " · " + h(S.heures) + " h" : ""}</div><div class="l">Sessions · heures cette semaine</div></div>
+    </div>
+    <div class="ad-grid">
+      <div class="card side-list"><p class="section-title">⚠ À surveiller</p>
+        ${surv.length ? surv.map(([l, arr]) => `<div class="watch"><span class="n">${arr.length}</span><b>${l}</b><span class="who">${lien(arr)}</span></div>`).join("") : `<div class="none">Rien à signaler 👌</div>`}</div>
+      <div class="card side-list"><p class="section-title">🏆 Meilleurs clients (facturé)</p>
+        ${top.length ? `<table class="ad-table"><tbody>${top.map((x) => `<tr><td translate="no"><b>${esc(x.nom)}</b> <small style="color:var(--muted)">${x.n} demande${x.n > 1 ? "s" : ""}</small></td><td class="n">${chf(x.f, false)}</td><td class="n" style="color:var(--ok)">${chf(x.e, false)}</td></tr>`).join("")}</tbody></table>` : `<div class="none">Aucun prix renseigné.</div>`}
+        <p class="section-title" style="margin-top:16px">Activité par profil (7 jours)</p>
+        ${Object.keys(activite).length ? Object.entries(activite).sort((a, b) => b[1] - a[1]).map(([p, n]) => `<div class="op-row"><b translate="no">${esc(p)}</b><small>${n} modification${n > 1 ? "s" : ""}</small></div>`).join("") : `<div class="none">${journalCharge ? "Aucune modification." : "Chargement…"}</div>`}
+      </div>
+    </div>`;
+}
 function renderApercu() {
   if (!estAdmin || $("adminbox").classList.contains("hidden")) return;
   const t = today();
@@ -2477,7 +2730,7 @@ function renderApercu() {
   const lignes = [...RESPS.map((r) => ({ nom: r.v, c: r.c, l: valides.filter((i) => i.resp === r.v) })), { nom: "À assigner", c: "var(--danger)", l: valides.filter((i) => !respConnu(i.resp)) }];
   const connectes = [...enLigne].sort((a, b) => (a.nom || "").localeCompare(b.nom || ""));
   const recents = [...items].sort((a, b) => (b.maj_le || "").localeCompare(a.maj_le || "")).slice(0, 15);
-  $("ad-body").innerHTML = `
+  $("ad-body").innerHTML = apercuPlus() + `
     <div class="cl-sum">
       <div class="card kpi"><div class="v">${connectes.length}</div><div class="l">Connectés maintenant</div></div>
       <div class="card kpi"><div class="v">${items.filter((i) => !estClos(i)).length} / ${items.length}</div><div class="l">Demandes actives / total</div></div>
@@ -2526,6 +2779,25 @@ $("admin-open").onclick = ouvrirAdmin;
 $("ad-close").onclick = fermerAdmin;
 $("ad-csv").onclick = exporterCSV;
 $("ad-refresh").onclick = () => { chargerJournal(); toast(tr("Actualisé")); };
+$("ad-body").addEventListener("click", (e) => {
+  const v = e.target.closest("[data-cv]"); if (v) { cpt.vue = v.dataset.cv; return renderCompta(); }
+  const nv = e.target.closest("[data-cnav]");
+  if (nv) { const k = +nv.dataset.cnav; if (cpt.vue === "mois") cpt.annee += k; else { const x = parse(cpt.finSemaine); x.setDate(x.getDate() + 84 * k); cpt.finSemaine = isoDay(x); } return renderCompta(); }
+  if (e.target.id === "cpt-csv-pay") return exporterPaiements();
+  if (e.target.id === "cpt-csv-synth") return exporterSynthese();
+  const a = e.target.closest(".watch a[data-id], .cpt-table tr[data-id], .ad-table tr[data-id]"); if (a && a.dataset.id) { e.stopPropagation(); return ouvrir(a.dataset.id); }
+}, true);
+$("ad-body").addEventListener("mousemove", (e) => {
+  const tip = $("cpt-tip"); if (!tip) return;
+  const hit = e.target.closest(".hit");
+  if (!hit) { tip.classList.add("hidden"); return; }
+  const k = +hit.dataset.k, { per, data } = renderCompta.data, d = data[k];
+  tip.innerHTML = `<b style="text-transform:capitalize">${esc(per[k].long)}</b><br><i style="background:var(--series-1)"></i>${tr("Facturé")} : ${chf(d.facture)}<br><i style="background:var(--series-2)"></i>${tr("Encaissé")} : ${chf(d.encaisse)}<br>${d.sessions} session${d.sessions > 1 ? "s" : ""}${d.heures ? " · " + d.heures.toLocaleString(LOC(), { maximumFractionDigits: 1 }) + " h" : ""}`;
+  const box = hit.closest(".cpt-chart").getBoundingClientRect();
+  tip.classList.remove("hidden");
+  tip.style.left = Math.min(box.width - tip.offsetWidth, Math.max(0, e.clientX - box.left + 12)) + "px";
+  tip.style.top = Math.max(0, e.clientY - box.top - tip.offsetHeight - 10) + "px";
+});
 $("ad-tabs").addEventListener("click", (e) => { const b = e.target.closest("[data-tab]"); if (b) { adOnglet = b.dataset.tab; renderAdmin(); } });
 $("ad-body").addEventListener("change", (e) => { const f = e.target.dataset.lg; if (f && f !== "q") { lgF[f] = e.target.value; renderLogs(); } });
 $("ad-body").addEventListener("input", (e) => { if (e.target.dataset.lg === "q") { lgF.q = e.target.value; clearTimeout(e.target._t); e.target._t = setTimeout(() => { renderLogs(); const q = $("ad-body").querySelector('[data-lg="q"]'); if (q) { q.focus(); q.setSelectionRange(q.value.length, q.value.length); } }, 250); } });
@@ -2616,6 +2888,11 @@ function appliquerLangue(l) {
 $("langsw").addEventListener("click", (e) => { const b = e.target.closest("[data-lang]"); if (b && b.dataset.lang !== LANG) appliquerLangue(b.dataset.lang); });
 
 // ---------- Démarrage ----------
+$("vue-btn").textContent = document.documentElement.classList.contains("vue-pc") ? "📱 Vue mobile" : "🖥 Vue ordinateur";
+$("vue-btn").addEventListener("click", () => {
+  try { localStorage.setItem("noname-vue", document.documentElement.classList.contains("vue-pc") ? "mobile" : "pc"); } catch {}
+  location.reload();
+});
 try { const t = localStorage.getItem("noname-tri"); if (t && $("sort").querySelector(`option[value="${t}"]`)) { tri = t; $("sort").value = t; } } catch {}
 
 appliquerLangue(LANG);
