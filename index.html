@@ -470,6 +470,24 @@
   .ad-act:first-child { border-top: none; }
   .ad-act small { margin-left: auto; color: var(--muted); white-space: nowrap; }
   @media (max-width: 900px) { .ad-grid { grid-template-columns: 1fr; } .ad-table { font-size: 14px; } }
+  /* Journée heure par heure */
+  .dd-pl { font-size: 13px; color: var(--muted); margin: -2px 0 4px 2px; }
+  .cl-sess .pl { color: var(--muted); font-size: 13px; }
+  .jr-wrap { display: grid; grid-template-columns: 64px 1fr; position: relative; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .jr-h { height: var(--hh); border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); padding: 2px 8px; font-variant-numeric: tabular-nums; }
+  .jr-h:first-child, .jr-c:first-child { border-top: none; }
+  .jr-col { position: relative; border-left: 1px solid var(--line); }
+  .jr-c { height: var(--hh); border-top: 1px solid var(--line); }
+  .jr-c.half { border-top-style: dashed; }
+  .jr-ev { position: absolute; border-radius: 10px; padding: 6px 10px; background: color-mix(in srgb, var(--rc) 22%, var(--card)); border-left: 5px solid var(--rc); cursor: pointer; overflow: hidden; font-size: 15px; box-shadow: 0 2px 8px rgba(0,0,0,.08); transition: transform .12s; }
+  .jr-ev:hover { transform: translateX(2px); z-index: 2; }
+  .jr-ev b { display: block; font-size: 16px; }
+  .jr-ev .jr-t { font-weight: 800; color: var(--rc); }
+  .jr-ev small { display: block; color: var(--muted); font-size: 13px; }
+  .jr-now { position: absolute; left: 0; right: 0; height: 2px; background: var(--danger); z-index: 3; }
+  .jr-now::before { content: ""; position: absolute; left: -5px; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--danger); }
+  .jr-list .jr-item { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 10px; border-left: 5px solid var(--rc); background: color-mix(in srgb, var(--rc) 12%, var(--card)); margin-bottom: 6px; cursor: pointer; flex-wrap: wrap; }
+  .jr-list .jr-item small { color: var(--muted); font-size: 13px; margin-left: auto; }
   .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 16px; z-index: 70; box-shadow: 0 6px 20px rgba(0,0,0,.2); max-width: calc(100% - 32px); }
 
   @media (max-width: 960px) {
@@ -664,6 +682,20 @@
   </div>
 </div>
 
+<!-- Journée heure par heure -->
+<div class="bigcal hidden" id="daybox" role="dialog" aria-label="Journée" style="z-index:35">
+  <div class="bigcal-box cl-box" style="max-width:900px">
+    <div class="bc-head">
+      <h2 id="jr-title" style="min-width:0"></h2>
+      <button class="btn" id="jr-prev" aria-label="Jour précédent">‹</button>
+      <button class="btn" id="jr-next" aria-label="Jour suivant">›</button>
+      <button class="btn primary" id="jr-new">+ Session ce jour</button>
+      <button class="btn" id="jr-close" style="margin-left:auto">✕ Fermer</button>
+    </div>
+    <div class="cl-body" id="jr-body"></div>
+  </div>
+</div>
+
 <!-- Tiroir d'édition -->
 <div class="overlay hidden" id="overlay"></div>
 <aside class="drawer hidden" id="drawer" aria-label="Fiche demande">
@@ -760,7 +792,7 @@ const EN = {
   "Enregistrement studio": "Studio recording", "Mix / master": "Mix / master", "Production / beat": "Production / beat", "Co-production label": "Label co-production", "Booking / live": "Booking / live", "Promo / com": "Promo / PR", "Admin / contrat": "Admin / contract", "Autre": "Other",
   "Cliquer pour modifier la date": "Click to change the date", "Retirer cette date": "Remove this date", "Fermer": "Close", "✕ Fermer": "✕ Close", "Mois précédent": "Previous month", "Mois suivant": "Next month", "Aujourd'hui": "Today", "Grand calendrier": "Big calendar", "+ session": "+ session", "Aucune session ce mois-ci.": "No sessions this month.",
   "Copier son récap": "Copy their summary", "+ Nouvelle demande": "+ New request", "Total facturé": "Total invoiced", "Déjà payé": "Already paid", "Reste à payer": "Amount due", "Tout est payé": "All paid", "Aucune session.": "No sessions.",
-  "jj/mm/aaaa": "dd/mm/yyyy", "☀️ Clair": "☀️ Light", "🌙 Sombre": "🌙 Dark", "Thème": "Theme", "Catégorie": "Category", "Cliquer pour afficher / masquer": "Click to show / hide", "🕐 de": "🕐 from", "à": "to", "(facultatif, appliqué à la date ajoutée)": "(optional, applied to the date you add)", "Heure de début": "Start time", "Heure de fin": "End time", "Modifier l'horaire": "Change the time",
+  "jj/mm/aaaa": "dd/mm/yyyy", "🕐 Voir la journée": "🕐 See the day", "Journée": "Day", "Jour précédent": "Previous day", "Jour suivant": "Next day", "Aussi ce jour-là": "Also that day", "✓ Terminée": "✓ Finished", "☎ Contact": "☎ Contact", "🕐 détail": "🕐 details", "☀️ Clair": "☀️ Light", "🌙 Sombre": "🌙 Dark", "Thème": "Theme", "Catégorie": "Category", "Cliquer pour afficher / masquer": "Click to show / hide", "🕐 de": "🕐 from", "à": "to", "(facultatif, appliqué à la date ajoutée)": "(optional, applied to the date you add)", "Heure de début": "Start time", "Heure de fin": "End time", "Modifier l'horaire": "Change the time",
   "Ton profil": "Your profile", "🛡️ Admin": "🛡️ Admin", "🛡️ Panel admin": "🛡️ Admin panel", "Panel admin": "Admin panel", "⬇ Exporter (CSV)": "⬇ Export (CSV)", "Connectés maintenant": "Online now", "Demandes actives / total": "Active / total requests",
   "Par responsable": "By owner", "Actives": "Active", "Encaissé": "Collected", "Activité récente": "Recent activity", "Total": "Total", "Choisir ton profil…": "Choose your profile…", "Invité": "Guest", "➕ Nouveau profil…": "➕ New profile…", "Écris le nom de ton profil": "Type your profile name", "Écris le nom de ton profil.": "Type your profile name.", "Choisis ton profil.": "Choose your profile.", "Autres profils": "Other profiles", "Aucun profil créé pour l'instant.": "No profiles created yet.", "Supprimer ce profil": "Delete this profile", "Supprimer ce profil de la liste ?": "Remove this profile from the list?", "Profil supprimé": "Profile deleted", "en ligne": "online", "Personne": "Nobody", "+ Ajouter": "+ Add", "Mois": "Month", "Tout": "All", "Tous les événements": "All events", "Aucun événement pour l'instant.": "No events yet.",
   "Rien ce mois-ci.": "Nothing this month.",
@@ -785,7 +817,7 @@ const RULES = [
   [/^Créée le /, "Created on "], [/ · modifiée /, " · updated "], [/ · modifiée par un membre/, " · changed by a member"], [/^Modifiée /, "Updated "],
   [/ payés\b/g, " paid"], [/(\d+) modification\(s\)/, "$1 change(s)"],
   [/^Contacts : /, "Contacts: "], [/^Contact : /, "Contact: "], [/^Sessions : /, "Sessions: "], [/^Terminées : /, "Finished: "], [/^Terminée : /, "Finished: "],
-  [/^Voir toutes les sessions et paiements de /, "See all sessions and payments for "], [/^Connecté·e : /, "Signed in: "], [/^Profil : /, "Profile: "], [/^Profils créés \((\d+)\)$/, "Created profiles ($1)"], [/^Sessions du mois \((\d+)\)$/, "Sessions this month ($1)"], [/^Encaissé sur (.+) facturés$/, "Collected out of $1 invoiced"], [/^🟢 Connectés maintenant \((\d+)\)$/, "🟢 Online now ($1)"], [/^Connectés maintenant \((\d+)\)$/, "Online now ($1)"], [/ · depuis (\d)/, " · since $1"],
+  [/^Voir toutes les sessions et paiements de /, "See all sessions and payments for "], [/^Connecté·e : /, "Signed in: "], [/^Profil : /, "Profile: "], [/(≈ )?placée le (\S+ \S+)( par (.+))?$/, (m, a, d, p, n) => `${a || ""}booked on ${d}${n ? " by " + n : ""}`], [/^Planning \((\d+)\)$/, "Schedule ($1)"], [/^Sessions sans horaire \((\d+)\)$/, "Sessions without a time ($1)"], [/^Profils créés \((\d+)\)$/, "Created profiles ($1)"], [/^Sessions du mois \((\d+)\)$/, "Sessions this month ($1)"], [/^Encaissé sur (.+) facturés$/, "Collected out of $1 invoiced"], [/^🟢 Connectés maintenant \((\d+)\)$/, "🟢 Online now ($1)"], [/^Connectés maintenant \((\d+)\)$/, "Online now ($1)"], [/ · depuis (\d)/, " · since $1"],
   [/\bdès (\d)/g, "from $1"], [/\bjusqu'à (\d)/g, "until $1"],
   [/\breste (?=[\d])/g, "due "], [/^✓ le /, "✓ on "], [/^Statut : /, "Status: "], [/^Responsable : /, "Owner: "], [/^Erreur : /, "Error: "],
   [/^Liste indisponible\./, "List unavailable."], [/le projet Supabase est peut-être en pause\./, "the Supabase project may be paused."],
@@ -955,7 +987,7 @@ function avecFin(patch, ancien) {
 }
 const sessionsPayload = (arr, h = {}) => {
   const s = [...new Set(arr)].sort(), horaires = {};
-  for (const d of s) if (h[d] && (h[d].d || h[d].f)) horaires[d] = { d: h[d].d || "", f: h[d].f || "" };
+  for (const d of s) if (h[d] && (h[d].d || h[d].f || h[d].le)) horaires[d] = { d: h[d].d || "", f: h[d].f || "", ...(h[d].le ? { le: h[d].le, par: h[d].par || "" } : {}) };
   return { sessions: s, date_reservation: s[0] || null, horaires };
 };
 // Horaires : « 14h–16h », « 18h30–19h » (FR) ou « 14:00–16:00 » (EN)
@@ -963,6 +995,16 @@ const fmtH = (h) => { if (!h) return ""; const [hh, mm] = h.split(":"); return L
 const plage = (h) => !h || (!h.d && !h.f) ? "" : h.d && h.f ? `${fmtH(h.d)}–${fmtH(h.f)}` : h.d ? (LANG === "en" ? "from " : "dès ") + fmtH(h.d) : (LANG === "en" ? "until " : "jusqu'à ") + fmtH(h.f);
 const horaireDe = (i, d) => (i.horaires && i.horaires[d]) || null;
 const plageDe = (i, d) => plage(horaireDe(i, d));
+// Quand la session a été placée : enregistré depuis cette version, sinon ≈ création de la demande
+function placee(i, d) {
+  const h = horaireDe(i, d);
+  if (h && h.le) return { le: h.le, par: h.par || "", approx: false };
+  return { le: i.cree_le, par: "", approx: true };
+}
+function placeeTexte(i, d) {
+  const p = placee(i, d); if (!p.le) return "";
+  return `${p.approx ? "≈ " : ""}placée le ${fmtDateHeure(new Date(p.le))}${p.par ? " par " + p.par : ""}`;
+}
 const OPTIONS_H = (() => { let o = `<option value="">—</option>`; for (let h = 0; h < 24; h++) for (const m of ["00", "30"]) { const v = `${String(h).padStart(2, "0")}:${m}`; o += `<option value="${v}">${v}</option>`; } return o; })();
 
 // ---------- Interface utilitaire ----------
@@ -1318,12 +1360,65 @@ function renderBigCal() {
       <span class="bc-num">${d.getDate()}</span>
       <span class="bc-full">${d.toLocaleDateString(LOC(), { weekday: "long", day: "numeric", month: "long" })}${key === t ? " · aujourd'hui" : ""}</span>
       ${evs.map(evHtml).join("")}
-      <span class="bc-add">+ session</span>
+      <span class="bc-add">🕐 détail</span>
     </div>`;
   }
   const vide = !Object.keys(parJour).some((d) => d.startsWith(isoDay(mois).slice(0, 7)));
   $("bc-grid").innerHTML = html + (vide ? `<div class="bc-empty">Rien ce mois-ci.</div>` : "");
 }
+// ---------- Journée heure par heure ----------
+let jourOuvert = null;
+const minutes = (h) => { if (!h) return null; const [a, b] = h.split(":").map(Number); return a * 60 + b; };
+function ouvrirJour(d) { jourOuvert = d; $("daybox").classList.remove("hidden"); renderJour(); }
+function fermerJour() { $("daybox").classList.add("hidden"); jourOuvert = null; }
+function renderJour() {
+  if (!jourOuvert || $("daybox").classList.contains("hidden")) return;
+  const d = jourOuvert, t = today();
+  $("jr-title").textContent = parse(d).toLocaleDateString(LOC(), { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  const sess = items.filter((i) => i.statut !== "annulee" && sessionsDe(i).includes(d)).map((i) => {
+    const h = horaireDe(i, d) || {};
+    let a = minutes(h.d), b = minutes(h.f);
+    if (a !== null && b === null) b = a + 60;           // début seulement : 1 h affichée
+    if (a === null && b !== null) a = b - 60;           // fin seulement
+    if (a !== null && b <= a) b += 24 * 60;             // session qui passe minuit
+    return { i, a, b };
+  });
+  const avecHeure = sess.filter((x) => x.a !== null).sort((x, y) => x.a - y.a);
+  const sansHeure = sess.filter((x) => x.a === null);
+  // plage affichée : 8h–22h au minimum, élargie selon les sessions
+  const h0 = Math.min(8, ...avecHeure.map((x) => Math.floor(x.a / 60)));
+  const h1 = Math.max(22, ...avecHeure.map((x) => Math.ceil(x.b / 60)));
+  const HH = 56; // hauteur d'une heure en pixels
+  // colonnes pour les sessions qui se chevauchent
+  const fins = [];
+  for (const x of avecHeure) { let c = fins.findIndex((f) => f <= x.a); if (c < 0) { c = fins.length; fins.push(0); } fins[c] = x.b; x.col = c; }
+  const nCol = Math.max(1, fins.length);
+  const ligne = (x) => `${esc(x.i.titre && x.i.titre !== x.i.client ? x.i.titre : "")}${x.i.titre && x.i.titre !== x.i.client ? " · " : ""}${esc(respConnu(x.i.resp) ? x.i.resp : "à assigner")} · ${statutLabel(x.i.statut)}`;
+  let heures = "", cases = "";
+  for (let h = h0; h < h1; h++) { heures += `<div class="jr-h">${fmtH(String(h % 24).padStart(2, "0") + ":00")}</div>`; cases += `<div class="jr-c"></div>`; }
+  const evs = avecHeure.map((x) => `<div class="jr-ev" data-id="${x.i.id}" style="--rc:${respCouleur(x.i.resp)};top:${(x.a / 60 - h0) * HH + 2}px;height:${Math.max(44, (x.b - x.a) / 60 * HH - 4)}px;left:calc(${(100 / nCol) * x.col}% + 4px);width:calc(${100 / nCol}% - 8px)">
+      <span class="jr-t">${plageDe(x.i, d)}</span><b translate="no">${esc(x.i.client || x.i.titre)}</b><small>${ligne(x)}</small><small>${placeeTexte(x.i, d)}</small></div>`).join("");
+  const now = new Date(), mNow = now.getHours() * 60 + now.getMinutes();
+  const barre = d === t && mNow >= h0 * 60 && mNow <= h1 * 60 ? `<div class="jr-now" style="top:${(mNow / 60 - h0) * HH}px"></div>` : "";
+  const autres = items.filter((i) => (calF.contacts && i.date_contact === d) || (calF.fins && i.date_fin === d));
+  $("jr-body").innerHTML = `
+    ${sansHeure.length ? `<div class="jr-list"><p class="section-title">Sessions sans horaire (${sansHeure.length})</p>${sansHeure.map((x) => `<div class="jr-item" data-id="${x.i.id}" style="--rc:${respCouleur(x.i.resp)}"><b translate="no">${esc(x.i.client || x.i.titre)}</b><span>${ligne(x)}</span><small>${placeeTexte(x.i, d)}</small></div>`).join("")}</div>` : ""}
+    ${avecHeure.length || !sansHeure.length ? `<div><p class="section-title">Planning (${avecHeure.length})</p>
+      <div class="jr-wrap" style="--hh:${HH}px"><div>${heures}</div><div class="jr-col"><div>${cases}</div>${evs}${barre}</div></div></div>` : ""}
+    ${autres.length ? `<div class="jr-list"><p class="section-title">Aussi ce jour-là</p>${autres.map((i) => `<div class="jr-item" data-id="${i.id}" style="--rc:${i.date_fin === d ? "var(--ok)" : "var(--info)"}"><b translate="no">${esc(i.client || i.titre)}</b><span>${i.date_fin === d ? "✓ Terminée" : "☎ Contact"}</span></div>`).join("")}</div>` : ""}`;
+  // faire défiler jusqu'à la première session
+  if (avecHeure.length) setTimeout(() => { const el = $("jr-body").querySelector(".jr-ev"); el && el.scrollIntoView({ block: "center" }); }, 0);
+}
+$("jr-close").onclick = fermerJour;
+$("daybox").addEventListener("click", (e) => {
+  if (e.target.id === "daybox") return fermerJour();
+  const ev = e.target.closest("[data-id]"); if (ev) ouvrir(ev.dataset.id);
+});
+const decalerJour = (n) => { const x = parse(jourOuvert); x.setDate(x.getDate() + n); jourOuvert = isoDay(x); renderJour(); };
+$("jr-prev").onclick = () => decalerJour(-1);
+$("jr-next").onclick = () => decalerJour(1);
+$("jr-new").onclick = () => ouvrir(null, { sessions: [jourOuvert] });
+
 // ---------- Fiche client ----------
 let clientSel = null, clientMois = null;
 const memeClient = (i, nom) => (i.client || i.titre || "").trim().toLowerCase() === nom.trim().toLowerCase();
@@ -1401,7 +1496,7 @@ function renderClient() {
         <div class="cl-list">${sessions.length ? sessions.map(({ i, d }) => `
           <div class="cl-sess ${d < t ? "past" : ""}" data-id="${i.id}" data-goto="${d}">
             <span class="rbadge" style="--rc:${respCouleur(i.resp)}">${esc((i.resp || "?")[0])}</span>
-            <b>${fmtDate(d)}</b><span>${jourSemaine(d)}${plageDe(i, d) ? " · <b>" + plageDe(i, d) + "</b>" : ""} · ${relJour(d)}${i.titre && i.titre !== i.client ? " · " + esc(i.titre) : ""}</span>
+            <b>${fmtDate(d)}</b><span>${jourSemaine(d)}${plageDe(i, d) ? " · <b>" + plageDe(i, d) + "</b>" : ""} · ${relJour(d)}<small class="pl"> · ${placeeTexte(i, d)}</small>${i.titre && i.titre !== i.client ? " · " + esc(i.titre) : ""}</span>
           </div>`).join("") : `<div class="none">Aucune session.</div>`}</div>
       </div>
     </div>
@@ -1442,15 +1537,16 @@ function renderDetailJour(resa, contact, modif, fin) {
   const box = $("day-detail");
   if (!jourSel) { box.classList.add("hidden"); return; }
   const lignes = [
-    ...(resa[jourSel] || []).map((i) => ({ i, t: "r", l: plageDe(i, jourSel) || "Session" })),
+    ...[...(resa[jourSel] || [])].sort((x, y) => (horaireDe(x, jourSel)?.d || "99").localeCompare(horaireDe(y, jourSel)?.d || "99")).map((i) => ({ i, t: "r", l: plageDe(i, jourSel) || "Session" })),
     ...(contact[jourSel] || []).map((i) => ({ i, t: "c", l: "Contact" })),
     ...(fin[jourSel] || []).map((i) => ({ i, t: "f", l: "Fin" })),
     ...(modif[jourSel] || []).map((i) => ({ i, t: "m", l: "Modif" })),
   ];
   box.innerHTML = `<div class="dd-title">${parse(jourSel).toLocaleDateString(LOC(), { weekday: "long", day: "numeric", month: "long" })}</div>`
-    + (lignes.length ? lignes.map(({ i, t, l }) => `<div class="dd-item s-${i.statut}" data-id="${i.id}"><span class="tag ${t}">${l}</span>${respBadge(i.resp)}<span class="dd-name" translate="no">${esc(i.client || i.titre)}</span></div>`).join("")
+    + (lignes.length ? lignes.map(({ i, t, l }) => `<div class="dd-item s-${i.statut}" data-id="${i.id}"><span class="tag ${t}">${l}</span>${respBadge(i.resp)}<span class="dd-name" translate="no">${esc(i.client || i.titre)}</span></div>`
+        + (t === "r" ? `<div class="dd-pl">${placeeTexte(i, jourSel)}</div>` : "")).join("")
       : `<div class="none">Rien ce jour-là.</div>`)
-    + `<div style="margin-top:8px"><button class="btn small" id="dd-new">+ Session ce jour</button></div>`;
+    + `<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn small primary" id="dd-jour">🕐 Voir la journée</button><button class="btn small" id="dd-new">+ Session ce jour</button></div>`;
   box.classList.remove("hidden");
 }
 
@@ -1493,6 +1589,7 @@ function render(anim = false) {
   renderCalendrier();
   renderSide();
   renderBigCal();
+  renderJour();
   renderClient();
   renderAdmin();
 }
@@ -1669,7 +1766,7 @@ const dates = { q: [], e: [] };
 function renderChips(k) {
   const t = today();
   $(k + "-chips").innerHTML = dates[k].length
-    ? dates[k].map((d, n) => `<span class="dchip ${d < t ? "past" : ""}" data-n="${n}"><span class="dlabel" title="Cliquer pour modifier la date" style="cursor:pointer">${jourSemaine(d)} ${fmtDate(d)}${plage(heures[k][d]) ? ` · <span class="dh">${plage(heures[k][d])}</span>` : ""}</span><button type="button" class="hbtn" data-h="${n}" title="Modifier l'horaire">🕐</button><button type="button" data-del="${n}" aria-label="Retirer cette date">×</button></span>`).join("")
+    ? dates[k].map((d, n) => `<span class="dchip ${d < t ? "past" : ""}" data-n="${n}"> <span class="dlabel" title="Cliquer pour modifier la date${heures[k][d]?.le ? " — placée le " + fmtDateHeure(new Date(heures[k][d].le)) + (heures[k][d].par ? " par " + heures[k][d].par : "") : ""}" style="cursor:pointer">${jourSemaine(d)} ${fmtDate(d)}${plage(heures[k][d]) ? ` · <span class="dh">${plage(heures[k][d])}</span>` : ""}</span><button type="button" class="hbtn" data-h="${n}" title="Modifier l'horaire">🕐</button><button type="button" data-del="${n}" aria-label="Retirer cette date">×</button></span>`).join("")
     : "";
 }
 // Date tapée au clavier (jj/mm/aaaa, jj.mm.aaaa, jj-mm-aaaa) → aaaa-mm-jj ; null si vide, false si invalide
@@ -1697,7 +1794,8 @@ function setDates(k, arr) {
 // Ajoute une date avec l'horaire choisi dans les menus « de / à »
 function ajouterDate(k, v) {
   const hd = $(k + "-h-d").value, hf = $(k + "-h-f").value;
-  if (hd || hf) heures[k][v] = { d: hd, f: hf };
+  if (!dates[k].includes(v)) heures[k][v] = { d: hd, f: hf, le: new Date().toISOString(), par: userEmail || "" };
+  else if (hd || hf) heures[k][v] = { ...heures[k][v], d: hd, f: hf };
   setDates(k, [...dates[k], v]);
 }
 for (const k of ["q", "e"]) {
@@ -1726,7 +1824,7 @@ for (const k of ["q", "e"]) {
       box.querySelector("[data-ok]").onclick = (ev) => {
         ev.stopPropagation();
         const hd = box.querySelector("[data-hd]").value, hf = box.querySelector("[data-hf]").value;
-        if (hd || hf) heures[k][d] = { d: hd, f: hf }; else delete heures[k][d];
+        heures[k][d] = { ...(heures[k][d] || {}), d: hd, f: hf };
         renderChips(k);
       };
       return;
@@ -1826,6 +1924,7 @@ $("cal").addEventListener("click", (e) => {
   render();
 });
 $("day-detail").addEventListener("click", (e) => {
+  if (e.target.id === "dd-jour") return ouvrirJour(jourSel);
   if (e.target.id === "dd-new") return ouvrir(null, { sessions: [jourSel] });
   const it = e.target.closest(".dd-item"); if (it) ouvrir(it.dataset.id);
 });
@@ -1852,7 +1951,7 @@ $("bc-alert").addEventListener("click", (e) => { const b = e.target.closest("[da
 $("bc-fins").onchange = (e) => majCalF("fins", e.target.checked);
 $("bc-grid").addEventListener("click", (e) => {
   const ev = e.target.closest(".bc-ev"); if (ev) return ouvrir(ev.dataset.id);
-  const day = e.target.closest(".bc-day"); if (day && bcVue === "mois") ouvrir(null, { sessions: [day.dataset.day] });
+  const day = e.target.closest(".bc-day"); if (day) ouvrirJour(day.dataset.day);
 });
 $("cl-close").onclick = fermerClient;
 $("clientbox").addEventListener("click", (e) => { if (e.target.id === "clientbox") fermerClient(); });
@@ -1891,6 +1990,7 @@ $("e-client").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); 
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && !document.querySelector(".flatpickr-calendar.open")) {
     if (!$("drawer").classList.contains("hidden")) fermer();
+    else if (!$("daybox").classList.contains("hidden")) fermerJour();
     else if (!$("clientbox").classList.contains("hidden")) fermerClient();
     else if (!$("adminbox").classList.contains("hidden")) fermerAdmin();
     else if (!$("bigcal").classList.contains("hidden")) fermerBigCal();
