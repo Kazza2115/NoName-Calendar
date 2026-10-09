@@ -348,6 +348,42 @@
     .bc-empty { display: block !important; }
   }
   .bc-empty { display: none; padding: 30px 16px; text-align: center; color: var(--muted); }
+  /* Fiche client */
+  .lien-client { background: none; border: none; padding: 0; font: inherit; font-weight: 650; color: inherit; cursor: pointer; text-align: left; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--accent) 35%, transparent); text-underline-offset: 3px; }
+  .lien-client:hover { color: var(--accent); text-decoration-color: var(--accent); }
+  .cl-box { max-width: 1150px; }
+  .cl-body { flex: 1; overflow: auto; padding: 18px 20px 24px; display: grid; gap: 18px; }
+  .cl-sum { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .cl-sum .kpi { padding: 14px; }
+  .cl-sum .v.red { color: var(--danger); } .cl-sum .v.green { color: var(--ok); }
+  .cl-cols { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+  .cl-cal-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .cl-cal-head h3 { margin: 0; flex: 1; font-size: 20px; text-transform: capitalize; }
+  .cl-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .cl-grid .bc-dow { position: static; padding: 8px 4px; font-size: 14px; }
+  .cl-grid .bc-day { min-height: 84px; padding: 5px; }
+  .cl-grid .bc-ev { font-size: 14px; padding: 4px 6px; }
+  .cl-list { display: grid; gap: 8px; }
+  .cl-sess { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; background: var(--soft); cursor: pointer; }
+  .cl-sess.past { opacity: .6; }
+  .cl-sess b { font-variant-numeric: tabular-nums; min-width: 110px; }
+  .cl-dem { padding: 14px; display: grid; gap: 8px; cursor: pointer; border-left: 5px solid var(--c); }
+  .cl-dem:hover { border-color: var(--accent); }
+  .cl-dem-top { display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .pill { display: inline-block; font-size: 14px; font-weight: 700; padding: 3px 12px; border-radius: 999px; color: var(--c); background: color-mix(in srgb, var(--c) 14%, var(--card)); }
+  .pill.r { color: var(--rc); background: color-mix(in srgb, var(--rc) 14%, var(--card)); }
+  @media (max-width: 900px) { .cl-cols { grid-template-columns: 1fr; } .cl-sum { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 680px) {
+    .cl-body { padding: 14px 12px; }
+    .cl-grid .bc-day, .cl-grid .bc-day.has:not(.out) { min-height: 54px; padding: 3px !important; justify-content: flex-start; }
+    .cl-grid .bc-ev { font-size: 0; padding: 0; height: 8px; border-left-width: 0; background: var(--rc); border-radius: 4px; }
+    .cl-grid .bc-ev.fin { height: 8px; border: none; background: var(--ok); }
+    .cl-grid .bc-dow { font-size: 12px; }
+    .cl-grid .bc-day.has:not(.out), .cl-grid .bc-day, .cl-grid .bc-dow { display: flex; }
+    .cl-grid .bc-num { display: grid !important; font-size: 14px; width: 24px; height: 24px; }
+    .cl-grid .bc-full { display: none !important; }
+    .cl-grid { display: grid !important; }
+  }
   .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 16px; z-index: 70; box-shadow: 0 6px 20px rgba(0,0,0,.2); max-width: calc(100% - 32px); }
 
   @media (max-width: 960px) {
@@ -501,11 +537,25 @@
   </div>
 </div>
 
+<!-- Fiche client : toutes les demandes, sessions et paiements d'un client -->
+<div class="bigcal hidden" id="clientbox" role="dialog" aria-label="Fiche client">
+  <div class="bigcal-box cl-box">
+    <div class="bc-head">
+      <h2 id="cl-title"></h2>
+      <button class="btn" id="cl-recap">Copier son récap</button>
+      <button class="btn primary" id="cl-new">+ Nouvelle demande</button>
+      <button class="btn" id="cl-close" style="margin-left:auto">✕ Fermer</button>
+    </div>
+    <div class="cl-body" id="cl-body"></div>
+  </div>
+</div>
+
 <!-- Tiroir d'édition -->
 <div class="overlay hidden" id="overlay"></div>
 <aside class="drawer hidden" id="drawer" aria-label="Fiche demande">
   <div class="d-head">
     <h2 id="d-title">Fiche</h2>
+    <button class="btn small" id="d-client" type="button" title="Voir toutes les demandes de ce client">👤 Fiche client</button>
     <button class="btn small ghost" id="d-close" aria-label="Fermer">✕</button>
   </div>
   <div class="field"><label for="e-client">Nom du client *</label><input type="text" id="e-client"></div>
@@ -858,7 +908,7 @@ function renderListe() {
   $("rows").innerHTML = rows.length ? rows.map((i) => `
     <div class="row s-${i.statut} ${estClos(i) ? "closed" : ""} ${respConnu(i.resp) ? "" : "unassigned"} ${flash.ids.has(i.id) ? "flash" : ""}" data-id="${i.id}" title="Modifiée ${relTime(i.maj_le)}">
       <div class="c-cl">
-        <div class="cl-name">${esc(i.client || i.titre)}</div>
+        <div class="cl-name"><button type="button" class="lien-client" data-client="${esc(i.client || i.titre)}" title="Voir toutes les sessions et paiements de ${esc(i.client || i.titre)}">${esc(i.client || i.titre)}</button></div>
         <div class="cl-sub">${esc([i.client && i.titre !== i.client ? i.titre : "", i.type && i.type !== "Autre" ? i.type : ""].filter(Boolean).join(" · ") || "—")}</div>
       </div>
       <div class="c-rp"><span class="lbl">Responsable</span>
@@ -954,6 +1004,117 @@ function renderBigCal() {
   const vide = !items.some((i) => sessionsDe(i).some((d) => d.startsWith(isoDay(mois).slice(0, 7))));
   $("bc-grid").innerHTML = html + (vide ? `<div class="bc-empty">Aucune session ce mois-ci.</div>` : "");
 }
+// ---------- Fiche client ----------
+let clientSel = null, clientMois = null;
+const memeClient = (i, nom) => (i.client || i.titre || "").trim().toLowerCase() === nom.trim().toLowerCase();
+const demandesClient = () => clientSel ? items.filter((i) => memeClient(i, clientSel)) : [];
+// Nom affiché : la variante la mieux écrite (majuscule au début), sans espaces superflus
+const nomClient = (dem) => { const noms = dem.map((i) => (i.client || i.titre || "").trim()); return noms.find((n) => /^\p{Lu}/u.test(n)) || noms[0] || ""; };
+
+function ouvrirClient(nom) {
+  clientSel = nom;
+  const t = today();
+  const toutes = demandesClient().flatMap(sessionsDe).sort();
+  const cible = toutes.find((d) => d >= t) || toutes[toutes.length - 1] || t;
+  clientMois = new Date(parse(cible).getFullYear(), parse(cible).getMonth(), 1);
+  $("clientbox").classList.remove("hidden");
+  renderClient();
+}
+function fermerClient() { $("clientbox").classList.add("hidden"); clientSel = null; }
+
+function renderClient() {
+  if (!clientSel || $("clientbox").classList.contains("hidden")) return;
+  const dem = demandesClient();
+  if (!dem.length) { fermerClient(); return; }
+  const t = today();
+  $("cl-title").textContent = nomClient(dem);
+
+  // Ce qu'il/elle doit
+  const valides = dem.filter((i) => i.statut !== "annulee").map(paiement).filter((p) => p.etat !== "aucun");
+  const facture = valides.reduce((a, p) => a + p.prix, 0), paye = valides.reduce((a, p) => a + Math.min(p.paye, p.prix), 0);
+  const reste = valides.reduce((a, p) => a + p.reste, 0);
+  const sessions = dem.filter((i) => i.statut !== "annulee").flatMap((i) => sessionsDe(i).map((d) => ({ i, d }))).sort((a, b) => a.d.localeCompare(b.d));
+  const aVenir = sessions.filter((x) => x.d >= t);
+
+  // Calendrier de ses sessions uniquement
+  const y = clientMois.getFullYear(), m = clientMois.getMonth();
+  const offset = (new Date(y, m, 1).getDay() + 6) % 7;
+  const cases = Math.ceil((offset + new Date(y, m + 1, 0).getDate()) / 7) * 7;
+  const parJour = {};
+  for (const x of sessions) (parJour[x.d] ||= []).push({ ...x, k: "s" });
+  for (const i of dem) if (i.date_fin) (parJour[i.date_fin] ||= []).push({ i, d: i.date_fin, k: "f" });
+  let grid = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((d) => `<div class="bc-dow">${d}</div>`).join("");
+  for (let n = 0; n < cases; n++) {
+    const d = new Date(y, m, 1 - offset + n), key = isoDay(d), evs = parJour[key] || [];
+    grid += `<div class="bc-day ${evs.length ? "has" : ""} ${d.getMonth() !== m ? "out" : ""} ${key === t ? "today" : ""} ${flash.days.has(key) ? "pulse" : ""}" data-day="${key}"><span class="bc-num">${d.getDate()}</span>`
+      + evs.map(({ i, k }) => k === "f"
+        ? `<div class="bc-ev fin" data-id="${i.id}" title="Terminée">✓ Fin</div>`
+        : `<div class="bc-ev ${estClos(i) ? "closed" : ""}" style="--rc:${respCouleur(i.resp)}" data-id="${i.id}" title="${esc(i.titre || "")} · ${esc(i.resp || "à assigner")}">${esc(i.titre && i.titre !== i.client ? i.titre : "Session")}</div>`).join("")
+      + `</div>`;
+  }
+
+  const paiementHtml = (i) => {
+    const p = paiement(i);
+    if (p.etat === "aucun") return `<span class="none">Pas encore de prix</span>`;
+    return `<div class="p-${p.etat}"><div class="pay-txt">${chf(p.paye, false)} <small>/ ${chf(p.prix)} payés</small> · <span style="color:var(--pc)">${p.reste ? "reste " + chf(p.reste) : "soldé"}</span></div><div class="bar"><i style="width:${p.pct}%"></i></div></div>`;
+  };
+
+  $("cl-body").innerHTML = `
+    <div class="cl-sum">
+      <div class="card kpi"><div class="v">${aVenir.length}</div><div class="l">Session${aVenir.length > 1 ? "s" : ""} à venir · ${sessions.length} au total</div></div>
+      <div class="card kpi"><div class="v">${chf(facture)}</div><div class="l">Total facturé</div></div>
+      <div class="card kpi"><div class="v green">${chf(paye)}</div><div class="l">Déjà payé</div></div>
+      <div class="card kpi"><div class="v ${reste ? "red" : "green"}">${chf(reste)}</div><div class="l">${reste ? "Reste à payer" : "Tout est payé"}</div></div>
+    </div>
+    <div class="cl-cols">
+      <div>
+        <div class="cl-cal-head">
+          <h3>${clientMois.toLocaleDateString("fr-CH", { month: "long", year: "numeric" })}</h3>
+          <button class="btn small" data-cm="-1" aria-label="Mois précédent">‹</button>
+          <button class="btn small" data-cm="0">Aujourd'hui</button>
+          <button class="btn small" data-cm="1" aria-label="Mois suivant">›</button>
+        </div>
+        <div class="cl-grid">${grid}</div>
+      </div>
+      <div>
+        <p class="section-title">Sessions (${sessions.length})</p>
+        <div class="cl-list">${sessions.length ? sessions.map(({ i, d }) => `
+          <div class="cl-sess ${d < t ? "past" : ""}" data-id="${i.id}" data-goto="${d}">
+            <span class="rbadge" style="--rc:${respCouleur(i.resp)}">${esc((i.resp || "?")[0])}</span>
+            <b>${fmtDate(d)}</b><span>${jourSemaine(d)} · ${relJour(d)}${i.titre && i.titre !== i.client ? " · " + esc(i.titre) : ""}</span>
+          </div>`).join("") : `<div class="none">Aucune session.</div>`}</div>
+      </div>
+    </div>
+    <div>
+      <p class="section-title">Demandes (${dem.length})</p>
+      <div class="cl-list">${dem.map((i) => `
+        <div class="card cl-dem s-${i.statut}" data-id="${i.id}">
+          <div class="cl-dem-top">
+            <b style="font-size:18px">${esc(i.titre && i.titre !== i.client ? i.titre : "Demande")}</b>
+            <span><span class="pill r" style="--rc:${respCouleur(i.resp)}">${esc(respConnu(i.resp) ? i.resp : "⚠ À assigner")}</span> <span class="pill">${statutLabel(i.statut)}</span></span>
+          </div>
+          <div class="si-sub" style="font-size:15px">${sessionsDe(i).length ? sessionsDe(i).map(fmtDate).join(" · ") : "Aucune session"}${i.date_fin ? " · terminée le " + fmtDate(i.date_fin) : ""}</div>
+          ${paiementHtml(i)}
+        </div>`).join("")}</div>
+    </div>`;
+}
+
+function recapClient() {
+  const dem = demandesClient(), t = today();
+  const nom = nomClient(dem);
+  let txt = `🎙️ ${nom} — récap au ${fmtDate(t)}\n`;
+  const aVenir = dem.filter((i) => i.statut !== "annulee").flatMap((i) => sessionsDe(i).filter((d) => d >= t).map((d) => ({ i, d }))).sort((a, b) => a.d.localeCompare(b.d));
+  if (aVenir.length) { txt += `\n*Sessions à venir*\n`; for (const { i, d } of aVenir) txt += `• ${jourSemaine(d)} ${fmtDate(d)}${i.titre && i.titre !== i.client ? " — " + i.titre : ""}\n`; }
+  const pays = dem.filter((i) => i.statut !== "annulee").map((i) => ({ i, p: paiement(i) })).filter((x) => x.p.etat !== "aucun");
+  if (pays.length) {
+    txt += `\n*Paiement*\n`;
+    for (const { i, p } of pays) txt += `• ${i.titre && i.titre !== i.client ? i.titre : "Prestation"} : ${chf(p.prix)} — payé ${chf(p.paye)}${p.reste ? " — reste " + chf(p.reste) : " ✅"}\n`;
+    const reste = pays.reduce((a, x) => a + x.p.reste, 0);
+    txt += reste ? `\n👉 Reste à payer : ${chf(reste)}\n` : `\n✅ Tout est réglé, merci !\n`;
+  }
+  return txt;
+}
+
 function ouvrirBigCal() { $("bigcal").classList.remove("hidden"); renderBigCal(); }
 function fermerBigCal() { $("bigcal").classList.add("hidden"); }
 
@@ -1012,6 +1173,7 @@ function render(anim = false) {
   renderCalendrier();
   renderSide();
   renderBigCal();
+  renderClient();
 }
 
 function allerAuMois(s) { const d = parse(s); mois = new Date(d.getFullYear(), d.getMonth(), 1); }
@@ -1044,6 +1206,7 @@ function ouvrir(id, preset = {}) {
   $("e-update").value = "";
   $("d-info").textContent = id ? infoLine(i) : "";
   $("d-delete").classList.toggle("hidden", !id);
+  $("d-client").classList.toggle("hidden", !id);
   $("overlay").classList.remove("hidden");
   $("drawer").classList.remove("hidden");
   setTimeout(() => (id ? $("e-update") : $("e-client")).focus(), 30);
@@ -1250,6 +1413,7 @@ $("rows").addEventListener("change", (e) => {
 });
 $("rows").addEventListener("click", (e) => {
   if (e.target.closest("select")) return;
+  const lien = e.target.closest(".lien-client"); if (lien) return ouvrirClient(lien.dataset.client);
   const r = e.target.closest(".row"); if (r) ouvrir(r.dataset.id);
 });
 $("cal").addEventListener("click", (e) => {
@@ -1278,6 +1442,22 @@ $("bc-grid").addEventListener("click", (e) => {
   const ev = e.target.closest(".bc-ev"); if (ev) return ouvrir(ev.dataset.id);
   const day = e.target.closest(".bc-day"); if (day) ouvrir(null, { sessions: [day.dataset.day] });
 });
+$("cl-close").onclick = fermerClient;
+$("clientbox").addEventListener("click", (e) => { if (e.target.id === "clientbox") fermerClient(); });
+$("cl-recap").onclick = () => copier(recapClient());
+$("cl-new").onclick = () => { const dem = demandesClient(); ouvrir(null, { client: nomClient(dem), resp: dem[0].resp }); };
+$("cl-body").addEventListener("click", (e) => {
+  const nav = e.target.closest("[data-cm]");
+  if (nav) {
+    const k = +nav.dataset.cm;
+    clientMois = k === 0 ? new Date(new Date().getFullYear(), new Date().getMonth(), 1) : new Date(clientMois.getFullYear(), clientMois.getMonth() + k, 1);
+    return renderClient();
+  }
+  const el = e.target.closest("[data-id]"); if (el) return ouvrir(el.dataset.id);
+  const day = e.target.closest(".bc-day");
+  if (day) { const dem = demandesClient(); ouvrir(null, { client: nomClient(dem), resp: dem[0].resp, sessions: [day.dataset.day] }); }
+});
+$("d-client").onclick = () => { const nom = $("e-client").value.trim(); if (!nom) return; fermer(); ouvrirClient(nom); };
 $("cal-prev").onclick = () => { mois.setMonth(mois.getMonth() - 1); renderCalendrier(); renderKpis(); };
 $("cal-next").onclick = () => { mois.setMonth(mois.getMonth() + 1); renderCalendrier(); renderKpis(); };
 $("cal-today").onclick = () => { mois = new Date(); mois.setDate(1); renderCalendrier(); renderKpis(); };
@@ -1299,6 +1479,7 @@ $("e-client").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); 
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && !document.querySelector(".flatpickr-calendar.open")) {
     if (!$("drawer").classList.contains("hidden")) fermer();
+    else if (!$("clientbox").classList.contains("hidden")) fermerClient();
     else if (!$("bigcal").classList.contains("hidden")) fermerBigCal();
   }
   if ((e.metaKey || e.ctrlKey) && e.key === "s" && !$("drawer").classList.contains("hidden")) { e.preventDefault(); enregistrer(); }
