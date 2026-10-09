@@ -69,7 +69,7 @@
   .btn.danger { color: var(--danger); }
   .btn.small { padding: 5px 10px; font-size: 13px; }
   .btn.ghost { border-color: transparent; background: transparent; }
-  input[type=text], input[type=email], input[type=date], input[type=search], select, textarea {
+  input[type=text], input[type=email], input[type=password], input[type=date], input[type=search], select, textarea {
     width: 100%; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; outline: none;
   }
   input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent); }
@@ -203,6 +203,7 @@
     </div>
     <div class="user hidden" id="userbox">
       <span id="useremail"></span>
+      <button class="btn small" id="change-pwd">Mot de passe</button>
       <button class="btn small" id="logout">Déconnexion</button>
     </div>
   </header>
@@ -216,12 +217,27 @@
   <!-- Connexion -->
   <div class="card login hidden" id="login">
     <h2>Connexion</h2>
-    <p>Entre ton e-mail : tu recevras un lien de connexion. Seuls les membres invités ont accès.</p>
+    <p>Réservé aux membres de l'équipe NONAME.</p>
     <form id="login-form">
-      <input type="email" id="login-email" placeholder="ton@email.ch" required autocomplete="email">
-      <button class="btn primary" type="submit" id="login-btn">Recevoir le lien</button>
+      <div><label for="login-email">E-mail</label><input type="email" id="login-email" placeholder="ton@email.ch" required autocomplete="email"></div>
+      <div><label for="login-pwd">Mot de passe</label><input type="password" id="login-pwd" required autocomplete="current-password"></div>
+      <button class="btn primary" type="submit" id="login-btn">Se connecter</button>
     </form>
     <div class="msg" id="login-msg"></div>
+    <p style="margin:16px 0 0"><button type="button" class="link" id="login-link">Première connexion ou mot de passe oublié ? Recevoir un lien par e-mail</button></p>
+  </div>
+
+  <!-- Choix / changement du mot de passe -->
+  <div class="card login hidden" id="pwd">
+    <h2>Choisis ton mot de passe</h2>
+    <p>Tu l'utiliseras avec ton e-mail pour te connecter. 8 caractères minimum.</p>
+    <form id="pwd-form">
+      <div><label for="pwd-1">Nouveau mot de passe</label><input type="password" id="pwd-1" required minlength="8" autocomplete="new-password"></div>
+      <div><label for="pwd-2">Confirme le mot de passe</label><input type="password" id="pwd-2" required minlength="8" autocomplete="new-password"></div>
+      <button class="btn primary" type="submit" id="pwd-btn">Enregistrer le mot de passe</button>
+      <button class="btn" type="button" id="pwd-later">Plus tard</button>
+    </form>
+    <div class="msg" id="pwd-msg"></div>
   </div>
 
   <!-- Application -->
@@ -761,13 +777,35 @@ setInterval(() => { if (vue === "activite") renderActivite(); }, 60000);
 // ---------- Connexion ----------
 $("login-form").onsubmit = async (e) => {
   e.preventDefault();
+  const msg = $("login-msg");
+  $("login-btn").disabled = true; msg.className = "msg"; msg.textContent = "Connexion…";
+  const { error } = await sb.auth.signInWithPassword({
+    email: $("login-email").value.trim(), password: $("login-pwd").value
+  });
+  $("login-btn").disabled = false;
+  if (error) {
+    msg.className = "msg ko";
+    msg.textContent = /invalid login credentials/i.test(error.message)
+      ? "E-mail ou mot de passe incorrect. Première connexion ? Utilise le lien ci-dessous."
+      : /rate|too many/i.test(error.message)
+        ? "Trop de tentatives. Réessaie dans quelques minutes."
+        : "Erreur : " + error.message;
+  } else {
+    msg.textContent = "";
+    $("login-pwd").value = "";
+  }
+};
+
+$("login-link").onclick = async () => {
   const email = $("login-email").value.trim();
   const msg = $("login-msg");
-  $("login-btn").disabled = true; msg.className = "msg"; msg.textContent = "Envoi…";
+  if (!email || !$("login-email").checkValidity()) {
+    msg.className = "msg ko"; msg.textContent = "Entre d'abord ton e-mail ci-dessus."; $("login-email").focus(); return;
+  }
+  msg.className = "msg"; msg.textContent = "Envoi…";
   const { error } = await sb.auth.signInWithOtp({
     email, options: { shouldCreateUser: false, emailRedirectTo: location.href.split("#")[0].split("?")[0] }
   });
-  $("login-btn").disabled = false;
   if (error) {
     msg.className = "msg ko";
     msg.textContent = /sign ?ups?|not allowed|not found|otp_disabled/i.test(error.message)
@@ -777,9 +815,42 @@ $("login-form").onsubmit = async (e) => {
         : "Erreur : " + error.message;
   } else {
     msg.className = "msg ok";
-    msg.textContent = "Lien envoyé ! Ouvre l'e-mail reçu pour te connecter.";
+    msg.textContent = "Lien envoyé ! Ouvre l'e-mail reçu : tu pourras ensuite choisir ton mot de passe.";
   }
 };
+
+// Écran « choisir mon mot de passe »
+function afficherPwd(premiere) {
+  $("pwd").querySelector("h2").textContent = premiere ? "Choisis ton mot de passe" : "Changer de mot de passe";
+  $("pwd-1").value = ""; $("pwd-2").value = ""; $("pwd-msg").textContent = "";
+  $("app").classList.add("hidden");
+  $("pwd").classList.remove("hidden");
+  setTimeout(() => $("pwd-1").focus(), 30);
+}
+function masquerPwd() {
+  $("pwd").classList.add("hidden");
+  $("app").classList.remove("hidden");
+}
+$("pwd-form").onsubmit = async (e) => {
+  e.preventDefault();
+  const msg = $("pwd-msg");
+  if ($("pwd-1").value !== $("pwd-2").value) { msg.className = "msg ko"; msg.textContent = "Les deux mots de passe ne correspondent pas."; return; }
+  $("pwd-btn").disabled = true; msg.className = "msg"; msg.textContent = "Enregistrement…";
+  const { error } = await sb.auth.updateUser({ password: $("pwd-1").value, data: { mdp_defini: true } });
+  $("pwd-btn").disabled = false;
+  if (error) {
+    msg.className = "msg ko";
+    msg.textContent = /same|different/i.test(error.message) ? "Choisis un mot de passe différent de l'actuel."
+      : /weak|short|least/i.test(error.message) ? "Mot de passe trop faible : 8 caractères minimum."
+      : /reauth|recent/i.test(error.message) ? "Par sécurité, reconnecte-toi avec un lien e-mail puis réessaie."
+      : "Erreur : " + error.message;
+    return;
+  }
+  masquerPwd();
+  toast("Mot de passe enregistré");
+};
+$("pwd-later").onclick = masquerPwd;
+$("change-pwd").onclick = () => afficherPwd(false);
 
 function afficherApp(email) {
   userEmail = email || "";
@@ -789,15 +860,22 @@ function afficherApp(email) {
   $("useremail").textContent = email || "";
 }
 
+let sessionUserId = null;
 function setSession(session) {
   if (session) {
+    const nouvelle = session.user.id !== sessionUserId;
+    sessionUserId = session.user.id;
+    if (!nouvelle) return; // simple rafraîchissement du jeton
     afficherApp(session.user.email);
     charger();
     abonnerTempsReel();
+    if (!session.user.user_metadata?.mdp_defini) afficherPwd(true);
   } else {
+    sessionUserId = null;
     if (channel) { sb.removeChannel(channel); channel = null; }
     items = [];
     $("app").classList.add("hidden");
+    $("pwd").classList.add("hidden");
     $("userbox").classList.add("hidden");
     $("login").classList.remove("hidden");
   }

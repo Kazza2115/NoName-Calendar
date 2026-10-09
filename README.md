@@ -112,7 +112,8 @@ Sans ça, le lien de connexion reçu par e-mail ne ramènera pas sur le site.
 
 1. Dans Supabase → **Authentication** → **Users** → **Invite user**, saisis l'e-mail de la personne.
 2. Envoie-lui le lien du site.
-3. Elle entre son e-mail sur la page, reçoit un lien de connexion et accède à toutes les demandes.
+3. Sur le site, elle entre son e-mail puis clique **« Première connexion ou mot de passe oublié ? »** : elle reçoit un lien, et le site lui demande de choisir son mot de passe.
+4. Ensuite, elle se connecte simplement avec **e-mail + mot de passe**. Le bouton **Mot de passe** (en haut) permet de le changer, et le lien e-mail sert aussi en cas d'oubli.
 
 Pour retirer l'accès à quelqu'un : **Authentication** → **Users** → supprime l'utilisateur.
 
