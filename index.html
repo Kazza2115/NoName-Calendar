@@ -722,13 +722,7 @@ try {
             <button class="btn small ghost" id="cal-next" aria-label="Mois suivant">›</button>
           </div>
           <div class="mini-grid" id="cal"></div>
-          <div class="legend" id="cal-filtre" title="Cliquer pour afficher / masquer">
-            <button type="button" data-calf="sessions"><i class="lr"></i>Session studio</button>
-            <button type="button" data-calf="contacts"><i class="lc"></i>Contact</button>
-            <button type="button" data-calf="fins"><i class="lf"></i>Terminée</button>
-            <button type="button" data-calf="modifs"><i class="lm"></i>Modifié ce jour</button>
-            <button type="button" data-calf="annulees"><i class="la"></i>Annulée</button>
-          </div>
+          <div class="legend" id="cal-filtre"><span><i class="lr"></i>Session confirmée</span></div>
           <div class="mois-liste" id="mois-liste"></div>
           <button class="btn" id="cal-open" style="width:100%;margin-top:12px">⤢ Ouvrir le grand calendrier</button>
           <div class="day-detail hidden" id="day-detail"></div>
@@ -763,9 +757,6 @@ try {
       <button class="btn" id="bc-next" aria-label="Mois suivant">›</button>
       <div class="bc-opts">
         <span class="langsw" id="bc-vue" style="margin:0"><button type="button" data-vue="semaine">Semaine</button><button type="button" data-vue="mois">Mois</button><button type="button" data-vue="tout">Tout</button></span>
-        <label><input type="checkbox" id="bc-contacts"> Contacts</label>
-        <label><input type="checkbox" id="bc-fins"> Fins</label>
-        <label><input type="checkbox" id="bc-annulees"> Annulées</label>
       </div>
       <div class="bc-legend" id="bc-legend"></div>
       <button class="btn" id="bc-close" aria-label="Fermer">✕ Fermer</button>
@@ -898,7 +889,7 @@ const EN = {
   "Contact": "Contact", "Statut": "Status", "Responsable *": "Owner *", "Responsable": "Owner", "Choisir…": "Choose…", "Choisir un responsable…": "Choose an owner…", "Ajouter": "Add",
   "Demandes actives": "Active requests", "Sessions sous 7 jours": "Sessions within 7 days", "Reste à encaisser": "Left to collect",
   "Toutes": "All", "Actives": "Active", "💰 À encaisser": "💰 To collect",
-  "Nouvelle": "New", "En cours": "In progress", "En attente": "On hold", "Confirmée": "Confirmed", "Terminée": "Finished", "Annulée": "Cancelled", "Annulées": "Cancelled",
+  "Nouvelle": "New", "En cours": "In progress", "En attente": "On hold", "Confirmée": "Confirmed", "Terminée": "Finished", "Annulée": "Cancelled", "Session confirmée": "Confirmed session", "Annulées": "Cancelled",
   "Rechercher un client, une demande…": "Search a client, a request…", "Tous les responsables": "All owners", "⚠ Non assignées": "⚠ Unassigned", "⚠ À assigner": "⚠ Unassigned", "À assigner": "Unassigned", "à assigner": "unassigned",
   "Tri : prochaine session": "Sort: next session", "Tri : dernière modification": "Sort: last change", "Tri : dernier contact": "Sort: last contact", "Tri : client A → Z": "Sort: client A → Z", "Tri : reste à payer": "Sort: amount due", "Tri : date de fin (récentes d'abord)": "Sort: end date (newest first)",
   "Trier": "Sort", "Filtrer par responsable": "Filter by owner",
@@ -1145,11 +1136,11 @@ function fillSelect(el, opts) {
 }
 const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
 
-// Effet visuel : la ligne clignote et les jours concernés « pulsent » dans le calendrier
+// Effet visuel : la ligne clignote et les jours de sessions confirmées « pulsent » dans le calendrier
 function marquer(row, ancien) {
   if (!row) return;
   flash.ids.add(row.id);
-  [...sessionsDe(row), row.date_contact, row.date_fin, ...(ancien ? sessionsDe(ancien) : []), jourModif(row)].filter(Boolean).forEach((d) => flash.days.add(d));
+  [...(surCalendrier(row) ? sessionsDe(row) : []), ...(ancien && surCalendrier(ancien) ? sessionsDe(ancien) : [])].forEach((d) => flash.days.add(d));
   clearTimeout(marquer.t);
   marquer.t = setTimeout(() => { flash.ids.clear(); flash.days.clear(); }, 1900);
 }
@@ -1372,15 +1363,9 @@ function renderListe() {
 }
 
 // Ce qui est affiché sur les calendriers (mémorisé sur l'appareil)
-const CALF_KEY = "noname-cal-filtres";
-let calF = { sessions: true, contacts: false, fins: true, modifs: true, annulees: true };
-try { Object.assign(calF, JSON.parse(localStorage.getItem(CALF_KEY)) || {}); } catch {}
-function majCalF(k, v) {
-  calF[k] = v;
-  try { localStorage.setItem(CALF_KEY, JSON.stringify(calF)); } catch {}
-  $("bc-contacts").checked = calF.contacts; $("bc-fins").checked = calF.fins; $("bc-annulees").checked = calF.annulees;
-  renderCalendrier(); renderBigCal(); renderJour();
-}
+// Calendriers : uniquement les sessions confirmées (statut Confirmée, ou Terminée = session déjà passée)
+const calF = { sessions: true, contacts: false, fins: false, modifs: false, annulees: false };
+const surCalendrier = (i) => i.statut === "confirmee" || i.statut === "terminee";
 function renderCalendrier() {
   const y = mois.getFullYear(), m = mois.getMonth();
   $("cal-title").textContent = mois.toLocaleDateString(LOC(), { month: "long", year: "numeric" });
@@ -1390,12 +1375,11 @@ function renderCalendrier() {
 
   const resa = {}, contact = {}, modif = {}, fin = {};
   for (const i of items) {
-    if (calF.sessions && i.statut !== "annulee") for (const d of sessionsDe(i)) (resa[d] ||= []).push(i);
+    if (surCalendrier(i)) for (const d of sessionsDe(i)) (resa[d] ||= []).push(i);
     if (calF.contacts && i.date_contact) (contact[i.date_contact] ||= []).push(i);
     if (calF.fins && i.date_fin) (fin[i.date_fin] ||= []).push(i);
     const dm = jourModif(i); if (calF.modifs && dm) (modif[dm] ||= []).push(i);
   }
-  document.querySelectorAll("#cal-filtre [data-calf]").forEach((b) => b.classList.toggle("off", !calF[b.dataset.calf]));
 
   const t = today();
   let html = DOWS("mini").map((d) => `<div class="mini-dow">${d}</div>`).join("");
@@ -1421,7 +1405,7 @@ function renderCalendrier() {
   renderDetailJour(resa, contact, modif, fin);
   // Toutes les sessions du mois affiché, en toutes lettres
   const prefixe = isoDay(mois).slice(0, 7);
-  const duMois = items.filter((i) => i.statut !== "annulee").flatMap((i) => sessionsDe(i).filter((d) => d.startsWith(prefixe)).map((d) => ({ i, d })))
+  const duMois = items.filter(surCalendrier).flatMap((i) => sessionsDe(i).filter((d) => d.startsWith(prefixe)).map((d) => ({ i, d })))
     .sort((a, b) => a.d.localeCompare(b.d) || (horaireDe(a.i, a.d)?.d || "99").localeCompare(horaireDe(b.i, b.d)?.d || "99"));
   $("mois-liste").innerHTML = `<h4>Sessions du mois (${duMois.length})</h4>`
     + (duMois.length ? duMois.map(({ i, d }) => `<div class="ml-row ${d < t ? "past" : ""}" style="--rc:${respCouleur(i.resp)}" data-id="${i.id}" title="${esc(i.titre || "")} · ${esc(i.resp || "")}">
@@ -1433,11 +1417,11 @@ let bcVue = (() => { try { return localStorage.getItem("noname-bcvue") || "semai
 const lundiDe = (d) => { const x = parse(d); x.setDate(x.getDate() - (x.getDay() + 6) % 7); return isoDay(x); };
 let semaine = lundiDe(today());
 function evenementsParJour() {
-  const voirContacts = $("bc-contacts").checked, voirFins = $("bc-fins").checked;
+  const voirContacts = calF.contacts, voirFins = calF.fins;
   const parJour = {};
   const push = (d, e) => (parJour[d] ||= []).push(e);
   for (const i of items) {
-    if (i.statut !== "annulee" || calF.annulees) for (const d of sessionsDe(i)) push(d, { i, k: "session", d });
+    if (surCalendrier(i)) for (const d of sessionsDe(i)) push(d, { i, k: "session", d });
     if (voirFins && i.date_fin) push(i.date_fin, { i, k: "fin" });
     if (voirContacts && i.date_contact) push(i.date_contact, { i, k: "contact" });
   }
@@ -1545,7 +1529,7 @@ function bornes(i, d) {
 function grilleHoraire(jours, entetes) {
   const t = today();
   const donnees = jours.map((d) => {
-    const sess = items.filter((i) => (i.statut !== "annulee" || calF.annulees) && sessionsDe(i).includes(d)).map((i) => ({ i, d, ...bornes(i, d) }));
+    const sess = items.filter((i) => surCalendrier(i) && sessionsDe(i).includes(d)).map((i) => ({ i, d, ...bornes(i, d) }));
     const avec = sess.filter((x) => x.a !== null).sort((x, y) => x.a - y.a || y.b - x.b);
     // sessions qui se chevauchent : côte à côte
     const finsCol = [];
@@ -1638,7 +1622,7 @@ function clicGrille(e) {
   const col = e.target.closest(".wk-col");
   if (col) {
     const m = minuteDans(col, e.clientY), d = col.dataset.jour;
-    ouvrir(null, { sessions: [d], horaires: { [d]: { d: hm(m), f: hm(m + 60), le: new Date().toISOString(), par: userEmail || "" } } });
+    ouvrir(null, { statut: "confirmee", sessions: [d], horaires: { [d]: { d: hm(m), f: hm(m + 60), le: new Date().toISOString(), par: userEmail || "" } } });
     return true;
   }
   return !!e.target.closest(".wk");
@@ -1652,7 +1636,7 @@ $("daybox").addEventListener("click", (e) => {
 const decalerJour = (n) => { const x = parse(jourOuvert); x.setDate(x.getDate() + n); jourOuvert = isoDay(x); renderJour(); };
 $("jr-prev").onclick = () => decalerJour(-1);
 $("jr-next").onclick = () => decalerJour(1);
-$("jr-new").onclick = () => ouvrir(null, { sessions: [jourOuvert] });
+$("jr-new").onclick = () => ouvrir(null, { statut: "confirmee", sessions: [jourOuvert] });
 
 // ---------- Fiche client ----------
 let clientSel = null, clientMois = null;
@@ -2201,7 +2185,7 @@ $("cal").addEventListener("click", (e) => {
 });
 $("day-detail").addEventListener("click", (e) => {
   if (e.target.id === "dd-jour") return ouvrirJour(jourSel);
-  if (e.target.id === "dd-new") return ouvrir(null, { sessions: [jourSel] });
+  if (e.target.id === "dd-new") return ouvrir(null, { statut: "confirmee", sessions: [jourSel] });
   const it = e.target.closest(".dd-item"); if (it) ouvrir(it.dataset.id);
 });
 $("upcoming").addEventListener("click", (e) => { const s = e.target.closest(".si"); if (s) ouvrir(s.dataset.id); });
@@ -2216,10 +2200,8 @@ const decalerSemaine = (n) => { const x = parse(semaine); x.setDate(x.getDate() 
 $("bc-prev").onclick = () => { if (bcVue === "semaine") return decalerSemaine(-1); mois.setMonth(mois.getMonth() - 1); render(); };
 $("bc-next").onclick = () => { if (bcVue === "semaine") return decalerSemaine(1); mois.setMonth(mois.getMonth() + 1); render(); };
 $("bc-today").onclick = () => { semaine = lundiDe(today()); mois = new Date(); mois.setDate(1); render(); };
-$("bc-contacts").checked = calF.contacts; $("bc-fins").checked = calF.fins; $("bc-annulees").checked = calF.annulees;
-$("bc-annulees").onchange = (e) => majCalF("annulees", e.target.checked);
-$("bc-contacts").onchange = (e) => majCalF("contacts", e.target.checked);
-$("cal-filtre").addEventListener("click", (e) => { const b = e.target.closest("[data-calf]"); if (b) majCalF(b.dataset.calf, !calF[b.dataset.calf]); });
+
+
 $("bc-vue").addEventListener("click", (e) => {
   const b = e.target.closest("[data-vue]"); if (!b) return;
   bcVue = b.dataset.vue; try { localStorage.setItem("noname-bcvue", bcVue); } catch {}
@@ -2228,7 +2210,7 @@ $("bc-vue").addEventListener("click", (e) => {
   if (bcVue === "tout") setTimeout(() => $("bc-next-day")?.scrollIntoView({ block: "start" }), 0);
 });
 $("bc-alert").addEventListener("click", (e) => { const b = e.target.closest("[data-id]"); if (b) ouvrir(b.dataset.id); });
-$("bc-fins").onchange = (e) => majCalF("fins", e.target.checked);
+
 $("bc-grid").addEventListener("click", (e) => {
   if (clicGrille(e)) return;
   const ev = e.target.closest(".bc-ev"); if (ev) return ouvrir(ev.dataset.id);
