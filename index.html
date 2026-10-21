@@ -111,7 +111,7 @@ try {
   .btn.danger { color: var(--danger); }
   .btn.small { padding: 5px 10px; font-size: 15px; }
   .btn.ghost { border-color: transparent; background: transparent; }
-  input[type=text], input[type=email], input[type=password], input[type=date], input[type=search], select, textarea {
+  input[type=text], input[type=email], input[type=url], input[type=password], input[type=date], input[type=search], select, textarea {
     width: 100%; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; outline: none;
   }
   input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent); }
@@ -335,6 +335,7 @@ try {
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .field { margin-bottom: 10px; }
   .drawer textarea { min-height: 140px; resize: vertical; }
+  .drawer textarea#e-adresse { min-height: 0; height: 64px; }
   .update-row { display: flex; gap: 8px; }
   .update-row > input, .update-row > .flatpickr-input { flex: 1; min-width: 0; }
   .hrow { display: flex; align-items: center; gap: 6px; margin-top: 6px; flex-wrap: wrap; font-size: 15px; color: var(--muted); }
@@ -602,6 +603,62 @@ try {
   .watch .who a { cursor: pointer; color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
   .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 16px; z-index: 70; box-shadow: 0 6px 20px rgba(0,0,0,.2); max-width: calc(100% - 32px); }
 
+  .crm-l { font-size: 12px; font-weight: 700; color: var(--accent); text-decoration: none; border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); border-radius: 6px; padding: 0 5px; margin-left: 6px; white-space: nowrap; }
+  .crm-l:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+  .cl-coord { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 15px; color: var(--muted); margin-bottom: 14px; }
+  .cl-coord a { color: var(--accent); }
+  .fa-box { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); display: grid; gap: 6px; }
+  .fa-l { display: flex; gap: 8px; align-items: center; font-size: 14px; padding: 5px 8px; border-radius: 8px; background: var(--card); border: 1px solid var(--line); cursor: pointer; }
+  .fa-l:hover { border-color: var(--accent); }
+  .fa-l small { color: var(--muted); margin-left: auto; }
+  /* Facture (aperçu A4 + impression) */
+  .fa-modal { position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.55); overflow: auto; padding: 16px; animation: fade .2s; }
+  .fa-actions { position: sticky; top: 0; z-index: 2; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: center; max-width: 210mm; margin: 0 auto 14px; background: var(--card); color: var(--text); padding: 10px; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,.2); }
+  .fa-actions .hint { font-size: 13px; color: var(--muted); flex-basis: 100%; text-align: center; }
+  .fa-page { width: 210mm; min-height: 297mm; margin: 0 auto; background: #fff; color: #111; position: relative; box-sizing: border-box; padding: 16mm 18mm 0; font: 10pt/1.45 "Helvetica Neue", Helvetica, Arial, sans-serif; box-shadow: 0 10px 40px rgba(0,0,0,.35); display: flex; flex-direction: column; }
+  .fa-corps { flex: 1; padding-bottom: 4mm; }
+  .fa-em { font-size: 9pt; color: #444; }
+  .fa-em b { display: block; font-size: 15pt; color: #111; letter-spacing: .02em; margin-bottom: 2px; }
+  .fa-dest { margin: 10mm 0 0 95mm; min-height: 20mm; font-size: 10.5pt; white-space: pre-line; }
+  .fa-page h1 { font-size: 17pt; margin: 8mm 0 3mm; color: #111; }
+  .fa-meta { display: grid; grid-template-columns: auto 1fr; gap: 1mm 6mm; font-size: 9.5pt; margin-bottom: 5mm; }
+  .fa-meta span { color: #555; }
+  .fa-t { width: 100%; border-collapse: collapse; font-size: 10pt; }
+  .fa-t th { text-align: left; font-size: 8.5pt; text-transform: uppercase; letter-spacing: .05em; color: #555; border-bottom: 1.5px solid #111; padding: 2mm 0; }
+  .fa-t td { padding: 2.5mm 0; border-bottom: 1px solid #ddd; vertical-align: top; }
+  .fa-t .n { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .fa-t td small { display: block; color: #555; font-size: 9pt; margin-top: 1mm; }
+  .fa-tot { margin: 4mm 0 0 auto; width: 85mm; font-size: 10pt; border-collapse: collapse; }
+  .fa-tot td { padding: 1.2mm 0; } .fa-tot td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+  .fa-tot .gros td { font-size: 12pt; font-weight: 800; border-top: 1.5px solid #111; padding-top: 2mm; }
+  .fa-cond { margin-top: 7mm; font-size: 9.5pt; color: #333; }
+  .fa-cond p { margin: 0 0 2mm; }
+  .fa-paye { display: inline-block; margin-top: 6mm; border: 2px solid #1a7f37; color: #1a7f37; font-weight: 800; padding: 2mm 5mm; border-radius: 2mm; transform: rotate(-3deg); }
+  /* Section paiement QR-facture (210 × 105 mm) */
+  .qrb { position: relative; flex: none; margin: 0 -18mm; height: 105mm; display: flex; break-inside: avoid; page-break-inside: avoid; border-top: 1px dashed #000; font-family: Arial, Helvetica, sans-serif; color: #000; }
+  .qrb::before { content: "✂"; position: absolute; top: -2.6mm; left: 6mm; font-size: 9pt; background: #fff; padding: 0 1mm; }
+  .qrb-r { width: 62mm; padding: 5mm; box-sizing: border-box; border-right: 1px dashed #000; position: relative; }
+  .qrb-p { width: 148mm; padding: 5mm; box-sizing: border-box; display: grid; grid-template-columns: 51mm 1fr; grid-template-rows: auto 1fr auto; column-gap: 5mm; }
+  .qrb h3 { font-size: 11pt; font-weight: 700; margin: 0 0 4mm; color: #000; }
+  .qrb h4 { font-size: 6pt; font-weight: 700; margin: 0; color: #000; }
+  .qrb-r h4 { font-size: 6pt; } .qrb-r p { font-size: 8pt; margin: 0 0 2.5mm; line-height: 1.25; }
+  .qrb-p h4 { font-size: 8pt; } .qrb-p p { font-size: 10pt; margin: 0 0 3mm; line-height: 1.25; }
+  .qrb .mt { display: flex; gap: 6mm; } .qrb .mt p { margin: 0; }
+  .qrb-r .mt { position: absolute; top: 68mm; left: 5mm; }
+  .qrb-r .depot { position: absolute; right: 5mm; top: 82mm; font-size: 6pt; font-weight: 700; }
+  .qrb-p .qr { grid-column: 1; grid-row: 2; }
+  .qrb-p .mt { grid-column: 1; grid-row: 3; padding-bottom: 8mm; }
+  .qrb-p .info { grid-column: 2; grid-row: 1 / 4; }
+  .qrb .vide { width: 52mm; height: 20mm; border: 1px solid #000; margin-top: 1mm; }
+  .qrb-p .vide { width: 65mm; height: 25mm; }
+  @media print {
+    @page { size: A4; margin: 0; }
+    body.impression > *:not(#facture) { display: none !important; }
+    body.impression { position: static !important; top: 0 !important; background: #fff !important; }
+    body.impression #facture { position: static; padding: 0; background: none; overflow: visible; }
+    body.impression .fa-actions { display: none; }
+    body.impression .fa-page { box-shadow: none; margin: 0; min-height: 296mm; }
+  }
   .tel-only { display: none; }
   html.tel .tel-only { display: inline-flex; }
   html.tel #vue-btn + #themesw { margin-left: 0 !important; }
@@ -785,7 +842,7 @@ try {
     <div class="bc-head">
       <h2>🛡️ Panel admin</h2>
       <span class="ad-badge">Michael</span>
-      <span class="langsw" id="ad-tabs" style="margin:0"><button type="button" data-tab="apercu" class="on">Vue d'ensemble</button><button type="button" data-tab="compta">💰 Comptabilité</button><button type="button" data-tab="logs">📜 Logs</button><button type="button" data-tab="acces">🔐 Connexions & comptes</button></span>
+      <span class="langsw" id="ad-tabs" style="margin:0"><button type="button" data-tab="apercu" class="on">Vue d'ensemble</button><button type="button" data-tab="compta">💰 Comptabilité</button><button type="button" data-tab="factures">🧾 Factures</button><button type="button" data-tab="logs">📜 Logs</button><button type="button" data-tab="acces">🔐 Connexions & comptes</button></span>
       <button class="btn" id="ad-refresh" title="Actualiser">↻</button>
       <button class="btn" id="ad-csv">⬇ Exporter (CSV)</button>
       <button class="btn" id="ad-close" style="margin-left:auto">✕ Fermer</button>
@@ -827,7 +884,10 @@ try {
     <div class="field"><label for="e-type">Type</label><select id="e-type"></select></div>
     <div class="field"><label for="e-contact">Coordonnées</label><input type="text" id="e-contact" placeholder="tél, e-mail, @insta…"></div>
     <div class="field"><label for="e-resp">Responsable *</label><select id="e-resp"></select></div>
+    <div class="field"><label for="e-email">E-mail du client</label><input type="email" id="e-email" placeholder="nom@exemple.ch" autocomplete="off"></div>
+    <div class="field"><label for="e-crm">Lien CRM</label><div class="update-row"><input type="url" id="e-crm" placeholder="https://…" autocomplete="off"><a class="btn small hidden" id="e-crm-go" target="_blank" rel="noopener noreferrer">↗</a></div></div>
   </div>
+  <div class="field"><label for="e-adresse">Adresse du client (pour la facture)</label><textarea id="e-adresse" rows="2" placeholder="Rue et n°&#10;NPA Ville"></textarea></div>
   <div class="paybox" id="paybox">
     <p class="section-title" style="margin-bottom:8px">💰 Prix & paiement</p>
     <div class="grid2">
@@ -842,6 +902,10 @@ try {
       <input type="date" id="e-pay-date" placeholder="jj/mm/aaaa" aria-label="Date du paiement">
       <select id="e-pay-mode" aria-label="Mode de paiement"><option value="twint">TWINT</option><option value="especes">Espèces</option><option value="virement">Virement</option><option value="carte">Carte</option><option value="autre">Autre</option></select>
       <button class="btn small primary" id="e-pay-btn" type="button">+ Encaisser</button>
+    </div>
+    <div class="fa-box">
+      <button class="btn small" id="e-fact-btn" type="button">🧾 Générer la facture</button>
+      <div id="e-fact-liste" style="display:grid;gap:4px"></div>
     </div>
   </div>
   <div class="field">
@@ -859,11 +923,22 @@ try {
   </div>
 </aside>
 
+<div class="fa-modal hidden" id="facture" role="dialog" aria-label="Facture">
+  <div class="fa-actions">
+    <button class="btn primary" id="fa-print" type="button">🖨 Imprimer / PDF</button>
+    <a class="btn" id="fa-mail" href="#">✉ Envoyer par e-mail</a>
+    <button class="btn" id="fa-close" type="button">✕ Fermer</button>
+    <span class="hint" id="fa-hint"></span>
+  </div>
+  <div class="fa-page" id="fa-page" translate="no"></div>
+</div>
+
 <div class="toast hidden" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/fr.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
 <script>
 // ====== LANGUE (FR / EN) ======
 // Le site est écrit en français ; en anglais, chaque texte affiché est traduit à la volée
@@ -889,7 +964,7 @@ const EN = {
   "Contact": "Contact", "Statut": "Status", "Responsable *": "Owner *", "Responsable": "Owner", "Choisir…": "Choose…", "Choisir un responsable…": "Choose an owner…", "Ajouter": "Add",
   "Demandes actives": "Active requests", "Sessions sous 7 jours": "Sessions within 7 days", "Reste à encaisser": "Left to collect",
   "Toutes": "All", "Actives": "Active", "💰 À encaisser": "💰 To collect",
-  "Nouvelle": "New", "En cours": "In progress", "En attente": "On hold", "Confirmée": "Confirmed", "Terminée": "Finished", "Annulée": "Cancelled", "Session confirmée": "Confirmed session", "Annulées": "Cancelled",
+  "Nouvelle": "New", "En cours": "In progress", "En attente": "On hold", "Confirmée": "Confirmed", "Terminée": "Finished", "Annulée": "Cancelled", "Session confirmée": "Confirmed session", "E-mail du client": "Client e-mail", "Lien CRM": "CRM link", "Adresse du client (pour la facture)": "Client address (for the invoice)", "🧾 Générer la facture": "🧾 Generate invoice", "🖨 Imprimer / PDF": "🖨 Print / PDF", "✉ Envoyer par e-mail": "✉ Send by e-mail", "🧾 Factures": "🧾 Invoices", "Coordonnées sur les factures": "Details shown on invoices", "Nom de l'entreprise": "Company name", "Rue": "Street", "N°": "No.", "NPA": "Postcode", "Ville": "City", "E-mail": "E-mail", "Téléphone": "Phone", "N° IDE / TVA (ex. CHE-123.456.789 TVA)": "UID / VAT no. (e.g. CHE-123.456.789 VAT)", "IBAN (pour la QR-facture)": "IBAN (for the QR-bill)", "Taux de TVA en % (0 si non assujetti)": "VAT rate in % (0 if not registered)", "Délai de paiement (jours)": "Payment term (days)", "Texte en bas de facture (facultatif)": "Invoice footer text (optional)", "⬇ Factures (CSV)": "⬇ Invoices (CSV)", "Aucune facture pour l'instant.": "No invoices yet.", "Par": "By", "Ouvrir": "Open", "Facture": "Invoice", "Ouvrir dans le CRM": "Open in the CRM", "Enregistre d'abord la demande, puis génère la facture.": "Save the request first, then generate the invoice.", "Indique d'abord le prix total.": "Enter the total price first.", "Adresse e-mail invalide, ex. nom@exemple.ch": "Invalid e-mail address, e.g. name@example.ch", "Le lien CRM doit commencer par https://": "The CRM link must start with https://", "✓ IBAN valide": "✓ Valid IBAN", "⚠ IBAN invalide": "⚠ Invalid IBAN", "Pour un PDF : Imprimer → « Enregistrer en PDF ».": "For a PDF: Print → “Save as PDF”.", "Le NPA doit avoir 4 chiffres": "The postcode must have 4 digits", "Annulées": "Cancelled",
   "Rechercher un client, une demande…": "Search a client, a request…", "Tous les responsables": "All owners", "⚠ Non assignées": "⚠ Unassigned", "⚠ À assigner": "⚠ Unassigned", "À assigner": "Unassigned", "à assigner": "unassigned",
   "Tri : prochaine session": "Sort: next session", "Tri : dernière modification": "Sort: last change", "Tri : dernier contact": "Sort: last contact", "Tri : client A → Z": "Sort: client A → Z", "Tri : reste à payer": "Sort: amount due", "Tri : date de fin (récentes d'abord)": "Sort: end date (newest first)",
   "Trier": "Sort", "Filtrer par responsable": "Filter by owner",
@@ -1176,6 +1251,214 @@ async function chargerPaiements() {
   const { data, error } = await sb.from("paiements").select("*").order("date_paiement");
   if (!error) paiements = data || [];
 }
+// ---------- Coordonnées client, CRM et factures ----------
+const urlSure = (u) => { u = (u || "").trim(); return /^https?:\/\/[^\s"'<>]+$/i.test(u) ? u : ""; };
+const emailOk = (m) => !m || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m);
+function verifierCoord(d) {
+  if (!emailOk(d.email)) { toast("Adresse e-mail invalide, ex. nom@exemple.ch"); $("e-email").focus(); return false; }
+  if (d.crm_url && !urlSure(d.crm_url)) { toast("Le lien CRM doit commencer par https://"); $("e-crm").focus(); return false; }
+  return true;
+}
+function majCrm() { const u = urlSure($("e-crm").value); $("e-crm-go").classList.toggle("hidden", !u); if (u) $("e-crm-go").href = u; }
+
+let reglages = {}, factures = [];
+const REG_KEY = "noname-reglages", FAC_KEY = "noname-factures";
+const REG_DEFAUT = { nom: "NONAME AGENCY SA", delai: 30, tva: 0 };
+async function chargerFacturation() {
+  if (!sb) {
+    try { reglages = JSON.parse(localStorage.getItem(REG_KEY)) || { ...REG_DEFAUT }; factures = JSON.parse(localStorage.getItem(FAC_KEY)) || []; } catch { reglages = { ...REG_DEFAUT }; }
+    return;
+  }
+  try {
+    const [r, f] = await Promise.all([
+      sb.from("reglages").select("data").eq("id", 1).maybeSingle(),
+      sb.from("factures").select("*").order("cree_le", { ascending: false }),
+    ]);
+    reglages = r.data?.data || { ...REG_DEFAUT };
+    if (!f.error) factures = f.data || [];
+  } catch {}
+}
+const deuxDec = (n) => Math.round((n || 0) * 100) / 100;
+const montantQR = (n) => n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+const ibanEspaces = (iban) => (iban || "").replace(/\s/g, "").toUpperCase().replace(/(.{4})/g, "$1 ").trim();
+function ibanOk(iban) {
+  const x = (iban || "").replace(/\s/g, "").toUpperCase();
+  if (!/^(CH|LI)\d{2}[0-9A-Z]{17}$/.test(x)) return false;
+  const chiffres = (x.slice(4) + x.slice(0, 4)).replace(/[A-Z]/g, (c) => c.charCodeAt(0) - 55);
+  let reste = 0; for (const c of chiffres) reste = (reste * 10 + +c) % 97;
+  return reste === 1;
+}
+// « Rue du Lac 12, 1200 Genève » ou sur deux lignes → champs séparés (adresse structurée de la QR-facture)
+function adresseStructuree(txt) {
+  const lignes = (txt || "").split(/\n|,/).map((l) => l.trim()).filter(Boolean);
+  const k = lignes.findIndex((l) => /^(?:CH-)?\d{4}\s+\S/.test(l));
+  if (k < 1) return null;
+  const [, npa, ville] = lignes[k].match(/^(?:CH-)?(\d{4})\s+(.+)$/);
+  const rue = lignes[k - 1], m = rue.match(/^(.*\S)\s+(\d+\s?[a-zA-Z]?)$/);
+  return { rue: (m ? m[1] : rue).slice(0, 70), numero: (m ? m[2] : "").slice(0, 16), npa, ville: ville.slice(0, 35) };
+}
+function contenuFacture(i) {
+  const r = { ...REG_DEFAUT, ...reglages };
+  const date = today(), e = new Date(parse(date)); e.setDate(e.getDate() + (parseInt(r.delai, 10) || 30));
+  const total = deuxDec(num(i.prix)), paye = deuxDec(Math.min(num(i.paye) || 0, total));
+  return {
+    emetteur: { nom: r.nom || "", rue: r.rue || "", numero: r.numero || "", npa: r.npa || "", ville: r.ville || "", email: r.email || "", tel: r.tel || "", ide: r.ide || "", iban: (r.iban || "").replace(/\s/g, "").toUpperCase() },
+    tva: num(r.tva) || 0, note: r.note || "", delai: parseInt(r.delai, 10) || 30,
+    client: { nom: i.client || i.titre || "", adresse: i.adresse || "", email: i.email || "" },
+    objet: i.titre || i.type || "Prestation studio", type: i.type && i.type !== "Autre" ? i.type : "",
+    sessions: sessionsDe(i).map((d) => ({ d, h: plageDe(i, d) || "" })),
+    total, paye, reste: deuxDec(total - paye), date, echeance: isoDay(e),
+  };
+}
+function qrPayload(numero, c) {
+  const e = c.emetteur, iban = e.iban;
+  if (!ibanOk(iban) || /^(CH|LI)\d{2}3[01]/.test(iban) || !e.nom || !e.rue || !/^\d{4}$/.test(e.npa) || !e.ville || !(c.reste > 0)) return null;
+  const deb = adresseStructuree(c.client.adresse);
+  return ["SPC", "0200", "1", iban,
+    "S", e.nom.slice(0, 70), e.rue.slice(0, 70), e.numero.slice(0, 16), e.npa, e.ville.slice(0, 35), "CH",
+    "", "", "", "", "", "", "",
+    c.reste.toFixed(2), "CHF",
+    ...(deb ? ["S", c.client.nom.slice(0, 70), deb.rue, deb.numero, deb.npa, deb.ville, "CH"] : ["", "", "", "", "", "", ""]),
+    "NON", "", `Facture ${numero}`, "EPD"].join("\r\n");
+}
+function qrSvg(texte) {
+  if (!window.qrcode) return "";
+  qrcode.stringToBytes = qrcode.stringToBytesFuncs["UTF-8"];
+  const q = qrcode(0, "M"); q.addData(texte, "Byte"); q.make();
+  const n = q.getModuleCount(); let d = "";
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (q.isDark(y, x)) d += `M${x},${y}h1v1h-1z`;
+  // Croix suisse au centre (7 × 7 mm sur 46 mm)
+  const c = n * 7 / 46, o = (n - c) / 2, b = c * 0.06, br = c * 0.19, lg = c * 0.6;
+  const croix = `<rect x="${o}" y="${o}" width="${c}" height="${c}" fill="#fff"/><rect x="${o + b}" y="${o + b}" width="${c - 2 * b}" height="${c - 2 * b}" fill="#000"/>`
+    + `<rect x="${n / 2 - br / 2}" y="${n / 2 - lg / 2}" width="${br}" height="${lg}" fill="#fff"/><rect x="${n / 2 - lg / 2}" y="${n / 2 - br / 2}" width="${lg}" height="${br}" fill="#fff"/>`;
+  return `<svg viewBox="0 0 ${n} ${n}" width="46mm" height="46mm" shape-rendering="crispEdges" aria-label="Code QR de paiement"><path d="${d}" fill="#000"/>${croix}</svg>`;
+}
+function factureHtml(f) {
+  const c = f.contenu, e = c.emetteur, h = (x) => esc(x || "");
+  const ligneAdr = [[e.rue, e.numero].filter(Boolean).join(" "), [e.npa, e.ville].filter(Boolean).join(" ")].filter(Boolean).join(" · ");
+  const dest = [c.client.nom, c.client.adresse].filter(Boolean).join("\n");
+  const sess = c.sessions.length ? c.sessions.map((s) => `${jourSemaine(s.d)} ${fmtDate(s.d)}${s.h ? " · " + s.h : ""}`).join("<br>") : "";
+  const tvaMt = c.tva ? deuxDec(c.total - c.total / (1 + c.tva / 100)) : 0;
+  const payload = qrPayload(f.numero, c);
+  const deb = adresseStructuree(c.client.adresse);
+  const payablePar = (cls) => deb ? `<h4>Payable par</h4><p>${h(c.client.nom)}<br>${h([deb.rue, deb.numero].filter(Boolean).join(" "))}<br>${h(deb.npa + " " + deb.ville)}</p>` : `<h4>Payable par (nom/adresse)</h4><div class="vide ${cls}"></div>`;
+  const cpt = `<p>${ibanEspaces(e.iban)}<br>${h(e.nom)}<br>${h([e.rue, e.numero].filter(Boolean).join(" "))}<br>${h(e.npa + " " + e.ville)}</p>`;
+  const qr = payload ? `<div class="qrb">
+      <div class="qrb-r"><h3>Récépissé</h3><h4>Compte / Payable à</h4>${cpt}${payablePar("")}
+        <div class="mt"><div><h4>Monnaie</h4><p>CHF</p></div><div><h4>Montant</h4><p>${montantQR(c.reste)}</p></div></div><div class="depot">Point de dépôt</div></div>
+      <div class="qrb-p"><h3 style="grid-column:1">Section paiement</h3><div class="qr">${qrSvg(payload)}</div>
+        <div class="mt"><div><h4>Monnaie</h4><p>CHF</p></div><div><h4>Montant</h4><p>${montantQR(c.reste)}</p></div></div>
+        <div class="info"><h4>Compte / Payable à</h4>${cpt}<h4>Informations supplémentaires</h4><p>Facture ${h(f.numero)}</p>${payablePar("")}</div></div>
+    </div>` : "";
+  return { qr: !!payload, html: `<div class="fa-corps">
+    <div class="fa-em"><b>${h(e.nom)}</b>${h(ligneAdr)}${e.email || e.tel ? "<br>" + h([e.email, e.tel].filter(Boolean).join(" · ")) : ""}${e.ide ? "<br>" + h(e.ide) : ""}</div>
+    <div class="fa-dest">${h(dest)}</div>
+    <h1>Facture n° ${h(f.numero)}</h1>
+    <div class="fa-meta"><span>Date</span><b>${fmtDate(c.date)}</b><span>Échéance</span><b>${fmtDate(c.echeance)}</b>${c.client.email ? `<span>E-mail</span><b>${h(c.client.email)}</b>` : ""}</div>
+    <table class="fa-t"><thead><tr><th>Description</th><th class="n">Montant</th></tr></thead>
+      <tbody><tr><td><b>${h(c.objet)}</b>${c.type && c.type !== c.objet ? " · " + h(c.type) : ""}${sess ? `<small>Session${c.sessions.length > 1 ? "s" : ""} studio :<br>${sess}</small>` : ""}</td><td class="n">${chf(c.total)}</td></tr></tbody></table>
+    <table class="fa-tot">
+      <tr><td>Total${c.tva ? " TTC" : ""}</td><td>${chf(c.total)}</td></tr>
+      ${c.tva ? `<tr><td>dont TVA ${String(c.tva).replace(".", ",")} %</td><td>${chf(tvaMt)}</td></tr>` : ""}
+      ${c.paye ? `<tr><td>Déjà payé (acomptes)</td><td>− ${chf(c.paye)}</td></tr>` : ""}
+      <tr class="gros"><td>Montant à payer</td><td>${chf(c.reste)}</td></tr>
+    </table>
+    <div class="fa-cond">
+      ${c.reste > 0 ? `<p>Payable dans les ${c.delai} jours, jusqu'au <b>${fmtDate(c.echeance)}</b>.</p>${e.iban && !payload ? `<p>IBAN : <b>${ibanEspaces(e.iban)}</b> · ${h(e.nom)} · Communication : Facture ${h(f.numero)}</p>` : ""}` : `<span class="fa-paye">PAYÉE — merci !</span>`}
+      ${c.note ? `<p style="white-space:pre-line;margin-top:5mm">${h(c.note)}</p>` : ""}
+    </div></div>${qr}` };
+}
+let factureOuverte = null;
+function afficherFacture(f) {
+  factureOuverte = f;
+  const { html, qr } = factureHtml(f), c = f.contenu;
+  $("fa-page").innerHTML = html;
+  const manque = !c.emetteur.iban ? "Ajoute l'IBAN dans Admin → 🧾 Factures pour avoir la QR-facture." : !qr && c.reste > 0 ? "QR-facture absente : vérifie l'IBAN et l'adresse (rue, NPA, ville) dans Admin → 🧾 Factures." : "";
+  $("fa-hint").textContent = [manque, "Pour un PDF : Imprimer → « Enregistrer en PDF »."].filter(Boolean).join(" ");
+  const corps = `Bonjour,\n\nVeuillez trouver ci-joint la facture n° ${f.numero} d'un montant de ${chf(c.reste)}${c.reste > 0 ? `, payable jusqu'au ${fmtDate(c.echeance)}` : ""}.\n${c.emetteur.iban && c.reste > 0 ? `\nIBAN : ${ibanEspaces(c.emetteur.iban)}\nCommunication : Facture ${f.numero}\n` : ""}\nMeilleures salutations,\n${c.emetteur.nom}`;
+  $("fa-mail").href = `mailto:${encodeURIComponent(c.client.email || "")}?subject=${encodeURIComponent(`Facture ${f.numero} – ${c.emetteur.nom}`)}&body=${encodeURIComponent(corps)}`;
+  $("facture").classList.remove("hidden"); $("facture").scrollTop = 0;
+  document.body.classList.add("impression");
+}
+function fermerFacture() { $("facture").classList.add("hidden"); document.body.classList.remove("impression"); factureOuverte = null; }
+function imprimerFacture() {
+  if (!factureOuverte) return;
+  const titre = document.title;
+  document.title = `Facture ${factureOuverte.numero} ${factureOuverte.client || ""}`.trim();
+  window.print();
+  setTimeout(() => (document.title = titre), 1000);
+}
+function renderFacturesFiche() {
+  const liste = editId ? factures.filter((f) => f.demande_id === editId) : [];
+  $("e-fact-liste").innerHTML = liste.map((f) => `<div class="fa-l" data-fact="${f.id}">🧾 <b>${esc(f.numero)}</b><span>${fmtDate(f.date_facture)} · ${chf(num(f.montant))}</span><small>Ouvrir</small></div>`).join("");
+}
+async function genererFacture() {
+  if (!editId) { toast("Enregistre d'abord la demande, puis génère la facture."); return; }
+  if (!validerSaisie("e")) return;
+  const data = lireTiroir();
+  if (!data.client) { toast("Le nom du client est obligatoire."); $("e-client").focus(); return; }
+  if (!respConnu(data.resp)) { toast("Choisis un responsable : chaque demande doit être assignée."); $("e-resp").focus(); return; }
+  if (!verifierCoord(data)) return;
+  if (Number.isNaN(data.prix) || !(data.prix > 0)) { toast("Indique d'abord le prix total."); $("e-prix").focus(); return; }
+  if (!(await modifier(editId, data))) return;   // la fiche est enregistrée avant (adresse, prix…)
+  const i = items.find((x) => x.id === editId), contenu = contenuFacture(i);
+  const ligne = { demande_id: i.id, client: i.client || "", montant: contenu.total, date_facture: contenu.date, echeance: contenu.echeance, contenu, cree_par: userEmail || "" };
+  let f;
+  if (sb) {
+    const { data: row, error } = await sb.from("factures").insert(ligne).select().single();
+    if (error) { toast("Erreur : " + error.message); return; }
+    f = row;
+  } else {
+    const an = +contenu.date.slice(0, 4), seq = Math.max(0, ...factures.filter((x) => x.annee === an).map((x) => x.seq)) + 1;
+    f = { ...ligne, id: "f" + Date.now(), annee: an, seq, numero: `${an}-${String(seq).padStart(3, "0")}`, cree_le: new Date().toISOString() };
+    try { localStorage.setItem(FAC_KEY, JSON.stringify([f, ...factures])); } catch {}
+  }
+  factures.unshift(f);
+  renderFacturesFiche();
+  afficherFacture(f);
+  toast(`🧾 ${tr("Facture")} ${f.numero}`);
+}
+const CHAMPS_REG = [
+  ["nom", "Nom de l'entreprise"], ["rue", "Rue"], ["numero", "N°"], ["npa", "NPA"], ["ville", "Ville"],
+  ["email", "E-mail"], ["tel", "Téléphone"], ["ide", "N° IDE / TVA (ex. CHE-123.456.789 TVA)"], ["iban", "IBAN (pour la QR-facture)"],
+  ["tva", "Taux de TVA en % (0 si non assujetti)"], ["delai", "Délai de paiement (jours)"], ["note", "Texte en bas de facture (facultatif)"],
+];
+function renderFacturesAdmin() {
+  const r = { ...REG_DEFAUT, ...reglages };
+  const ib = (r.iban || "").trim(), ibEtat = !ib ? "" : ibanOk(ib) ? (/^(CH|LI)\d{2}3[01]/.test(ib.replace(/\s/g, "")) ? "⚠ QR-IBAN : utilise plutôt l'IBAN normal du compte" : "✓ IBAN valide") : "⚠ IBAN invalide";
+  const total = factures.reduce((a, f) => a + num(f.montant), 0);
+  $("ad-body").innerHTML = `
+    <div class="ad-grid">
+      <div class="card" style="padding:16px">
+        <p class="section-title">Coordonnées sur les factures</p>
+        <form id="reg-form" class="grid2" style="gap:8px 12px">
+          ${CHAMPS_REG.map(([k, l]) => `<div class="field" style="margin:0;${["nom", "ide", "iban", "note", "email"].includes(k) ? "grid-column:1/-1" : ""}"><label for="reg-${k}">${l}</label>${k === "note" ? `<textarea id="reg-${k}" rows="2" style="min-height:0">${esc(r[k] || "")}</textarea>` : `<input type="text" id="reg-${k}" value="${esc(k === "iban" ? ibanEspaces(r[k]) : r[k] ?? "")}" ${["tva", "delai"].includes(k) ? 'inputmode="decimal"' : ""}>`}${k === "iban" && ibEtat ? `<small style="color:${ibEtat.startsWith("✓") ? "var(--ok)" : "var(--danger)"}">${ibEtat}</small>` : ""}</div>`).join("")}
+          <div style="grid-column:1/-1;display:flex;justify-content:flex-end"><button class="btn primary" type="submit">Enregistrer</button></div>
+        </form>
+      </div>
+      <div class="card" style="padding:16px">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><p class="section-title" style="margin:0">Factures émises (${factures.length}) · ${chf(total)}</p><button class="btn small" id="fa-csv" style="margin-left:auto">⬇ Factures (CSV)</button></div>
+        <table class="ad-table" style="margin-top:8px"><thead><tr><th>N°</th><th>Date</th><th>Client</th><th style="text-align:right">Montant</th><th>Par</th></tr></thead>
+        <tbody>${factures.length ? factures.map((f) => `<tr data-fact="${f.id}" style="cursor:pointer"><td><b>${esc(f.numero)}</b></td><td>${fmtDate(f.date_facture)}</td><td translate="no">${esc(f.client || "")}</td><td style="text-align:right">${chf(num(f.montant), false)}</td><td>${esc(f.cree_par || "")}</td></tr>`).join("") : `<tr><td colspan="5" class="none">Aucune facture pour l'instant.</td></tr>`}</tbody></table>
+      </div>
+    </div>`;
+}
+async function enregistrerReglages() {
+  const data = Object.fromEntries(CHAMPS_REG.map(([k]) => [k, $("reg-" + k).value.trim()]));
+  data.tva = num(data.tva) || 0; data.delai = parseInt(data.delai, 10) || 30; data.iban = data.iban.replace(/\s/g, "").toUpperCase();
+  if (data.iban && !ibanOk(data.iban)) { toast("IBAN invalide : vérifie-le (ex. CH93 0076 2011 6238 5295 7)"); return; }
+  if (data.npa && !/^\d{4}$/.test(data.npa)) { toast("Le NPA doit avoir 4 chiffres"); return; }
+  if (sb) {
+    const { error } = await sb.from("reglages").upsert({ id: 1, data, maj_le: new Date().toISOString() });
+    if (error) { toast("Erreur : " + error.message); return; }
+  } else { try { localStorage.setItem(REG_KEY, JSON.stringify(data)); } catch {} }
+  reglages = data; renderFacturesAdmin(); toast(tr("Enregistré"));
+}
+function exporterFactures() {
+  csv(`noname-factures-${today()}.csv`, ["N°", "Date", "Échéance", "Client", "Montant total", "Déjà payé", "À payer", "Créée par"],
+    factures.map((f) => [f.numero, fmtDate(f.date_facture), fmtDate(f.echeance), f.client, num(f.montant), f.contenu?.paye ?? "", f.contenu?.reste ?? "", f.cree_par]));
+}
+
 async function charger() {
   if (sb) {
     const { data, error } = await sb.from("demandes").select("*").order("cree_le", { ascending: false });
@@ -1186,7 +1469,7 @@ async function charger() {
     items = demoLoad() || demoSeed();
     demoSave();
   }
-  await chargerPaiements();
+  await Promise.all([chargerPaiements(), chargerFacturation()]);
   render();
 }
 
@@ -1264,7 +1547,7 @@ function abonnerTempsReel() {
 // ---------- Rendu ----------
 function correspond(i) {
   const q = recherche.trim().toLowerCase();
-  if (q && ![i.client, i.titre, i.type, i.notes, i.contact, i.resp].join(" ").toLowerCase().includes(q)) return false;
+  if (q && ![i.client, i.titre, i.type, i.notes, i.contact, i.resp, i.email, i.adresse].join(" ").toLowerCase().includes(q)) return false;
   if (jourSel && !sessionsDe(i).includes(jourSel) && i.date_contact !== jourSel && i.date_fin !== jourSel) return false;
   if (filtreResp === "aucun" ? respConnu(i.resp) : filtreResp && i.resp !== filtreResp) return false;
   if (filtre === "actives") return !estClos(i);
@@ -1343,7 +1626,7 @@ function renderListe() {
   $("rows").innerHTML = rows.length ? rows.map((i) => `
     <div class="row s-${i.statut} ${estClos(i) ? "closed" : ""} ${respConnu(i.resp) ? "" : "unassigned"} ${flash.ids.has(i.id) ? "flash" : ""}" data-id="${i.id}" title="Modifiée ${relTime(i.maj_le)}">
       <div class="c-cl">
-        <div class="cl-name"><button type="button" translate="no" class="lien-client" data-client="${esc(i.client || i.titre)}" title="Voir toutes les sessions et paiements de ${esc(i.client || i.titre)}">${esc(i.client || i.titre)}</button></div>
+        <div class="cl-name"><button type="button" translate="no" class="lien-client" data-client="${esc(i.client || i.titre)}" title="Voir toutes les sessions et paiements de ${esc(i.client || i.titre)}">${esc(i.client || i.titre)}</button>${urlSure(i.crm_url) ? `<a class="crm-l" href="${esc(urlSure(i.crm_url))}" target="_blank" rel="noopener noreferrer" title="Ouvrir dans le CRM">CRM ↗</a>` : ""}</div>
         <div class="cl-sub">${esc([i.client && i.titre !== i.client ? i.titre : "", i.type && i.type !== "Autre" ? i.type : ""].filter(Boolean).join(" · ") || "—")}</div>
       </div>
       <div class="c-rp"><span class="lbl">Responsable</span>
@@ -1416,12 +1699,12 @@ function renderCalendrier() {
 let bcVue = (() => { try { return localStorage.getItem("noname-bcvue") || "semaine"; } catch { return "semaine"; } })();
 const lundiDe = (d) => { const x = parse(d); x.setDate(x.getDate() - (x.getDay() + 6) % 7); return isoDay(x); };
 let semaine = lundiDe(today());
-function evenementsParJour() {
+function evenementsParJour(sansClos = false) {
   const voirContacts = calF.contacts, voirFins = calF.fins;
   const parJour = {};
   const push = (d, e) => (parJour[d] ||= []).push(e);
   for (const i of items) {
-    if (surCalendrier(i)) for (const d of sessionsDe(i)) push(d, { i, k: "session", d });
+    if (surCalendrier(i) && !(sansClos && estClos(i))) for (const d of sessionsDe(i)) push(d, { i, k: "session", d });
     if (voirFins && i.date_fin) push(i.date_fin, { i, k: "fin" });
     if (voirContacts && i.date_contact) push(i.date_contact, { i, k: "contact" });
   }
@@ -1446,7 +1729,7 @@ function renderAlerteSansDate() {
     : "";
 }
 function renderAgenda() {
-  const parJour = evenementsParJour(), t = today();
+  const parJour = evenementsParJour(true), t = today(); // vue « Tout » : sans les demandes terminées / annulées
   const jours = Object.keys(parJour).sort();
   if (!jours.length) { $("bc-grid").innerHTML = `<div class="bc-empty" style="display:block">Aucun événement pour l'instant.</div>`; return; }
   let html = "", moisCourant = "";
@@ -1693,7 +1976,10 @@ function renderClient() {
     return `<div class="p-${p.etat}"><div class="pay-txt">${chf(p.paye, false)} <small>/ ${chf(p.prix)} payés</small> · <span style="color:var(--pc)">${p.reste ? "reste " + chf(p.reste) : "soldé"}</span></div><div class="bar"><i style="width:${p.pct}%"></i></div></div>`;
   };
 
+  const coord = (k) => dem.map((i) => i[k]).find((v) => v && v.trim()) || "";
+  const em = coord("email"), adr = coord("adresse"), crm = urlSure(coord("crm_url"));
   $("cl-body").innerHTML = `
+    ${em || adr || crm ? `<div class="cl-coord">${em ? `<span>✉ <a href="mailto:${esc(em)}">${esc(em)}</a></span>` : ""}${adr ? `<span>📍 ${esc(adr.replace(/\s*\n\s*/g, ", "))}</span>` : ""}${crm ? `<a href="${esc(crm)}" target="_blank" rel="noopener noreferrer">↗ CRM</a>` : ""}</div>` : ""}
     <div class="cl-sum">
       <div class="card kpi"><div class="v">${aVenir.length}</div><div class="l">Session${aVenir.length > 1 ? "s" : ""} à venir · ${sessions.length} au total</div></div>
       <div class="card kpi"><div class="v">${chf(facture)}</div><div class="l">Total facturé</div></div>
@@ -1835,13 +2121,14 @@ function ouvrir(id, preset = {}) {
   setD("e-fin", i.date_fin);
   $("e-type").value = TYPES.includes(i.type) ? i.type : "Autre";
   $("e-contact").value = i.contact || "";
+  $("e-email").value = i.email || ""; $("e-adresse").value = i.adresse || ""; $("e-crm").value = i.crm_url || ""; majCrm();
   $("e-resp").innerHTML = respOptions(i.resp, "Choisir un responsable…");
   $("e-prix").value = i.prix ?? (num(i.budget) > 0 ? num(i.budget) : "");
   $("e-paye").value = num(i.paye) ? num(i.paye) : "";
   $("e-paye").readOnly = !!sb; $("e-paye").title = sb ? tr("Calculé automatiquement à partir des paiements enregistrés") : "";
   setD("e-pay-date", today());
   $("e-pay-add").value = "";
-  majPaybox(); renderPaiementsFiche();
+  majPaybox(); renderPaiementsFiche(); renderFacturesFiche();
   $("e-notes").value = i.notes || "";
   $("e-update").value = "";
   $("d-info").textContent = id ? infoLine(i) : "";
@@ -1863,6 +2150,9 @@ function lireTiroir() {
     date_fin: $("e-fin").value || null,
     type: $("e-type").value,
     contact: $("e-contact").value.trim(),
+    email: $("e-email").value.trim(),
+    adresse: $("e-adresse").value.trim(),
+    crm_url: $("e-crm").value.trim(),
     resp: $("e-resp").value,
     prix: num($("e-prix").value),
     ...(sb ? {} : { paye: num($("e-paye").value) || 0 }), // avec Supabase, le total payé vient du registre
@@ -1931,6 +2221,7 @@ async function enregistrer(garderOuvert = false) {
   if (Number.isNaN(data.prix) || Number.isNaN(num($("e-paye").value))) { toast("Montant invalide : écris un nombre, ex. 600 ou 1250.50"); return; }
   if (!data.client) { toast("Le nom du client est obligatoire."); $("e-client").focus(); return; }
   if (!respConnu(data.resp)) { toast("Choisis un responsable : chaque demande doit être assignée."); $("e-resp").focus(); return; }
+  if (!verifierCoord(data)) return;
   const ok = editId ? await modifier(editId, data) : await ajouter(data);
   if (!ok) return;
   if (garderOuvert && editId) { $("d-info").textContent = infoLine(items.find((x) => x.id === editId)); toast("Update ajoutée"); }
@@ -2173,7 +2464,7 @@ $("rows").addEventListener("change", (e) => {
   }
 });
 $("rows").addEventListener("click", (e) => {
-  if (e.target.closest("select")) return;
+  if (e.target.closest("select, .crm-l")) return;
   const lien = e.target.closest(".lien-client"); if (lien) return ouvrirClient(lien.dataset.client);
   const r = e.target.closest(".row"); if (r) ouvrir(r.dataset.id);
 });
@@ -2255,12 +2546,24 @@ $("e-pay-liste").addEventListener("click", async (e) => {
   if (error) return toast("Erreur : " + error.message);
   paiements = paiements.filter((y) => y.id !== x.id); renderPaiementsFiche(); await rafraichirDemande(x.demande_id);
 });
+$("e-crm").oninput = majCrm;
+$("e-fact-btn").onclick = () => genererFacture();
+$("e-fact-liste").onclick = (e) => { const l = e.target.closest("[data-fact]"); const f = l && factures.find((x) => x.id === l.dataset.fact); if (f) afficherFacture(f); };
+$("fa-print").onclick = imprimerFacture;
+$("fa-close").onclick = fermerFacture;
+$("facture").addEventListener("click", (e) => { if (e.target.id === "facture") fermerFacture(); });
+$("ad-body").addEventListener("submit", (e) => { if (e.target.id === "reg-form") { e.preventDefault(); enregistrerReglages(); } });
+$("ad-body").addEventListener("click", (e) => {
+  if (e.target.closest("#fa-csv")) return exporterFactures();
+  const l = e.target.closest("tr[data-fact]"); const f = l && factures.find((x) => x.id === l.dataset.fact); if (f) afficherFacture(f);
+});
 $("e-pay-add").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); encaisser(); } };
 $("e-update").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); ajouterUpdate(); } };
 $("e-client").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); enregistrer(); } };
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && !document.querySelector(".flatpickr-calendar.open")) {
-    if (!$("drawer").classList.contains("hidden")) fermer();
+    if (!$("facture").classList.contains("hidden")) fermerFacture();
+    else if (!$("drawer").classList.contains("hidden")) fermer();
     else if (!$("daybox").classList.contains("hidden")) fermerJour();
     else if (!$("clientbox").classList.contains("hidden")) fermerClient();
     else if (!$("adminbox").classList.contains("hidden")) fermerAdmin();
@@ -2409,6 +2712,7 @@ function renderAdmin() {
   if (adOnglet === "logs") return renderLogs();
   if (adOnglet === "acces") return renderAcces();
   if (adOnglet === "compta") return renderCompta();
+  if (adOnglet === "factures") return renderFacturesAdmin();
   renderApercu();
 }
 // ---------- Logs : toutes les modifications, qui et quand ----------
@@ -2760,7 +3064,7 @@ function exporterCSV() {
 $("admin-open").onclick = ouvrirAdmin;
 $("ad-close").onclick = fermerAdmin;
 $("ad-csv").onclick = exporterCSV;
-$("ad-refresh").onclick = () => { chargerJournal(); toast(tr("Actualisé")); };
+$("ad-refresh").onclick = async () => { chargerJournal(); await chargerFacturation(); renderAdmin(); toast(tr("Actualisé")); };
 $("ad-body").addEventListener("click", (e) => {
   const v = e.target.closest("[data-cv]"); if (v) { cpt.vue = v.dataset.cv; return renderCompta(); }
   const nv = e.target.closest("[data-cnav]");
@@ -2843,7 +3147,7 @@ majBoutonsTheme();
 
 // ---------- Fenêtre au premier plan : bloque le défilement de la page derrière ----------
 let verrouY = 0;
-const FENETRES = ["bigcal", "clientbox", "adminbox", "daybox", "drawer"];
+const FENETRES = ["bigcal", "clientbox", "adminbox", "daybox", "drawer", "facture"];
 function majVerrou() {
   const ouvert = FENETRES.some((id) => $(id) && !$(id).classList.contains("hidden"));
   const deja = document.body.classList.contains("verrou");
