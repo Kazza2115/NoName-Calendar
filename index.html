@@ -771,7 +771,7 @@ try {
     <section class="hidden" id="page-parts">
       <div class="toolbar" style="margin-bottom:14px"><h2 style="margin:0;font-size:24px">💸 Parts & remboursements</h2><span style="flex:1"></span>
         <button type="button" class="btn small aide-btn" title="Afficher / masquer les explications">ℹ️ Aide</button>
-        <span class="langsw" id="pt-tabs" style="margin:0"><button type="button" data-pt="parts" class="on">Parts des responsables</button><button type="button" data-pt="remb">🔁 Remboursements</button><button type="button" data-pt="ctrl">🔎 Contrôles</button></span></div>
+        <span class="langsw" id="pt-tabs" style="margin:0"><button type="button" data-pt="parts" class="on">Parts des responsables</button><button type="button" data-pt="remb">🔁 Remboursements</button></span></div>
       <div id="pt-body"></div>
     </section>
     <div class="layout">
@@ -889,7 +889,7 @@ try {
     <div class="bc-head">
       <h2>🛡️ Panel admin</h2>
       <span class="ad-badge">Michael</span>
-      <span class="langsw" id="ad-tabs" style="margin:0"><button type="button" data-tab="apercu" class="on">Vue d'ensemble</button><button type="button" data-tab="compta">💰 Comptabilité</button><button type="button" data-tab="factures">🧾 Factures</button><button type="button" data-tab="remb">🔁 Remboursements</button><button type="button" data-tab="logs">📜 Logs</button><button type="button" data-tab="acces">🔐 Connexions & comptes</button></span>
+      <span class="langsw" id="ad-tabs" style="margin:0"><button type="button" data-tab="apercu" class="on">Vue d'ensemble</button><button type="button" data-tab="compta">💰 Comptabilité</button><button type="button" data-tab="factures">🧾 Factures</button><button type="button" data-tab="remb">🔁 Remboursements</button><button type="button" data-tab="ctrl">🔎 Contrôles</button><button type="button" data-tab="logs">📜 Logs</button><button type="button" data-tab="acces">🔐 Connexions & comptes</button></span>
       <button class="btn" id="ad-refresh" title="Actualiser">↻</button>
       <button type="button" class="btn aide-btn" title="Afficher / masquer les explications">ℹ️ Aide</button>
       <button class="btn" id="ad-csv">⬇ Exporter (CSV)</button>
@@ -2654,7 +2654,6 @@ $("pt-body").addEventListener("click", (e) => {
   if (e.target.closest("#rb-csv")) return exporterRemb();
   if (e.target.closest("#cpt-csv-resp")) return exporterRapporte();
   const pay = e.target.closest("[data-vp-payer]"); if (pay && estAdmin) { const [r, m] = pay.dataset.vpPayer.split("|"); return payerPart(r, m); }
-  const ct = e.target.closest("[data-ctrl]"); if (ct && estAdmin) return basculerControle(ct.dataset.ctrl);
   const sup = e.target.closest("[data-vp-suppr]"); if (sup && estAdmin) return annulerVersementPart(sup.dataset.vpSuppr);
   if (e.target.closest("summary")) return;
   const row = e.target.closest("tr[data-id]"); if (row) return ouvrir(row.dataset.id);
@@ -2692,6 +2691,7 @@ $("ad-body").addEventListener("click", (e) => {
   const fsup = e.target.closest("[data-fact-suppr]"); if (fsup) return supprimerFacture(fsup.dataset.factSuppr);
   if (e.target.closest("#cpt-csv-resp")) return exporterRapporte();
   if (e.target.closest("#rb-csv")) return exporterRemb();
+  const ct = e.target.closest("[data-ctrl]"); if (ct) { e.stopPropagation(); return basculerControle(ct.dataset.ctrl); }
   if (e.target.closest("#rb-new")) { rbForm = rbForm && !rbForm.id ? null : { id: null }; renderRemb(); return; }
   if (e.target.closest("#rb-annuler")) { rbForm = null; renderRemb(); return; }
   const ed = e.target.closest("[data-rb-edit]"); if (ed) { rbForm = { id: ed.dataset.rbEdit }; renderRemb(); $("ad-body").scrollTop = 0; return; }
@@ -2858,6 +2858,7 @@ function renderAdmin() {
   if (adOnglet === "compta") return renderCompta();
   if (adOnglet === "factures") return renderFacturesAdmin();
   if (adOnglet === "remb") return renderRemb();
+  if (adOnglet === "ctrl") return renderControles();
   renderApercu();
 }
 // ---------- Logs : toutes les modifications, qui et quand ----------
@@ -3460,7 +3461,6 @@ function renderParts() {
   if ($("page-parts").classList.contains("hidden")) return;
   document.querySelectorAll("#pt-tabs [data-pt]").forEach((b) => b.classList.toggle("on", b.dataset.pt === ptOnglet));
   if (ptOnglet === "remb") return renderRemb($("pt-body"), true);
-  if (ptOnglet === "ctrl") return renderControles();
   const { demandes, grille, totaux, noms } = calculerParts(), p = reglParts();
   const etat = (c, r, m) => {
     if (!c.genere && !c.verse) return `<span class="none">·</span>`;
@@ -3580,7 +3580,7 @@ function renderControles() {
   const tous = controles(), ok = new Set(ctrlOk());
   const ouverts = tous.filter((c) => !ok.has(c.cle)), verifies = tous.filter((c) => ok.has(c.cle));
   const ligne = (c, v) => `<tr ${c.id ? `data-id="${c.id}" style="cursor:pointer"` : ""}><td style="width:28px">${v ? "✓" : c.niv}</td><td><b>${esc(c.titre)}</b><br><small>${esc(c.detail)}</small></td>${estAdmin ? `<td style="width:1%;white-space:nowrap"><button class="btn small" data-ctrl="${esc(c.cle)}">${v ? "↩ Rouvrir" : "✓ Vérifié"}</button></td>` : ""}</tr>`;
-  $("pt-body").innerHTML = `<p class="lg-note" style="margin:0 0 12px">Vérification automatique des données : ⚠ = probablement faux ou incomplet, ℹ = à vérifier. Clic sur une ligne = ouvrir la fiche.${estAdmin ? " « ✓ Vérifié » range un point déjà contrôlé." : ""}</p>
+  $("ad-body").innerHTML = `<p class="lg-note" style="margin:0 0 12px">Vérification automatique des données : ⚠ = probablement faux ou incomplet, ℹ = à vérifier. Clic sur une ligne = ouvrir la fiche.${estAdmin ? " « ✓ Vérifié » range un point déjà contrôlé." : ""}</p>
     <div class="card side-list">${ouverts.length ? `<table class="ad-table"><tbody>${ouverts.map((c) => ligne(c, false)).join("")}</tbody></table>` : `<div class="none">Rien à signaler 👌</div>`}</div>
     ${verifies.length ? `<details class="card side-list" ${ctrlTous ? "open" : ""} id="ctrl-ok"><summary class="section-title" style="cursor:pointer;margin:0">Déjà vérifiés (${verifies.length})</summary><table class="ad-table" style="margin-top:8px"><tbody>${verifies.map((c) => ligne(c, true)).join("")}</tbody></table></details>` : ""}`;
 }
@@ -3590,7 +3590,7 @@ async function basculerControle(cle) {
   const data = { ...reglages, controles_ok: [...liste] };
   if (sb) { const { error } = await sb.from("reglages").upsert({ id: 1, data, maj_le: new Date().toISOString() }); if (error) { toast("Erreur : " + error.message); return; } }
   else { try { localStorage.setItem(REG_KEY, JSON.stringify(data)); } catch {} }
-  reglages = data; ctrlTous = !!document.querySelector("#ctrl-ok[open]"); renderControles();
+  reglages = data; ctrlTous = !!document.querySelector("#ctrl-ok[open]"); renderAdmin();
 }
 
 function csv(nom, entetes, lignes) {
@@ -3713,7 +3713,7 @@ $("ad-body").addEventListener("click", (e) => {
   if (nv) { const k = +nv.dataset.cnav; if (cpt.vue === "mois") cpt.annee += k; else { const x = parse(cpt.finSemaine); x.setDate(x.getDate() + 84 * k); cpt.finSemaine = isoDay(x); } return renderCompta(); }
   if (e.target.id === "cpt-csv-pay") return exporterPaiements();
   if (e.target.id === "cpt-csv-synth") return exporterSynthese();
-  const a = e.target.closest(".watch a[data-id], .cpt-table tr[data-id], .ad-table tr[data-id]"); if (a && a.dataset.id) { e.stopPropagation(); return ouvrir(a.dataset.id); }
+  const a = !e.target.closest("button, input, select") && e.target.closest(".watch a[data-id], .cpt-table tr[data-id], .ad-table tr[data-id]"); if (a && a.dataset.id) { e.stopPropagation(); return ouvrir(a.dataset.id); }
 }, true);
 $("ad-body").addEventListener("mousemove", (e) => {
   const tip = $("cpt-tip"); if (!tip) return;
