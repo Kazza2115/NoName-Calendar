@@ -607,6 +607,24 @@ try {
   .crm-l:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
   .cl-coord { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 15px; color: var(--muted); margin-bottom: 14px; }
   .cl-coord a { color: var(--accent); }
+  .pr-box { margin-bottom: 10px; }
+  .pr-liste { display: grid; gap: 6px; margin-bottom: 6px; }
+  .pr-l { display: grid; grid-template-columns: 96px 104px minmax(0, 1fr) auto; grid-template-areas: "nom nom tot x" "q pu par par"; gap: 6px 8px; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 7px 8px; font-size: 14px; }
+  .pr-l input, .pr-l select { padding: 5px 7px; font-size: 14px; min-width: 0; }
+  .pr-nom { grid-area: nom; min-width: 0; } .pr-tot { grid-area: tot; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .pr-x { grid-area: x; border: none; background: none; color: var(--danger); cursor: pointer; font-size: 15px; }
+  .pr-l label { display: flex; align-items: center; gap: 4px; margin: 0; font-size: 13px; color: var(--muted); }
+  .pr-q { grid-area: q; } .pr-pu { grid-area: pu; } .pr-l select { grid-area: par; }
+  .rb-card { padding: 16px; display: grid; gap: 12px; }
+  .rb-head { display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline; }
+  .rb-head h3 { margin: 0; font-size: 19px; }
+  .rb-head small { color: var(--muted); }
+  .rb-form { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px 12px; padding: 16px; }
+  .rb-form .field { margin: 0; } .rb-form .large { grid-column: span 2; } .rb-form .tout { grid-column: 1 / -1; }
+  .rb-resps { display: flex; gap: 12px; flex-wrap: wrap; } .rb-resps label { display: inline-flex; gap: 5px; align-items: center; margin: 0; color: var(--text); font-size: 15px; }
+  .rb-vers { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .rb-vers input, .rb-vers select { width: auto; flex: 1 1 110px; min-width: 0; }
+  @media (max-width: 680px) { .rb-form { grid-template-columns: 1fr 1fr; } }
   .fa-box { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); display: grid; gap: 6px; }
   .fa-l { display: flex; gap: 8px; align-items: center; font-size: 14px; padding: 5px 8px; border-radius: 8px; background: var(--card); border: 1px solid var(--line); cursor: pointer; }
   .fa-l:hover { border-color: var(--accent); }
@@ -842,7 +860,7 @@ try {
     <div class="bc-head">
       <h2>🛡️ Panel admin</h2>
       <span class="ad-badge">Michael</span>
-      <span class="langsw" id="ad-tabs" style="margin:0"><button type="button" data-tab="apercu" class="on">Vue d'ensemble</button><button type="button" data-tab="compta">💰 Comptabilité</button><button type="button" data-tab="factures">🧾 Factures</button><button type="button" data-tab="logs">📜 Logs</button><button type="button" data-tab="acces">🔐 Connexions & comptes</button></span>
+      <span class="langsw" id="ad-tabs" style="margin:0"><button type="button" data-tab="apercu" class="on">Vue d'ensemble</button><button type="button" data-tab="compta">💰 Comptabilité</button><button type="button" data-tab="factures">🧾 Factures</button><button type="button" data-tab="remb">🔁 Remboursements</button><button type="button" data-tab="logs">📜 Logs</button><button type="button" data-tab="acces">🔐 Connexions & comptes</button></span>
       <button class="btn" id="ad-refresh" title="Actualiser">↻</button>
       <button class="btn" id="ad-csv">⬇ Exporter (CSV)</button>
       <button class="btn" id="ad-close" style="margin-left:auto">✕ Fermer</button>
@@ -889,7 +907,11 @@ try {
   </div>
   <div class="field"><label for="e-adresse">Adresse du client (pour la facture)</label><textarea id="e-adresse" rows="2" placeholder="Rue et n°&#10;NPA Ville"></textarea></div>
   <div class="paybox" id="paybox">
-    <p class="section-title" style="margin-bottom:8px">💰 Prix & paiement</p>
+    <p class="section-title" style="margin-bottom:8px">💰 Prestations, prix & paiement</p>
+    <div class="pr-box">
+      <div class="pr-liste" id="e-presta"></div>
+      <div class="update-row"><select id="e-presta-sel" aria-label="Prestation"></select><button class="btn small" id="e-presta-btn" type="button">+ Prestation</button></div>
+    </div>
     <div class="grid2">
       <div class="field" style="margin:0"><label for="e-prix">Prix total (CHF)</label><input type="text" id="e-prix" inputmode="decimal" placeholder="Ex. : 600"></div>
       <div class="field" style="margin:0"><label for="e-paye">Déjà payé (CHF)</label><input type="text" id="e-paye" inputmode="decimal" placeholder="0"></div>
@@ -964,7 +986,7 @@ const EN = {
   "Contact": "Contact", "Statut": "Status", "Responsable *": "Owner *", "Responsable": "Owner", "Choisir…": "Choose…", "Choisir un responsable…": "Choose an owner…", "Ajouter": "Add",
   "Demandes actives": "Active requests", "Sessions sous 7 jours": "Sessions within 7 days", "Reste à encaisser": "Left to collect",
   "Toutes": "All", "Actives": "Active", "💰 À encaisser": "💰 To collect",
-  "Nouvelle": "New", "En cours": "In progress", "En attente": "On hold", "Confirmée": "Confirmed", "Terminée": "Finished", "Annulée": "Cancelled", "Session confirmée": "Confirmed session", "E-mail du client": "Client e-mail", "Lien CRM": "CRM link", "Adresse du client (pour la facture)": "Client address (for the invoice)", "🧾 Générer la facture": "🧾 Generate invoice", "🖨 Imprimer / PDF": "🖨 Print / PDF", "✉ Envoyer par e-mail": "✉ Send by e-mail", "🧾 Factures": "🧾 Invoices", "Coordonnées sur les factures": "Details shown on invoices", "Nom de l'entreprise": "Company name", "Rue": "Street", "N°": "No.", "NPA": "Postcode", "Ville": "City", "E-mail": "E-mail", "Téléphone": "Phone", "N° IDE / TVA (ex. CHE-123.456.789 TVA)": "UID / VAT no. (e.g. CHE-123.456.789 VAT)", "IBAN (pour la QR-facture)": "IBAN (for the QR-bill)", "Taux de TVA en % (0 si non assujetti)": "VAT rate in % (0 if not registered)", "Délai de paiement (jours)": "Payment term (days)", "Texte en bas de facture (facultatif)": "Invoice footer text (optional)", "⬇ Factures (CSV)": "⬇ Invoices (CSV)", "Aucune facture pour l'instant.": "No invoices yet.", "Par": "By", "Ouvrir": "Open", "Facture": "Invoice", "Ouvrir dans le CRM": "Open in the CRM", "Enregistre d'abord la demande, puis génère la facture.": "Save the request first, then generate the invoice.", "Indique d'abord le prix total.": "Enter the total price first.", "Adresse e-mail invalide, ex. nom@exemple.ch": "Invalid e-mail address, e.g. name@example.ch", "Le lien CRM doit commencer par https://": "The CRM link must start with https://", "✓ IBAN valide": "✓ Valid IBAN", "⚠ IBAN invalide": "⚠ Invalid IBAN", "Pour un PDF : Imprimer → « Enregistrer en PDF ».": "For a PDF: Print → “Save as PDF”.", "Le NPA doit avoir 4 chiffres": "The postcode must have 4 digits", "Annulées": "Cancelled",
+  "Nouvelle": "New", "En cours": "In progress", "En attente": "On hold", "Confirmée": "Confirmed", "Terminée": "Finished", "Annulée": "Cancelled", "Session confirmée": "Confirmed session", "💰 Prestations, prix & paiement": "💰 Services, price & payment", "+ Prestation": "+ Service", "Fait par…": "Done by…", "Calculé à partir des prestations": "Calculated from the services", "Nom de la prestation": "Service name", "Enregistrement": "Recording", "Mix basique": "Basic mix", "Mix Pro": "Pro mix", "Master": "Master", "Prod sur mesure": "Custom production", "Autre (prix libre, remise…)": "Other (free price, discount…)", "Non détaillé": "Not itemised", "Tarifs des prestations (CHF)": "Service rates (CHF)", "🔁 Remboursements": "🔁 Reimbursements", "🔁 Remboursements à NoName": "🔁 Reimbursements to NoName", "⬇ Remboursements (CSV)": "⬇ Reimbursements (CSV)", "+ Nouvelle dette": "+ New debt", "Total dû à NoName": "Total owed to NoName", "Déjà remboursé": "Already reimbursed", "Reste à rembourser": "Left to reimburse", "Nouvelle dette envers NoName": "New debt to NoName", "Modifier la dette": "Edit debt", "Libellé *": "Label *", "Session / client concerné (facultatif)": "Related session / client (optional)", "Tarif (CHF / h)": "Rate (CHF / h)", "Montant dû (CHF) *": "Amount owed (CHF) *", "Revenus comptés à partir du": "Revenue counted from", "Part du revenu remboursée (%)": "Share of revenue used (%)", "Revenu pris en compte": "Revenue taken into account", "Encaissé (payé par le client)": "Collected (paid by the client)", "Répartition": "Split", "Commune : tout le revenu des responsables compte": "Shared: all owners' revenue counts", "Parts égales : chacun rembourse sa part avec son revenu": "Equal shares: each repays their share with their revenue", "Responsables concernés": "Owners concerned", "Note": "Note", "Annuler": "Cancel", "✏ Modifier": "✏ Edit", "Sa part": "Their share", "Revenu compté": "Revenue counted", "Remboursé (sessions)": "Reimbursed (sessions)", "Versé à la main": "Paid manually", "Contribution": "Contribution", "Fait par": "Done by", "Compté": "Counted", "+ Versement": "+ Payment", "Tous": "All", "Note (facultatif)": "Note (optional)", "Montant (CHF)": "Amount (CHF)", "Soldé ✓": "Settled ✓", "Supprimer cette dette et ses versements ?": "Delete this debt and its payments?", "Retirer ce versement ?": "Remove this payment?", "⬇ Détail par responsable (CSV)": "⬇ Detail by owner (CSV)", "Enreg. (h)": "Rec. (h)", "Mix": "Mix", "Prod": "Prod", "Autres": "Other", "Part du facturé": "Share of invoiced", "Quantité": "Quantity", "Prix unitaire": "Unit price", "E-mail du client": "Client e-mail", "Lien CRM": "CRM link", "Adresse du client (pour la facture)": "Client address (for the invoice)", "🧾 Générer la facture": "🧾 Generate invoice", "🖨 Imprimer / PDF": "🖨 Print / PDF", "✉ Envoyer par e-mail": "✉ Send by e-mail", "🧾 Factures": "🧾 Invoices", "Coordonnées sur les factures": "Details shown on invoices", "Nom de l'entreprise": "Company name", "Rue": "Street", "N°": "No.", "NPA": "Postcode", "Ville": "City", "E-mail": "E-mail", "Téléphone": "Phone", "N° IDE / TVA (ex. CHE-123.456.789 TVA)": "UID / VAT no. (e.g. CHE-123.456.789 VAT)", "IBAN (pour la QR-facture)": "IBAN (for the QR-bill)", "Taux de TVA en % (0 si non assujetti)": "VAT rate in % (0 if not registered)", "Délai de paiement (jours)": "Payment term (days)", "Texte en bas de facture (facultatif)": "Invoice footer text (optional)", "⬇ Factures (CSV)": "⬇ Invoices (CSV)", "Aucune facture pour l'instant.": "No invoices yet.", "Par": "By", "Ouvrir": "Open", "Facture": "Invoice", "Ouvrir dans le CRM": "Open in the CRM", "Enregistre d'abord la demande, puis génère la facture.": "Save the request first, then generate the invoice.", "Indique d'abord le prix total.": "Enter the total price first.", "Adresse e-mail invalide, ex. nom@exemple.ch": "Invalid e-mail address, e.g. name@example.ch", "Le lien CRM doit commencer par https://": "The CRM link must start with https://", "✓ IBAN valide": "✓ Valid IBAN", "⚠ IBAN invalide": "⚠ Invalid IBAN", "Pour un PDF : Imprimer → « Enregistrer en PDF ».": "For a PDF: Print → “Save as PDF”.", "Le NPA doit avoir 4 chiffres": "The postcode must have 4 digits", "Annulées": "Cancelled",
   "Rechercher un client, une demande…": "Search a client, a request…", "Tous les responsables": "All owners", "⚠ Non assignées": "⚠ Unassigned", "⚠ À assigner": "⚠ Unassigned", "À assigner": "Unassigned", "à assigner": "unassigned",
   "Tri : prochaine session": "Sort: next session", "Tri : dernière modification": "Sort: last change", "Tri : dernier contact": "Sort: last contact", "Tri : client A → Z": "Sort: client A → Z", "Tri : reste à payer": "Sort: amount due", "Tri : date de fin (récentes d'abord)": "Sort: end date (newest first)",
   "Trier": "Sort", "Filtrer par responsable": "Filter by owner",
@@ -1007,7 +1029,7 @@ const RULES = [
   [/^Créée le /, "Created on "], [/ · modifiée /, " · updated "], [/ · modifiée par un membre/, " · changed by a member"], [/^Modifiée /, "Updated "],
   [/ payés\b/g, " paid"], [/(\d+) modification\(s\)/, "$1 change(s)"],
   [/^Contacts : /, "Contacts: "], [/^Contact : /, "Contact: "], [/^Sessions : /, "Sessions: "], [/^Terminées : /, "Finished: "], [/^Terminée : /, "Finished: "],
-  [/^Voir toutes les sessions et paiements de /, "See all sessions and payments for "], [/^Connecté·e : /, "Signed in: "], [/^Profil : /, "Profile: "], [/^Encaissé sur la période · (\d+)%$/, "Collected in period · $1%"], [/^Facturé et encaissé par (mois|semaine)$/, (m, x) => `Invoiced and collected by ${x === "mois" ? "month" : "week"}`], [/^Impayés \((\d+)\) — total (.+)$/, "Unpaid ($1) — total $2"], [/^Paiements de la période \((\d+)\)$/, "Payments in period ($1)"], [/^(\d+) modifications?$/, (m, n) => `${n} change${n > 1 ? "s" : ""}`], [/^(\d+) entrées?$/, (m, n) => `${n} entr${n > 1 ? "ies" : "y"}`], [/^Connexions sur 7 jours \((\d+)\)$/, "Logins over 7 days ($1)"], [/^Historique des connexions \((\d+)\)$/, "Login history ($1)"], [/(≈ )?placée le (\S+ \S+)( par (.+))?$/, (m, a, d, p, n) => `${a || ""}booked on ${d}${n ? " by " + n : ""}`], [/^Planning \((\d+)\)$/, "Schedule ($1)"], [/^Sessions sans horaire \((\d+)\)$/, "Sessions without a time ($1)"], [/^Profils créés \((\d+)\)$/, "Created profiles ($1)"], [/^Sessions du mois \((\d+)\)$/, "Sessions this month ($1)"], [/^Encaissé sur (.+) facturés$/, "Collected out of $1 invoiced"], [/^🟢 Connectés maintenant \((\d+)\)$/, "🟢 Online now ($1)"], [/^Connectés maintenant \((\d+)\)$/, "Online now ($1)"], [/ · depuis (\d)/, " · since $1"],
+  [/^Voir toutes les sessions et paiements de /, "See all sessions and payments for "], [/^Connecté·e : /, "Signed in: "], [/^Profil : /, "Profile: "], [/^Encaissé sur la période · (\d+)%$/, "Collected in period · $1%"], [/^Facturé et encaissé par (mois|semaine)$/, (m, x) => `Invoiced and collected by ${x === "mois" ? "month" : "week"}`], [/^Impayés \((\d+)\) — total (.+)$/, "Unpaid ($1) — total $2"], [/^Paiements de la période \((\d+)\)$/, "Payments in period ($1)"], [/^(\d+) modifications?$/, (m, n) => `${n} change${n > 1 ? "s" : ""}`], [/^(\d+) entrées?$/, (m, n) => `${n} entr${n > 1 ? "ies" : "y"}`], [/^Connexions sur 7 jours \((\d+)\)$/, "Logins over 7 days ($1)"], [/^Historique des connexions \((\d+)\)$/, "Login history ($1)"], [/(≈ )?placée le (\S+ \S+)( par (.+))?$/, (m, a, d, p, n) => `${a || ""}booked on ${d}${n ? " by " + n : ""}`], [/^Planning \((\d+)\)$/, "Schedule ($1)"], [/^Sessions sans horaire \((\d+)\)$/, "Sessions without a time ($1)"], [/^Profils créés \((\d+)\)$/, "Created profiles ($1)"], [/^Sessions du mois \((\d+)\)$/, "Sessions this month ($1)"], [/^👥 Ce que chacun a rapporté · (.+)$/, "👥 What each owner brought in · $1"], [/^Sessions qui ont remboursé \((\d+)\)$/, "Sessions that reimbursed ($1)"], [/^Versements à la main \((\d+)\)$/, "Manual payments ($1)"], [/^Encaissé sur (.+) facturés$/, "Collected out of $1 invoiced"], [/^🟢 Connectés maintenant \((\d+)\)$/, "🟢 Online now ($1)"], [/^Connectés maintenant \((\d+)\)$/, "Online now ($1)"], [/ · depuis (\d)/, " · since $1"],
   [/\bdès (\d)/g, "from $1"], [/\bjusqu'à (\d)/g, "until $1"],
   [/\breste (?=[\d])/g, "due "], [/^✓ le /, "✓ on "], [/^Statut : /, "Status: "], [/^Responsable : /, "Owner: "], [/^Erreur : /, "Error: "],
   [/^Liste indisponible\./, "List unavailable."], [/le projet Supabase est peut-être en pause\./, "the Supabase project may be paused."],
@@ -1255,6 +1277,8 @@ async function chargerPaiements() {
 const urlSure = (u) => { u = (u || "").trim(); return /^https?:\/\/[^\s"'<>]+$/i.test(u) ? u : ""; };
 const emailOk = (m) => !m || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m);
 function verifierCoord(d) {
+  if ((d.prestations || []).some((l) => l.q === null || l.pu === null || Number.isNaN(l.q) || Number.isNaN(l.pu))) { toast("Prestation : indique une quantité et un prix valides, ex. 2 et 100"); return false; }
+  if (d.prix < 0) { toast("Le total des prestations ne peut pas être négatif"); return false; }
   if (!emailOk(d.email)) { toast("Adresse e-mail invalide, ex. nom@exemple.ch"); $("e-email").focus(); return false; }
   if (d.crm_url && !urlSure(d.crm_url)) { toast("Le lien CRM doit commencer par https://"); $("e-crm").focus(); return false; }
   return true;
@@ -1307,6 +1331,7 @@ function contenuFacture(i) {
     client: { nom: i.client || i.titre || "", adresse: i.adresse || "", email: i.email || "" },
     objet: i.titre || i.type || "Prestation studio", type: i.type && i.type !== "Autre" ? i.type : "",
     sessions: sessionsDe(i).map((d) => ({ d, h: plageDe(i, d) || "" })),
+    lignes: (i.prestations || []).map((l) => ({ l: l.l, q: num(l.q) || 0, u: l.u || "", pu: numSigne(l.pu) || 0, t: totalLigne(l) })),
     total, paye, reste: deuxDec(total - paye), date, echeance: isoDay(e),
   };
 }
@@ -1355,8 +1380,11 @@ function factureHtml(f) {
     <div class="fa-dest">${h(dest)}</div>
     <h1>Facture n° ${h(f.numero)}</h1>
     <div class="fa-meta"><span>Date</span><b>${fmtDate(c.date)}</b><span>Échéance</span><b>${fmtDate(c.echeance)}</b>${c.client.email ? `<span>E-mail</span><b>${h(c.client.email)}</b>` : ""}</div>
-    <table class="fa-t"><thead><tr><th>Description</th><th class="n">Montant</th></tr></thead>
-      <tbody><tr><td><b>${h(c.objet)}</b>${c.type && c.type !== c.objet ? " · " + h(c.type) : ""}${sess ? `<small>Session${c.sessions.length > 1 ? "s" : ""} studio :<br>${sess}</small>` : ""}</td><td class="n">${chf(c.total)}</td></tr></tbody></table>
+    ${(c.lignes || []).length ? `<table class="fa-t"><thead><tr><th>Description</th><th class="n">Quantité</th><th class="n">Prix unitaire</th><th class="n">Montant</th></tr></thead>
+      <tbody><tr><td colspan="4"><b>${h(c.objet)}</b>${sess ? `<small>Session${c.sessions.length > 1 ? "s" : ""} studio : ${c.sessions.map((s) => `${jourSemaine(s.d)} ${fmtDate(s.d)}${s.h ? " · " + s.h : ""}`).join(" · ")}</small>` : ""}</td></tr>
+      ${c.lignes.map((l) => `<tr><td>${h(l.l)}</td><td class="n">${String(l.q).replace(".", ",")}${l.u === "h" ? " h" : ""}</td><td class="n">${chf(l.pu)}</td><td class="n">${chf(l.t)}</td></tr>`).join("")}</tbody></table>`
+    : `<table class="fa-t"><thead><tr><th>Description</th><th class="n">Montant</th></tr></thead>
+      <tbody><tr><td><b>${h(c.objet)}</b>${c.type && c.type !== c.objet ? " · " + h(c.type) : ""}${sess ? `<small>Session${c.sessions.length > 1 ? "s" : ""} studio :<br>${sess}</small>` : ""}</td><td class="n">${chf(c.total)}</td></tr></tbody></table>`}
     <table class="fa-tot">
       <tr><td>Total${c.tva ? " TTC" : ""}</td><td>${chf(c.total)}</td></tr>
       ${c.tva ? `<tr><td>dont TVA ${String(c.tva).replace(".", ",")} %</td><td>${chf(tvaMt)}</td></tr>` : ""}
@@ -1433,6 +1461,8 @@ function renderFacturesAdmin() {
         <p class="section-title">Coordonnées sur les factures</p>
         <form id="reg-form" class="grid2" style="gap:8px 12px">
           ${CHAMPS_REG.map(([k, l]) => `<div class="field" style="margin:0;${["nom", "ide", "iban", "note", "email"].includes(k) ? "grid-column:1/-1" : ""}"><label for="reg-${k}">${l}</label>${k === "note" ? `<textarea id="reg-${k}" rows="2" style="min-height:0">${esc(r[k] || "")}</textarea>` : `<input type="text" id="reg-${k}" value="${esc(k === "iban" ? ibanEspaces(r[k]) : r[k] ?? "")}" ${["tva", "delai"].includes(k) ? 'inputmode="decimal"' : ""}>`}${k === "iban" && ibEtat ? `<small style="color:${ibEtat.startsWith("✓") ? "var(--ok)" : "var(--danger)"}">${ibEtat}</small>` : ""}</div>`).join("")}
+          <p class="section-title" style="grid-column:1/-1;margin:10px 0 0">Tarifs des prestations (CHF)</p>
+          ${tarifs().filter((t) => t.k !== "autre").map((t) => `<div class="field" style="margin:0"><label for="tar-${t.k}">${esc(t.l)}${t.u === "h" ? " (par heure)" : ""}</label><input type="text" id="tar-${t.k}" inputmode="decimal" value="${t.pu}"></div>`).join("")}
           <div style="grid-column:1/-1;display:flex;justify-content:flex-end"><button class="btn primary" type="submit">Enregistrer</button></div>
         </form>
       </div>
@@ -1445,6 +1475,8 @@ function renderFacturesAdmin() {
 }
 async function enregistrerReglages() {
   const data = Object.fromEntries(CHAMPS_REG.map(([k]) => [k, $("reg-" + k).value.trim()]));
+  data.tarifs = Object.fromEntries(tarifs().filter((t) => t.k !== "autre").map((t) => [t.k, num($("tar-" + t.k).value)]));
+  if (Object.values(data.tarifs).some((v) => v === null || Number.isNaN(v) || v < 0)) { toast("Tarif invalide : écris un nombre, ex. 100"); return; }
   data.tva = num(data.tva) || 0; data.delai = parseInt(data.delai, 10) || 30; data.iban = data.iban.replace(/\s/g, "").toUpperCase();
   if (data.iban && !ibanOk(data.iban)) { toast("IBAN invalide : vérifie-le (ex. CH93 0076 2011 6238 5295 7)"); return; }
   if (data.npa && !/^\d{4}$/.test(data.npa)) { toast("Le NPA doit avoir 4 chiffres"); return; }
@@ -1469,7 +1501,7 @@ async function charger() {
     items = demoLoad() || demoSeed();
     demoSave();
   }
-  await Promise.all([chargerPaiements(), chargerFacturation()]);
+  await Promise.all([chargerPaiements(), chargerFacturation(), chargerRemb()]);
   render();
 }
 
@@ -2125,6 +2157,9 @@ function ouvrir(id, preset = {}) {
   $("e-resp").innerHTML = respOptions(i.resp, "Choisir un responsable…");
   $("e-prix").value = i.prix ?? (num(i.budget) > 0 ? num(i.budget) : "");
   $("e-paye").value = num(i.paye) ? num(i.paye) : "";
+  prestaE = JSON.parse(JSON.stringify(Array.isArray(i.prestations) ? i.prestations : []));
+  $("e-presta-sel").innerHTML = tarifs().map((t) => `<option value="${t.k}">${esc(t.l)}${t.pu ? " — " + chf(t.pu) + (t.u === "h" ? " / h" : "") : " — prix libre"}</option>`).join("");
+  renderPresta();
   $("e-paye").readOnly = !!sb; $("e-paye").title = sb ? tr("Calculé automatiquement à partir des paiements enregistrés") : "";
   setD("e-pay-date", today());
   $("e-pay-add").value = "";
@@ -2154,7 +2189,8 @@ function lireTiroir() {
     adresse: $("e-adresse").value.trim(),
     crm_url: $("e-crm").value.trim(),
     resp: $("e-resp").value,
-    prix: num($("e-prix").value),
+    prestations: prestaE.map((l) => ({ k: l.k, l: (l.l || "").trim() || "Prestation", u: l.u || "", q: num(l.q), pu: numSigne(l.pu), par: l.par || "" })),
+    prix: prestaE.length ? totalPresta(prestaE) : num($("e-prix").value),
     ...(sb ? {} : { paye: num($("e-paye").value) || 0 }), // avec Supabase, le total payé vient du registre
     notes: $("e-notes").value,
   };
@@ -2547,14 +2583,40 @@ $("e-pay-liste").addEventListener("click", async (e) => {
   paiements = paiements.filter((y) => y.id !== x.id); renderPaiementsFiche(); await rafraichirDemande(x.demande_id);
 });
 $("e-crm").oninput = majCrm;
+$("e-presta-btn").onclick = ajouterPresta;
+$("e-presta").addEventListener("input", (e) => {
+  const row = e.target.closest(".pr-l"), f = e.target.dataset.f; if (!row || !f) return;
+  const l = prestaE[+row.dataset.n]; l[f] = e.target.value;
+  row.querySelector(".pr-tot").textContent = chf(totalLigne(l));
+  majPrixPresta();
+});
+$("e-presta").addEventListener("click", (e) => { const x = e.target.closest("[data-x]"); if (x) { prestaE.splice(+x.dataset.x, 1); renderPresta(); } });
 $("e-fact-btn").onclick = () => genererFacture();
 $("e-fact-liste").onclick = (e) => { const l = e.target.closest("[data-fact]"); const f = l && factures.find((x) => x.id === l.dataset.fact); if (f) afficherFacture(f); };
 $("fa-print").onclick = imprimerFacture;
 $("fa-close").onclick = fermerFacture;
 $("facture").addEventListener("click", (e) => { if (e.target.id === "facture") fermerFacture(); });
-$("ad-body").addEventListener("submit", (e) => { if (e.target.id === "reg-form") { e.preventDefault(); enregistrerReglages(); } });
+$("ad-body").addEventListener("submit", (e) => { if (e.target.id === "reg-form") { e.preventDefault(); enregistrerReglages(); } if (e.target.id === "rb-form") { e.preventDefault(); enregistrerRemb(); } });
+$("ad-body").addEventListener("input", (e) => {
+  if (e.target.id === "rb-h" || e.target.id === "rb-t") { const h = num($("rb-h").value), t = num($("rb-t").value); if (h > 0 && t > 0) $("rb-m").value = deuxDec(h * t); }
+});
+$("ad-body").addEventListener("change", (e) => {
+  if (e.target.id !== "rb-dem") return;
+  const i = items.find((x) => x.id === e.target.value); if (!i) return;
+  const s = sessionsDe(i); if (s.length) $("rb-date").value = s[s.length - 1];
+  if (!$("rb-lib").value) $("rb-lib").value = `Heures offertes à ${i.client || i.titre}`;
+  if (!$("rb-h").value) { const m = s.reduce((a, d) => a + dureeMin(i, d), 0); if (m) $("rb-h").value = deuxDec(m / 60); }
+});
 $("ad-body").addEventListener("click", (e) => {
   if (e.target.closest("#fa-csv")) return exporterFactures();
+  if (e.target.closest("#cpt-csv-resp")) return exporterRapporte();
+  if (e.target.closest("#rb-csv")) return exporterRemb();
+  if (e.target.closest("#rb-new")) { rbForm = rbForm && !rbForm.id ? null : { id: null }; renderRemb(); return; }
+  if (e.target.closest("#rb-annuler")) { rbForm = null; renderRemb(); return; }
+  const ed = e.target.closest("[data-rb-edit]"); if (ed) { rbForm = { id: ed.dataset.rbEdit }; renderRemb(); $("ad-body").scrollTop = 0; return; }
+  const del = e.target.closest("[data-rb-del]"); if (del) return supprimerRemb(del.dataset.rbDel);
+  const ve = e.target.closest("[data-rb-vers]"); if (ve) return ajouterVersement(ve.dataset.rbVers);
+  const vd = e.target.closest("[data-rb-vdel]"); if (vd) { const [id, n] = vd.dataset.rbVdel.split("|"); return retirerVersement(id, +n); }
   const l = e.target.closest("tr[data-fact]"); const f = l && factures.find((x) => x.id === l.dataset.fact); if (f) afficherFacture(f);
 });
 $("e-pay-add").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); encaisser(); } };
@@ -2713,6 +2775,7 @@ function renderAdmin() {
   if (adOnglet === "acces") return renderAcces();
   if (adOnglet === "compta") return renderCompta();
   if (adOnglet === "factures") return renderFacturesAdmin();
+  if (adOnglet === "remb") return renderRemb();
   renderApercu();
 }
 // ---------- Logs : toutes les modifications, qui et quand ----------
@@ -2903,11 +2966,6 @@ function renderCompta() {
   const taux = tot.facture ? Math.round(Math.min(tot.encaisse, tot.facture) / tot.facture * 100) : 0;
   const parMode = Object.keys(MODES).map((m) => ({ m, v: tot.pay.filter((x) => x.mode === m).reduce((a, x) => a + num(x.montant), 0) })).filter((x) => x.v);
   const totMode = parMode.reduce((a, x) => a + x.v, 0) || 1;
-  const parResp = [...RESPS.map((r) => r.v), ""].map((r) => {
-    const l = tot.factures.filter((i) => (r ? i.resp === r : !respConnu(i.resp)));
-    const ids = new Set(items.filter((i) => (r ? i.resp === r : !respConnu(i.resp))).map((i) => i.id));
-    return { r: r || "À assigner", c: r ? respCouleur(r) : "var(--danger)", f: l.reduce((a, i) => a + num(i.prix), 0), e: tot.pay.filter((x) => ids.has(x.demande_id)).reduce((a, x) => a + num(x.montant), 0) };
-  }).filter((x) => x.f || x.e);
   const impayes = items.filter(aEncaisser).map((i) => ({ i, p: paiement(i), j: -daysUntil(dateRef(i)) })).sort((a, b) => b.j - a.j);
   const titre = cpt.vue === "mois" ? String(cpt.annee) : `${per[0].long.split(" – ")[0]} – ${per[11].long.split(" – ")[1]}`;
   $("ad-body").innerHTML = `<div class="cpt-root">
@@ -2933,12 +2991,11 @@ function renderCompta() {
       <tfoot><tr><td>Total</td><td class="n">${tot.sessions}</td><td class="n">${tot.heures.toLocaleString(LOC(), { maximumFractionDigits: 1 })}</td><td class="n">${chf(tot.facture, false)}</td><td class="n">${chf(tot.encaisse, false)}</td><td class="n ${tot.encaisse - tot.facture < 0 ? "neg" : ""}">${chf(tot.encaisse - tot.facture)}</td></tr></tfoot></table>
       <p class="lg-note">Facturé = prix des demandes (hors annulées), rattachées à leur 1re session, sinon à leur date de fin, sinon à leur création. Encaissé = paiements du registre, à leur date de paiement.</p>
     </div>
+    ${tableRapporte(per[0].debut, per[per.length - 1].fin, titre)}
     <div class="ad-grid">
       <div class="card side-list">
         <p class="section-title">Encaissé par mode de paiement</p>
         ${parMode.length ? `<table class="ad-table"><tbody>${parMode.map((x) => `<tr><td>${MODES[x.m]}</td><td style="width:45%"><div class="cpt-part" style="width:${Math.max(2, x.v / totMode * 100)}%"></div></td><td class="n">${chf(x.v, false)}</td><td class="n">${Math.round(x.v / totMode * 100)}%</td></tr>`).join("")}</tbody></table>` : `<div class="none">Aucun paiement sur la période.</div>`}
-        <p class="section-title" style="margin-top:16px">Par responsable</p>
-        ${parResp.length ? `<table class="ad-table"><thead><tr><th>Responsable</th><th class="n">Facturé</th><th class="n">Encaissé</th></tr></thead><tbody>${parResp.map((x) => `<tr><td><span class="pill r" style="--rc:${x.c}">${esc(x.r)}</span></td><td class="n">${chf(x.f, false)}</td><td class="n">${chf(x.e, false)}</td></tr>`).join("")}</tbody></table>` : `<div class="none">Rien sur la période.</div>`}
       </div>
       <div class="card side-list">
         <p class="section-title">Impayés (${impayes.length}) — total ${chf(resteGlobal)}</p>
@@ -2951,6 +3008,234 @@ function renderCompta() {
     </div></div>`;
   renderCompta.data = { per, data };
 }
+// ---------- Prestations ----------
+const TARIFS_DEFAUT = [
+  { k: "enregistrement", l: "Enregistrement", pu: 100, u: "h" },
+  { k: "mix_basique", l: "Mix basique", pu: 150, u: "" },
+  { k: "mix_pro", l: "Mix Pro", pu: 200, u: "" },
+  { k: "master", l: "Master", pu: 80, u: "" },
+  { k: "prod", l: "Prod sur mesure", pu: 250, u: "" },
+  { k: "autre", l: "Autre (prix libre, remise…)", pu: 0, u: "" },
+];
+const tarifs = () => TARIFS_DEFAUT.map((t) => { const v = reglages.tarifs?.[t.k]; return v === undefined || v === null || v === "" ? t : { ...t, pu: num(v) }; });
+// Prix unitaire : négatif autorisé (remise)
+const numSigne = (v) => { const t = String(v ?? "").trim(); return t.startsWith("-") || t.startsWith("−") ? (num(t.slice(1)) === null ? NaN : -num(t.slice(1))) : num(t); };
+const totalLigne = (l) => deuxDec((num(l.q) || 0) * (numSigne(l.pu) || 0));
+const totalPresta = (ls) => deuxDec(ls.reduce((a, l) => a + totalLigne(l), 0));
+let prestaE = [];
+function renderPresta() {
+  const opts = (par) => (respConnu(par) ? "" : `<option value="" selected>Fait par…</option>`) + RESPS.map((r) => `<option value="${r.v}" ${r.v === par ? "selected" : ""}>${r.v}</option>`).join("");
+  $("e-presta").innerHTML = prestaE.map((l, n) => `<div class="pr-l" data-n="${n}">
+      ${l.k === "autre" ? `<input class="pr-nom" data-f="l" value="${esc(l.l || "")}" placeholder="Nom de la prestation" aria-label="Nom de la prestation">` : `<b class="pr-nom">${esc(l.l)}</b>`}
+      <b class="pr-tot">${chf(totalLigne(l))}</b>
+      <button type="button" class="pr-x" data-x="${n}" aria-label="Retirer" title="Retirer">✕</button>
+      <label class="pr-q"><input data-f="q" inputmode="decimal" value="${l.q ?? ""}" aria-label="Quantité">${l.u === "h" ? "h" : "×"}</label>
+      <label class="pr-pu"><input data-f="pu" inputmode="decimal" value="${l.pu ?? ""}" aria-label="Prix unitaire">CHF</label>
+      <select data-f="par" aria-label="Fait par">${opts(l.par)}</select>
+    </div>`).join("");
+  majPrixPresta();
+}
+function majPrixPresta() {
+  const avec = prestaE.length > 0;
+  if (avec) $("e-prix").value = totalPresta(prestaE);
+  $("e-prix").readOnly = avec;
+  $("e-prix").title = avec ? tr("Calculé à partir des prestations") : "";
+  majPaybox();
+}
+function ajouterPresta() {
+  const t = tarifs().find((x) => x.k === $("e-presta-sel").value); if (!t) return;
+  let q = 1;
+  if (t.k === "enregistrement") { const m = dates.e.reduce((a, d) => a + dureeMin({ horaires: heures.e }, d), 0); if (m) q = deuxDec(m / 60); }
+  prestaE.push({ k: t.k, l: t.k === "autre" ? "" : t.l, u: t.u, q, pu: t.pu, par: respConnu($("e-resp").value) ? $("e-resp").value : "" });
+  renderPresta();
+  const champ = $("e-presta").lastElementChild?.querySelector(t.k === "autre" ? '[data-f="l"]' : '[data-f="q"]'); champ?.focus(); champ?.select?.();
+}
+
+// Revenu généré par chaque ligne de prestation (sans prestations : le prix de la demande, attribué au responsable)
+function contributions() {
+  const out = [];
+  for (const i of items) {
+    if (i.statut === "annulee") continue;
+    const prix = num(i.prix) || 0, ratio = prix > 0 ? Math.min((num(i.paye) || 0) / prix, 1) : 0;
+    const lignes = (i.prestations || []).length ? i.prestations : prix > 0 ? [{ k: "nd", l: "Non détaillé", q: 1, u: "", pu: prix, par: i.resp }] : [];
+    for (const l of lignes) {
+      const f = totalLigne(l); if (!f) continue;
+      out.push({ i, date: dateRef(i), par: respConnu(l.par) ? l.par : respConnu(i.resp) ? i.resp : "", k: l.k, l: l.l, q: num(l.q) || 0, u: l.u, facture: f, encaisse: deuxDec(f * ratio) });
+    }
+  }
+  return out.sort((a, b) => a.date.localeCompare(b.date));
+}
+function tableRapporte(debut, fin, titre) {
+  const cs = contributions().filter((c) => c.date >= debut && c.date <= fin);
+  const qte = (l, ...k) => l.filter((c) => k.includes(c.k)).reduce((a, c) => a + c.q, 0);
+  const lignes = [...RESPS.map((r) => r.v), ""].map((r) => {
+    const l = cs.filter((c) => c.par === r);
+    return { r: r || "À assigner", c: r ? respCouleur(r) : "var(--danger)", h: qte(l, "enregistrement"), mix: qte(l, "mix_basique", "mix_pro"), master: qte(l, "master"), prod: qte(l, "prod"),
+      autres: l.filter((c) => !["enregistrement", "mix_basique", "mix_pro", "master", "prod"].includes(c.k)).reduce((a, c) => a + c.facture, 0),
+      f: l.reduce((a, c) => a + c.facture, 0), e: l.reduce((a, c) => a + c.encaisse, 0) };
+  }).filter((x) => x.f || x.r !== "À assigner");
+  const totF = lignes.reduce((a, x) => a + x.f, 0), totE = lignes.reduce((a, x) => a + x.e, 0);
+  const nb = (v) => (v ? v.toLocaleString(LOC(), { maximumFractionDigits: 2 }) : "·");
+  renderCompta.contribs = cs;
+  return `<div class="card side-list">
+      <div class="toolbar" style="justify-content:space-between"><p class="section-title" style="margin:0">👥 Ce que chacun a rapporté · ${esc(titre)}</p><button class="btn small" id="cpt-csv-resp">⬇ Détail par responsable (CSV)</button></div>
+      <table class="ad-table cpt-table"><thead><tr><th>Responsable</th><th class="n">Enreg. (h)</th><th class="n">Mix</th><th class="n">Master</th><th class="n">Prod</th><th class="n">Autres</th><th class="n">Facturé</th><th class="n">Encaissé</th><th style="width:22%">Part du facturé</th></tr></thead>
+      <tbody>${lignes.map((x) => `<tr><td><span class="pill r" style="--rc:${x.c}">${esc(x.r)}</span></td><td class="n">${nb(x.h)}</td><td class="n">${nb(x.mix)}</td><td class="n">${nb(x.master)}</td><td class="n">${nb(x.prod)}</td><td class="n">${x.autres ? chf(x.autres, false) : "·"}</td><td class="n"><b>${chf(x.f, false)}</b></td><td class="n">${chf(x.e, false)}</td>
+        <td><div style="display:flex;align-items:center;gap:6px"><div class="cpt-part" style="width:${totF ? Math.max(x.f ? 2 : 0, x.f / totF * 100) : 0}%;background:${x.c}"></div><small>${totF ? Math.round(x.f / totF * 100) : 0}%</small></div></td></tr>`).join("")}</tbody>
+      <tfoot><tr><td>Total</td><td class="n">${nb(lignes.reduce((a, x) => a + x.h, 0))}</td><td class="n">${nb(lignes.reduce((a, x) => a + x.mix, 0))}</td><td class="n">${nb(lignes.reduce((a, x) => a + x.master, 0))}</td><td class="n">${nb(lignes.reduce((a, x) => a + x.prod, 0))}</td><td class="n">${chf(lignes.reduce((a, x) => a + x.autres, 0), false)}</td><td class="n">${chf(totF, false)}</td><td class="n">${chf(totE, false)}</td><td></td></tr></tfoot></table>
+      <p class="lg-note">Chaque prestation compte pour la personne indiquée dans « Fait par » (sinon le responsable de la demande). Demandes sans prestations : leur prix compte pour leur responsable (« Autres »). Encaissé = part de la prestation déjà payée par le client.</p>
+    </div>`;
+}
+function exporterRapporte() {
+  const cs = renderCompta.contribs || [];
+  csv(`noname-rapporte-${today()}.csv`, ["Date", "Client", "Prestation", "Quantité", "Fait par", "Facturé (CHF)", "Encaissé (CHF)"],
+    cs.map((c) => [fmtDate(c.date), c.i.client, c.l, c.q, c.par || "À assigner", c.facture.toFixed(2), c.encaisse.toFixed(2)]));
+}
+
+// ---------- Remboursements : dettes des responsables envers NoName, remboursées par le revenu de leurs sessions ----------
+let remboursements = [], rbForm = null;
+const RMB_KEY = "noname-remboursements";
+async function chargerRemb() {
+  if (!sb) { try { remboursements = JSON.parse(localStorage.getItem(RMB_KEY)) || []; } catch { remboursements = []; } return; }
+  try { const { data, error } = await sb.from("remboursements").select("*").order("date_debut"); if (!error) remboursements = data || []; } catch {}
+}
+function calculerRemb() {
+  const dettes = [...remboursements].sort((a, b) => a.date_debut.localeCompare(b.date_debut) || (a.cree_le || "").localeCompare(b.cree_le || "")).map((d) => {
+    const resps = d.resps?.length ? d.resps : RESPS.map((r) => r.v), montant = num(d.montant) || 0, vers = d.versements || [];
+    const parResp = Object.fromEntries(resps.map((r) => [r, { du: d.mode === "egal" ? montant / resps.length : 0, revenu: 0, auto: 0, manuel: 0 }]));
+    let manuel = 0;
+    for (const v of vers) {
+      const m = num(v.montant) || 0; manuel += m;
+      if (parResp[v.par]) parResp[v.par].manuel += m; else resps.forEach((r) => (parResp[r].manuel += m / resps.length));
+    }
+    return { d, resps, montant, parResp, manuel, auto: 0, lignes: [] };
+  });
+  const resteDe = (x, r) => x.d.mode === "egal" ? Math.max(0, x.parResp[r].du - x.parResp[r].manuel - x.parResp[r].auto) : Math.max(0, x.montant - x.manuel - x.auto);
+  for (const c of contributions()) {
+    let dispo = 1;   // part de la contribution pas encore utilisée
+    for (const x of dettes) {
+      if (dispo <= 0) break;
+      if (c.date < x.d.date_debut || !x.parResp[c.par] || (x.d.demande_id && c.i.id === x.d.demande_id)) continue;
+      const base = x.d.base === "facture" ? c.facture : c.encaisse, part = (num(x.d.part) || 100) / 100;
+      if (!base) continue;
+      x.parResp[c.par].revenu += base * dispo;
+      const pris = Math.min(base * dispo * part, resteDe(x, c.par));
+      if (pris <= 0) continue;
+      x.parResp[c.par].auto += pris; x.auto += pris;
+      x.lignes.push({ c, pris });
+      dispo -= pris / (base * part);
+    }
+  }
+  return dettes.map((x) => ({ ...x, rembourse: Math.min(x.montant, x.auto + x.manuel), reste: Math.max(0, x.montant - x.auto - x.manuel) }));
+}
+function formRemb() {
+  const d = rbForm.id ? remboursements.find((x) => x.id === rbForm.id) || {} : {};
+  const clients = [...new Map(items.map((i) => [i.id, i])).values()].sort((a, b) => (a.client || "").localeCompare(b.client || ""));
+  const resps = d.resps?.length ? d.resps : RESPS.map((r) => r.v);
+  return `<form class="card rb-form" id="rb-form">
+    <p class="section-title tout" style="margin:0">${d.id ? "Modifier la dette" : "Nouvelle dette envers NoName"}</p>
+    <div class="field large"><label for="rb-lib">Libellé *</label><input type="text" id="rb-lib" value="${esc(d.libelle || "")}" placeholder="Ex. : Heures offertes à TIF"></div>
+    <div class="field large"><label for="rb-dem">Session / client concerné (facultatif)</label><select id="rb-dem"><option value="">—</option>${clients.map((i) => `<option value="${i.id}" ${i.id === d.demande_id ? "selected" : ""}>${esc(i.client || i.titre)} · ${esc(i.titre || "")}</option>`).join("")}</select></div>
+    <div class="field"><label for="rb-h">Heures</label><input type="text" id="rb-h" inputmode="decimal" value="${d.heures ?? ""}" placeholder="Ex. : 24"></div>
+    <div class="field"><label for="rb-t">Tarif (CHF / h)</label><input type="text" id="rb-t" inputmode="decimal" value="${d.taux ?? ""}" placeholder="Ex. : 50"></div>
+    <div class="field"><label for="rb-m">Montant dû (CHF) *</label><input type="text" id="rb-m" inputmode="decimal" value="${d.montant ?? ""}"></div>
+    <div class="field"><label for="rb-date">Revenus comptés à partir du</label><input type="date" id="rb-date" placeholder="jj/mm/aaaa" value="${d.date_debut || today()}"></div>
+    <div class="field"><label for="rb-part">Part du revenu remboursée (%)</label><input type="text" id="rb-part" inputmode="decimal" value="${d.part ?? 100}"></div>
+    <div class="field"><label for="rb-base">Revenu pris en compte</label><select id="rb-base"><option value="encaisse" ${d.base !== "facture" ? "selected" : ""}>Encaissé (payé par le client)</option><option value="facture" ${d.base === "facture" ? "selected" : ""}>Facturé</option></select></div>
+    <div class="field large"><label for="rb-mode">Répartition</label><select id="rb-mode"><option value="commun" ${d.mode !== "egal" ? "selected" : ""}>Commune : tout le revenu des responsables compte</option><option value="egal" ${d.mode === "egal" ? "selected" : ""}>Parts égales : chacun rembourse sa part avec son revenu</option></select></div>
+    <div class="field large"><label>Responsables concernés</label><div class="rb-resps">${RESPS.map((r) => `<label><input type="checkbox" name="rb-r" value="${r.v}" ${resps.includes(r.v) ? "checked" : ""}> ${r.v}</label>`).join("")}</div></div>
+    <div class="field tout"><label for="rb-note">Note</label><input type="text" id="rb-note" value="${esc(d.note || "")}" placeholder="Ex. : 24 h × 50.- convenues, heures offertes à TIF"></div>
+    <div class="tout" style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" type="button" id="rb-annuler">Annuler</button><button class="btn primary" type="submit">Enregistrer</button></div>
+  </form>`;
+}
+function renderRemb() {
+  const dettes = calculerRemb();
+  const totDu = dettes.reduce((a, x) => a + x.montant, 0), totR = dettes.reduce((a, x) => a + x.rembourse, 0);
+  const pct = (x) => (x.montant ? Math.round(x.rembourse / x.montant * 100) : 100);
+  $("ad-body").innerHTML = `
+    <div class="toolbar"><p class="section-title" style="margin:0">🔁 Remboursements à NoName</p><span style="flex:1"></span>
+      <button class="btn small" id="rb-csv">⬇ Remboursements (CSV)</button><button class="btn small primary" id="rb-new">+ Nouvelle dette</button></div>
+    ${rbForm ? formRemb() : ""}
+    <div class="cl-sum" style="grid-template-columns:repeat(3,1fr)">
+      <div class="card kpi"><div class="v">${chf(totDu)}</div><div class="l">Total dû à NoName</div></div>
+      <div class="card kpi"><div class="v green">${chf(totR)}</div><div class="l">Déjà remboursé</div></div>
+      <div class="card kpi"><div class="v ${totDu - totR > 0 ? "red" : "green"}">${chf(totDu - totR)}</div><div class="l">Reste à rembourser</div></div>
+    </div>
+    ${dettes.length ? dettes.map((x) => { const d = x.d; return `<div class="card rb-card">
+      <div class="rb-head"><h3>${esc(d.libelle || "Dette")}</h3>${d.client ? `<span class="pill" style="--c:var(--accent)" translate="no">${esc(d.client)}</span>` : ""}
+        <small>${d.heures && d.taux ? `${String(d.heures).replace(".", ",")} h × ${chf(num(d.taux))} · ` : ""}revenus ${d.base === "facture" ? "facturés" : "encaissés"} depuis le ${fmtDate(d.date_debut)} · ${num(d.part)} % · ${d.mode === "egal" ? "parts égales" : "répartition commune"}</small>
+        <span style="flex:1"></span><button class="btn small" data-rb-edit="${d.id}">✏ Modifier</button><button class="btn small danger" data-rb-del="${d.id}">Supprimer</button></div>
+      ${d.note ? `<div class="lg-note" style="margin:0">${esc(d.note)}</div>` : ""}
+      <div><div class="pay-sum"><span><b>${chf(x.rembourse)}</b> remboursés sur ${chf(x.montant)} · ${pct(x)} %</span><span>Reste : <b class="${x.reste ? "" : "green"}">${x.reste ? chf(x.reste) : "Soldé ✓"}</b></span></div>
+        <div class="bar big"><i style="width:${pct(x)}%;background:var(--ok)"></i></div></div>
+      <table class="ad-table"><thead><tr><th>Responsable</th>${d.mode === "egal" ? `<th class="n">Sa part</th>` : ""}<th class="n">Revenu compté</th><th class="n">Remboursé (sessions)</th><th class="n">Versé à la main</th>${d.mode === "egal" ? `<th class="n">Reste</th>` : `<th style="width:24%">Contribution</th>`}</tr></thead>
+      <tbody>${x.resps.map((r) => { const p = x.parResp[r], fait = p.auto + p.manuel; return `<tr><td><span class="pill r" style="--rc:${respCouleur(r)}">${esc(r)}</span></td>${d.mode === "egal" ? `<td class="n">${chf(p.du, false)}</td>` : ""}<td class="n">${chf(deuxDec(p.revenu), false)}</td><td class="n">${chf(deuxDec(p.auto), false)}</td><td class="n">${p.manuel ? chf(deuxDec(p.manuel), false) : "·"}</td>
+        ${d.mode === "egal" ? `<td class="n ${p.du - fait > 0.005 ? "neg" : ""}">${p.du - fait > 0.005 ? chf(deuxDec(p.du - fait), false) : "✓"}</td>` : `<td><div style="display:flex;align-items:center;gap:6px"><div class="cpt-part" style="width:${x.rembourse ? Math.max(fait ? 2 : 0, fait / x.rembourse * 100) : 0}%;background:${respCouleur(r)}"></div><small>${x.rembourse ? Math.round(fait / x.rembourse * 100) : 0}%</small></div></td>`}</tr>`; }).join("")}</tbody></table>
+      <details><summary style="cursor:pointer;font-weight:600">Sessions qui ont remboursé (${x.lignes.length})</summary>
+        ${x.lignes.length ? `<table class="ad-table" style="margin-top:6px"><thead><tr><th>Date</th><th>Client</th><th>Prestation</th><th>Fait par</th><th class="n">Compté</th></tr></thead><tbody>${x.lignes.map(({ c, pris }) => `<tr data-id="${c.i.id}" style="cursor:pointer"><td>${fmtDate(c.date)}</td><td translate="no">${esc(c.i.client || c.i.titre)}</td><td>${esc(c.l)}${c.q && c.k !== "nd" ? ` · ${String(c.q).replace(".", ",")}${c.u === "h" ? " h" : "×"}` : ""}</td><td>${esc(c.par)}</td><td class="n">${chf(deuxDec(pris), false)}</td></tr>`).join("")}</tbody></table>` : `<div class="none" style="margin-top:6px">Aucune session comptée pour l'instant (sessions à partir du ${fmtDate(d.date_debut)}).</div>`}
+      </details>
+      <div>
+        <p class="section-title" style="margin:0 0 6px">Versements à la main (${(d.versements || []).length})</p>
+        ${(d.versements || []).map((v, n) => `<div class="pay-l" style="margin-bottom:4px"><b>${chf(num(v.montant))}</b><span>${fmtDate(v.date)}${v.par ? " · " + esc(v.par) : ""}${v.note ? " · " + esc(v.note) : ""}</span><small></small><button type="button" data-rb-vdel="${d.id}|${n}" title="Retirer ce versement">✕</button></div>`).join("")}
+        <div class="rb-vers"><input type="text" id="rbv-m-${d.id}" inputmode="decimal" placeholder="Montant (CHF)"><input type="date" id="rbv-d-${d.id}" value="${today()}"><select id="rbv-p-${d.id}"><option value="">Tous</option>${x.resps.map((r) => `<option>${r}</option>`).join("")}</select><input type="text" id="rbv-n-${d.id}" placeholder="Note (facultatif)"><button class="btn small" data-rb-vers="${d.id}">+ Versement</button></div>
+      </div>
+    </div>`; }).join("") : `<div class="card" style="padding:16px"><div class="none">Aucune dette enregistrée. Exemple : « Heures offertes à TIF », 24 h × 50.- = 1'200.-, remboursées par le revenu des sessions des responsables.</div></div>`}
+    <p class="lg-note">Chaque session (prestations « Fait par ») rembourse la dette la plus ancienne en premier, à partir de sa date de départ, selon la part du revenu choisie. Les versements à la main (ex. un responsable qui paie directement) s'ajoutent.</p>`;
+}
+function lireFormRemb() {
+  const v = (id) => $(id).value.trim();
+  const h = num(v("rb-h")), t = num(v("rb-t")), m = num(v("rb-m")), part = num(v("rb-part"));
+  const dem = items.find((i) => i.id === v("rb-dem"));
+  return { libelle: v("rb-lib"), demande_id: dem?.id || null, client: dem?.client || "", heures: Number.isNaN(h) ? null : h, taux: Number.isNaN(t) ? null : t, montant: m, date_debut: v("rb-date") || today(), part, base: v("rb-base"), mode: v("rb-mode"),
+    resps: [...document.querySelectorAll('[name="rb-r"]:checked')].map((x) => x.value), note: v("rb-note") };
+}
+async function ecrireRemb(id, patch, msg) {
+  patch = { ...patch, modifie_par: userEmail || "" };
+  if (sb) {
+    const q = id === null ? sb.from("remboursements").insert({ ...patch, cree_par: userEmail || "" }) : sb.from("remboursements").update(patch).eq("id", id);
+    const { error } = await q;
+    if (error) { toast("Erreur : " + error.message); return false; }
+    await chargerRemb();
+  } else {
+    if (id === null) remboursements.push({ ...patch, id: "r" + Date.now(), cree_le: new Date().toISOString(), versements: [] });
+    else remboursements = remboursements.map((x) => (x.id === id ? { ...x, ...patch } : x));
+    try { localStorage.setItem(RMB_KEY, JSON.stringify(remboursements)); } catch {}
+  }
+  renderRemb(); if (msg) toast(msg);
+  return true;
+}
+async function enregistrerRemb() {
+  const d = lireFormRemb();
+  if (!d.libelle) { toast("Indique un libellé, ex. Heures offertes à TIF"); $("rb-lib").focus(); return; }
+  if (!(d.montant > 0)) { toast("Indique le montant dû (ou les heures et le tarif)"); $("rb-m").focus(); return; }
+  if (!(d.part > 0 && d.part <= 100)) { toast("La part du revenu doit être entre 1 et 100 %"); $("rb-part").focus(); return; }
+  if (!d.resps.length) { toast("Coche au moins un responsable"); return; }
+  const id = rbForm.id || null; rbForm = null;
+  await ecrireRemb(id, d, tr("Enregistré"));
+}
+async function supprimerRemb(id) {
+  if (!confirm(tr("Supprimer cette dette et ses versements ?"))) return;
+  if (sb) { const { error } = await sb.from("remboursements").delete().eq("id", id); if (error) { toast("Erreur : " + error.message); return; } await chargerRemb(); }
+  else { remboursements = remboursements.filter((x) => x.id !== id); try { localStorage.setItem(RMB_KEY, JSON.stringify(remboursements)); } catch {} }
+  renderRemb();
+}
+async function ajouterVersement(id) {
+  const d = remboursements.find((x) => x.id === id); if (!d) return;
+  const m = num($("rbv-m-" + id).value);
+  if (!(m > 0)) { toast("Indique le montant versé, ex. 200"); $("rbv-m-" + id).focus(); return; }
+  const v = { montant: m, date: $("rbv-d-" + id).value || today(), par: $("rbv-p-" + id).value, note: $("rbv-n-" + id).value.trim(), saisi_par: userEmail || "" };
+  await ecrireRemb(id, { versements: [...(d.versements || []), v] }, `${chf(m)} ✓`);
+}
+async function retirerVersement(id, n) {
+  const d = remboursements.find((x) => x.id === id); if (!d || !confirm(tr("Retirer ce versement ?"))) return;
+  await ecrireRemb(id, { versements: (d.versements || []).filter((_, k) => k !== n) });
+}
+function exporterRemb() {
+  const dettes = calculerRemb();
+  csv(`noname-remboursements-${today()}.csv`, ["Dette", "Client", "Montant dû", "Remboursé", "Reste", "Responsable", "Revenu compté", "Remboursé par sessions", "Versé à la main"],
+    dettes.flatMap((x) => x.resps.map((r) => [x.d.libelle, x.d.client, x.montant.toFixed(2), x.rembourse.toFixed(2), x.reste.toFixed(2), r, x.parResp[r].revenu.toFixed(2), x.parResp[r].auto.toFixed(2), x.parResp[r].manuel.toFixed(2)])));
+}
+
 function csv(nom, entetes, lignes) {
   const cell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
   const blob = new Blob(["\ufeff" + entetes.map(cell).join(";") + "\n" + lignes.map((l) => l.map(cell).join(";")).join("\n")], { type: "text/csv;charset=utf-8" });
@@ -3064,7 +3349,7 @@ function exporterCSV() {
 $("admin-open").onclick = ouvrirAdmin;
 $("ad-close").onclick = fermerAdmin;
 $("ad-csv").onclick = exporterCSV;
-$("ad-refresh").onclick = async () => { chargerJournal(); await chargerFacturation(); renderAdmin(); toast(tr("Actualisé")); };
+$("ad-refresh").onclick = async () => { chargerJournal(); await Promise.all([chargerFacturation(), chargerRemb()]); renderAdmin(); toast(tr("Actualisé")); };
 $("ad-body").addEventListener("click", (e) => {
   const v = e.target.closest("[data-cv]"); if (v) { cpt.vue = v.dataset.cv; return renderCompta(); }
   const nv = e.target.closest("[data-cnav]");
