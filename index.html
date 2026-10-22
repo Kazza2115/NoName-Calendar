@@ -923,6 +923,7 @@ try {
     <div class="bar big" id="e-bar"><i></i></div>
     <div class="pay-sum"><span id="e-pay-etat"></span><span>Reste à payer : <b id="e-reste">—</b></span></div>
     <div class="lg-note" id="e-ttc" style="margin:0 0 6px"></div>
+    <label style="display:flex;gap:6px;align-items:center;margin:0 0 8px;color:var(--text)"><input type="checkbox" id="e-sans-tva" style="width:auto"> Sans TVA (le prix est final, pas de TVA facturée)</label>
     <div class="pay-liste" id="e-pay-liste"></div>
     <div class="pay-add">
       <input type="text" id="e-pay-add" inputmode="decimal" placeholder="Montant reçu (CHF)">
@@ -991,7 +992,7 @@ const EN = {
   "Contact": "Contact", "Statut": "Status", "Responsable *": "Owner *", "Responsable": "Owner", "Choisir…": "Choose…", "Choisir un responsable…": "Choose an owner…", "Ajouter": "Add",
   "Demandes actives": "Active requests", "Sessions sous 7 jours": "Sessions within 7 days", "Reste à encaisser": "Left to collect",
   "Toutes": "All", "Actives": "Active", "💰 À encaisser": "💰 To collect",
-  "Nouvelle": "New", "En cours": "In progress", "En attente": "On hold", "Confirmée": "Confirmed", "Terminée": "Finished", "Annulée": "Cancelled", "Session confirmée": "Confirmed session", "💰 Prestations, prix & paiement": "💰 Services, price & payment", "+ Prestation": "+ Service", "Fait par…": "Done by…", "Calculé à partir des prestations": "Calculated from the services", "Nom de la prestation": "Service name", "Enregistrement": "Recording", "Mix basique": "Basic mix", "Mix Pro": "Pro mix", "Master": "Master", "Prod sur mesure": "Custom production", "Autre (prix libre, remise…)": "Other (free price, discount…)", "Non détaillé": "Not itemised", "Tarifs des prestations (CHF)": "Service rates (CHF)", "🔁 Remboursements": "🔁 Reimbursements", "🔁 Remboursements à NoName": "🔁 Reimbursements to NoName", "⬇ Remboursements (CSV)": "⬇ Reimbursements (CSV)", "+ Nouvelle dette": "+ New debt", "Total dû à NoName": "Total owed to NoName", "Déjà remboursé": "Already reimbursed", "Reste à rembourser": "Left to reimburse", "Nouvelle dette envers NoName": "New debt to NoName", "Modifier la dette": "Edit debt", "Libellé *": "Label *", "Session / client concerné (facultatif)": "Related session / client (optional)", "Tarif (CHF / h)": "Rate (CHF / h)", "Montant dû (CHF) *": "Amount owed (CHF) *", "Revenus comptés à partir du": "Revenue counted from", "Part du revenu remboursée (%)": "Share of revenue used (%)", "Revenu pris en compte": "Revenue taken into account", "Encaissé (payé par le client)": "Collected (paid by the client)", "Répartition": "Split", "Commune : tout le revenu des responsables compte": "Shared: all owners' revenue counts", "Parts égales : chacun rembourse sa part avec son revenu": "Equal shares: each repays their share with their revenue", "Responsables concernés": "Owners concerned", "Note": "Note", "Annuler": "Cancel", "✏ Modifier": "✏ Edit", "Sa part": "Their share", "Revenu compté": "Revenue counted", "Remboursé (sessions)": "Reimbursed (sessions)", "Versé à la main": "Paid manually", "Contribution": "Contribution", "Fait par": "Done by", "Compté": "Counted", "+ Versement": "+ Payment", "Tous": "All", "Note (facultatif)": "Note (optional)", "Montant (CHF)": "Amount (CHF)", "Soldé ✓": "Settled ✓", "Supprimer cette dette et ses versements ?": "Delete this debt and its payments?", "Retirer ce versement ?": "Remove this payment?", "⬇ Détail par responsable (CSV)": "⬇ Detail by owner (CSV)", "Enreg. (h)": "Rec. (h)", "Mix": "Mix", "Prod": "Prod", "Autres": "Other", "Part du facturé": "Share of invoiced", "Quantité": "Quantity", "Prix unitaire": "Unit price", "E-mail du client": "Client e-mail", "Lien CRM": "CRM link", "Adresse du client (pour la facture)": "Client address (for the invoice)", "🧾 Générer la facture": "🧾 Generate invoice", "🖨 Imprimer / PDF": "🖨 Print / PDF", "✉ Envoyer par e-mail": "✉ Send by e-mail", "🧾 Factures": "🧾 Invoices", "Coordonnées sur les factures": "Details shown on invoices", "Nom de l'entreprise": "Company name", "Rue": "Street", "N°": "No.", "NPA": "Postcode", "Ville": "City", "E-mail": "E-mail", "Téléphone": "Phone", "N° IDE / TVA (ex. CHE-123.456.789 TVA)": "UID / VAT no. (e.g. CHE-123.456.789 VAT)", "IBAN (pour la QR-facture)": "IBAN (for the QR-bill)", "TVA ajoutée sur les factures (%)": "VAT added on invoices (%)", "À payer par le client": "To be paid by the client", "Prix hors TVA (CHF)": "Price excl. VAT (CHF)", "Vidéo": "Video", "Prestations qui remboursent": "Services that reimburse", "Au choix : je coche les prestations": "Hand-picked: I tick the services", "Automatique : tout le revenu depuis une date": "Automatic: all revenue since a date", "Compté": "Counted", "Délai de paiement (jours)": "Payment term (days)", "Texte en bas de facture (facultatif)": "Invoice footer text (optional)", "⬇ Factures (CSV)": "⬇ Invoices (CSV)", "Aucune facture pour l'instant.": "No invoices yet.", "Par": "By", "Ouvrir": "Open", "Facture": "Invoice", "Ouvrir dans le CRM": "Open in the CRM", "Enregistre d'abord la demande, puis génère la facture.": "Save the request first, then generate the invoice.", "Indique d'abord le prix total.": "Enter the total price first.", "Adresse e-mail invalide, ex. nom@exemple.ch": "Invalid e-mail address, e.g. name@example.ch", "Le lien CRM doit commencer par https://": "The CRM link must start with https://", "✓ IBAN valide": "✓ Valid IBAN", "⚠ IBAN invalide": "⚠ Invalid IBAN", "Pour un PDF : Imprimer → « Enregistrer en PDF ».": "For a PDF: Print → “Save as PDF”.", "Le NPA doit avoir 4 chiffres": "The postcode must have 4 digits", "Annulées": "Cancelled",
+  "Nouvelle": "New", "En cours": "In progress", "En attente": "On hold", "Confirmée": "Confirmed", "Terminée": "Finished", "Annulée": "Cancelled", "Session confirmée": "Confirmed session", "💰 Prestations, prix & paiement": "💰 Services, price & payment", "+ Prestation": "+ Service", "Fait par…": "Done by…", "Calculé à partir des prestations": "Calculated from the services", "Nom de la prestation": "Service name", "Enregistrement": "Recording", "Mix basique": "Basic mix", "Mix Pro": "Pro mix", "Master": "Master", "Prod sur mesure": "Custom production", "Autre (prix libre, remise…)": "Other (free price, discount…)", "Non détaillé": "Not itemised", "Tarifs des prestations (CHF)": "Service rates (CHF)", "🔁 Remboursements": "🔁 Reimbursements", "🔁 Remboursements à NoName": "🔁 Reimbursements to NoName", "⬇ Remboursements (CSV)": "⬇ Reimbursements (CSV)", "+ Nouvelle dette": "+ New debt", "Total dû à NoName": "Total owed to NoName", "Déjà remboursé": "Already reimbursed", "Reste à rembourser": "Left to reimburse", "Nouvelle dette envers NoName": "New debt to NoName", "Modifier la dette": "Edit debt", "Libellé *": "Label *", "Session / client concerné (facultatif)": "Related session / client (optional)", "Tarif (CHF / h)": "Rate (CHF / h)", "Montant dû (CHF) *": "Amount owed (CHF) *", "Revenus comptés à partir du": "Revenue counted from", "Part du revenu remboursée (%)": "Share of revenue used (%)", "Revenu pris en compte": "Revenue taken into account", "Encaissé (payé par le client)": "Collected (paid by the client)", "Répartition": "Split", "Commune : tout le revenu des responsables compte": "Shared: all owners' revenue counts", "Parts égales : chacun rembourse sa part avec son revenu": "Equal shares: each repays their share with their revenue", "Responsables concernés": "Owners concerned", "Note": "Note", "Annuler": "Cancel", "✏ Modifier": "✏ Edit", "Sa part": "Their share", "Revenu compté": "Revenue counted", "Revenu compté (HT)": "Revenue counted (excl. VAT)", "Montant HT": "Amount excl. VAT", "Facturé HT": "Invoiced excl. VAT", "Encaissé HT": "Collected excl. VAT", "Remboursé (sessions)": "Reimbursed (sessions)", "Versé à la main": "Paid manually", "Contribution": "Contribution", "Fait par": "Done by", "Compté": "Counted", "+ Versement": "+ Payment", "Tous": "All", "Note (facultatif)": "Note (optional)", "Montant (CHF)": "Amount (CHF)", "Soldé ✓": "Settled ✓", "Supprimer cette dette et ses versements ?": "Delete this debt and its payments?", "Retirer ce versement ?": "Remove this payment?", "⬇ Détail par responsable (CSV)": "⬇ Detail by owner (CSV)", "Enreg. (h)": "Rec. (h)", "Mix": "Mix", "Prod": "Prod", "Autres": "Other", "Part du facturé": "Share of invoiced", "Quantité": "Quantity", "Prix unitaire": "Unit price", "E-mail du client": "Client e-mail", "Lien CRM": "CRM link", "Adresse du client (pour la facture)": "Client address (for the invoice)", "🧾 Générer la facture": "🧾 Generate invoice", "🖨 Imprimer / PDF": "🖨 Print / PDF", "✉ Envoyer par e-mail": "✉ Send by e-mail", "🧾 Factures": "🧾 Invoices", "Coordonnées sur les factures": "Details shown on invoices", "Nom de l'entreprise": "Company name", "Rue": "Street", "N°": "No.", "NPA": "Postcode", "Ville": "City", "E-mail": "E-mail", "Téléphone": "Phone", "N° IDE / TVA (ex. CHE-123.456.789 TVA)": "UID / VAT no. (e.g. CHE-123.456.789 VAT)", "IBAN (pour la QR-facture)": "IBAN (for the QR-bill)", "TVA ajoutée sur les factures (%)": "VAT added on invoices (%)", "À payer par le client": "To be paid by the client", "sans TVA": "no VAT", "Sans TVA (le prix est final, pas de TVA facturée)": "No VAT (final price, no VAT charged)", "Enregistrement heures creuses": "Off-peak recording", "Prix hors TVA (CHF)": "Price excl. VAT (CHF)", "Vidéo": "Video", "Prestations qui remboursent": "Services that reimburse", "Au choix : je coche les prestations": "Hand-picked: I tick the services", "Automatique : tout le revenu depuis une date": "Automatic: all revenue since a date", "Compté": "Counted", "Délai de paiement (jours)": "Payment term (days)", "Texte en bas de facture (facultatif)": "Invoice footer text (optional)", "⬇ Factures (CSV)": "⬇ Invoices (CSV)", "Aucune facture pour l'instant.": "No invoices yet.", "Par": "By", "Ouvrir": "Open", "Facture": "Invoice", "Ouvrir dans le CRM": "Open in the CRM", "Enregistre d'abord la demande, puis génère la facture.": "Save the request first, then generate the invoice.", "Indique d'abord le prix total.": "Enter the total price first.", "Adresse e-mail invalide, ex. nom@exemple.ch": "Invalid e-mail address, e.g. name@example.ch", "Le lien CRM doit commencer par https://": "The CRM link must start with https://", "✓ IBAN valide": "✓ Valid IBAN", "⚠ IBAN invalide": "⚠ Invalid IBAN", "Pour un PDF : Imprimer → « Enregistrer en PDF ».": "For a PDF: Print → “Save as PDF”.", "Le NPA doit avoir 4 chiffres": "The postcode must have 4 digits", "Annulées": "Cancelled",
   "Rechercher un client, une demande…": "Search a client, a request…", "Tous les responsables": "All owners", "⚠ Non assignées": "⚠ Unassigned", "⚠ À assigner": "⚠ Unassigned", "À assigner": "Unassigned", "à assigner": "unassigned",
   "Tri : prochaine session": "Sort: next session", "Tri : dernière modification": "Sort: last change", "Tri : dernier contact": "Sort: last contact", "Tri : client A → Z": "Sort: client A → Z", "Tri : reste à payer": "Sort: amount due", "Tri : date de fin (récentes d'abord)": "Sort: end date (newest first)",
   "Trier": "Sort", "Filtrer par responsable": "Filter by owner",
@@ -1192,7 +1193,7 @@ const ETATS_PAY = { aucun: "Pas de prix", impaye: "Non payé", partiel: "Acompte
 function paiement(i) {
   const ht = num(i.prix), paye = num(i.paye) || 0;
   if (ht === null || Number.isNaN(ht)) return { etat: "aucun", prix: null, paye, reste: 0, pct: 0 };
-  const prix = avecTVA(ht);
+  const prix = avecTVA(ht, i.sans_tva);
   const reste = Math.max(0, Math.round((prix - paye) * 100) / 100);
   const etat = paye >= prix ? "paye" : paye > 0 ? "partiel" : "impaye";
   return { etat, prix, paye, reste, pct: prix ? Math.min(100, (paye / prix) * 100) : 100 };
@@ -1296,7 +1297,7 @@ let reglages = {}, factures = [];
 const REG_KEY = "noname-reglages", FAC_KEY = "noname-factures";
 const REG_DEFAUT = { nom: "NONAME AGENCY SA", delai: 30, tva: 8.1 };
 const tauxTVA = () => { const t = num(reglages.tva ?? REG_DEFAUT.tva); return Number.isNaN(t) || t === null ? 0 : t; };
-const avecTVA = (ht) => deuxDec(ht + deuxDec(ht * tauxTVA() / 100));
+const avecTVA = (ht, sansTVA = false) => (sansTVA ? deuxDec(ht) : deuxDec(ht + deuxDec(ht * tauxTVA() / 100)));
 async function chargerFacturation() {
   if (!sb) {
     try { reglages = JSON.parse(localStorage.getItem(REG_KEY)) || { ...REG_DEFAUT }; factures = JSON.parse(localStorage.getItem(FAC_KEY)) || []; } catch { reglages = { ...REG_DEFAUT }; }
@@ -1334,7 +1335,7 @@ function contenuFacture(i) {
   const r = { ...REG_DEFAUT, ...reglages };
   const date = today(), e = new Date(parse(date)); e.setDate(e.getDate() + (parseInt(r.delai, 10) || 30));
   // Le prix de la demande est hors taxe : la TVA est ajoutée sur la facture
-  const ht = deuxDec(num(i.prix)), tva = num(r.tva) || 0, tvaMt = deuxDec(ht * tva / 100), total = deuxDec(ht + tvaMt), paye = deuxDec(Math.min(num(i.paye) || 0, total));
+  const ht = deuxDec(num(i.prix)), tva = i.sans_tva ? 0 : num(r.tva) || 0, tvaMt = deuxDec(ht * tva / 100), total = deuxDec(ht + tvaMt), paye = deuxDec(Math.min(num(i.paye) || 0, total));
   return {
     emetteur: { nom: r.nom || "", rue: r.rue || "", numero: r.numero || "", npa: r.npa || "", ville: r.ville || "", email: r.email || "", tel: r.tel || "", ide: r.ide || "", iban: (r.iban || "").replace(/\s/g, "").toUpperCase() },
     tva, ht, tvaMt, note: r.note || "", delai: parseInt(r.delai, 10) || 30,
@@ -2168,6 +2169,7 @@ function ouvrir(id, preset = {}) {
   $("e-resp").innerHTML = respOptions(i.resp, "Choisir un responsable…");
   $("e-prix").value = i.prix ?? (num(i.budget) > 0 ? num(i.budget) : "");
   $("e-paye").value = num(i.paye) ? num(i.paye) : "";
+  $("e-sans-tva").checked = !!i.sans_tva;
   prestaE = JSON.parse(JSON.stringify(Array.isArray(i.prestations) ? i.prestations : []));
   $("e-presta-sel").innerHTML = tarifs().map((t) => `<option value="${t.k}">${esc(t.l)}${t.pu ? " — " + chf(t.pu) + (t.u === "h" ? " / h" : "") : " — prix libre"}</option>`).join("");
   renderPresta();
@@ -2202,18 +2204,19 @@ function lireTiroir() {
     resp: $("e-resp").value,
     prestations: prestaE.map((l) => ({ k: l.k, l: (l.l || "").trim() || "Prestation", u: l.u || "", q: num(l.q), pu: numSigne(l.pu), par: l.par || "" })),
     prix: prestaE.length ? totalPresta(prestaE) : num($("e-prix").value),
+    sans_tva: $("e-sans-tva").checked,
     ...(sb ? {} : { paye: num($("e-paye").value) || 0 }), // avec Supabase, le total payé vient du registre
     notes: $("e-notes").value,
   };
 }
 function majPaybox() {
-  const p = paiement({ prix: $("e-prix").value, paye: $("e-paye").value });
+  const p = paiement({ prix: $("e-prix").value, paye: $("e-paye").value, sans_tva: $("e-sans-tva").checked });
   $("paybox").className = "paybox p-" + p.etat;
   $("e-bar").firstElementChild.style.width = p.pct + "%";
   $("e-pay-etat").innerHTML = `<span class="pay-etat" style="margin:0">${ETATS_PAY[p.etat]}</span>`;
   $("e-reste").textContent = p.etat === "aucun" ? "—" : chf(p.reste);
   const ht = num($("e-prix").value);
-  $("e-ttc").innerHTML = ht > 0 && tauxTVA() ? `${tr("À payer par le client")} : <b>${chf(avecTVA(ht))}</b> = ${chf(ht)} + TVA ${String(tauxTVA()).replace(".", ",")} % (${chf(deuxDec(avecTVA(ht) - ht))})` : "";
+  $("e-ttc").innerHTML = ht > 0 && $("e-sans-tva").checked ? `${tr("À payer par le client")} : <b>${chf(ht)}</b> (${tr("sans TVA")})` : ht > 0 && tauxTVA() ? `${tr("À payer par le client")} : <b>${chf(avecTVA(ht))}</b> = ${chf(ht)} + TVA ${String(tauxTVA()).replace(".", ",")} % (${chf(deuxDec(avecTVA(ht) - ht))})` : "";
 }
 function renderPaiementsFiche() {
   const box = $("e-pay-liste"); if (!box) return;
@@ -2585,7 +2588,7 @@ $("d-delete").onclick = async () => {
   if (await supprimer(editId)) { fermer(); toast("Demande supprimée"); }
 };
 $("e-update-btn").onclick = ajouterUpdate;
-$("e-prix").oninput = majPaybox; $("e-paye").oninput = majPaybox;
+$("e-prix").oninput = majPaybox; $("e-sans-tva").onchange = majPaybox; $("e-paye").oninput = majPaybox;
 $("e-pay-btn").onclick = encaisser;
 $("e-pay-liste").addEventListener("click", async (e) => {
   const b = e.target.closest("[data-suppr-pay]"); if (!b || !estAdmin) return;
@@ -3028,6 +3031,7 @@ function renderCompta() {
 // ---------- Prestations ----------
 const TARIFS_DEFAUT = [
   { k: "enregistrement", l: "Enregistrement", pu: 100, u: "h" },
+  { k: "enregistrement_creuses", l: "Enregistrement heures creuses", pu: 60, u: "h" },
   { k: "mix_basique", l: "Mix basique", pu: 150, u: "" },
   { k: "mix_pro", l: "Mix Pro", pu: 200, u: "" },
   { k: "master", l: "Master", pu: 80, u: "" },
@@ -3063,7 +3067,7 @@ function majPrixPresta() {
 function ajouterPresta() {
   const t = tarifs().find((x) => x.k === $("e-presta-sel").value); if (!t) return;
   let q = 1;
-  if (t.k === "enregistrement") { const m = dates.e.reduce((a, d) => a + dureeMin({ horaires: heures.e }, d), 0); if (m) q = deuxDec(m / 60); }
+  if (t.u === "h") { const m = dates.e.reduce((a, d) => a + dureeMin({ horaires: heures.e }, d), 0); if (m) q = deuxDec(m / 60); }
   prestaE.push({ k: t.k, l: t.k === "autre" ? "" : t.l, u: t.u, q, pu: t.pu, par: respConnu($("e-resp").value) ? $("e-resp").value : "" });
   renderPresta();
   const champ = $("e-presta").lastElementChild?.querySelector(t.k === "autre" ? '[data-f="l"]' : '[data-f="q"]'); champ?.focus(); champ?.select?.();
@@ -3074,7 +3078,7 @@ function contributions() {
   const out = [];
   for (const i of items) {
     if (i.statut === "annulee") continue;
-    const prix = num(i.prix) || 0, ratio = prix > 0 ? Math.min((num(i.paye) || 0) / avecTVA(prix), 1) : 0;
+    const prix = num(i.prix) || 0, ratio = prix > 0 ? Math.min((num(i.paye) || 0) / avecTVA(prix, i.sans_tva), 1) : 0;
     const lignes = (i.prestations || []).length ? i.prestations : prix > 0 ? [{ k: "nd", l: "Non détaillé", q: 1, u: "", pu: prix, par: i.resp }] : [];
     lignes.forEach((l, n) => {
       const f = totalLigne(l); if (!f) return;
@@ -3088,8 +3092,8 @@ function tableRapporte(debut, fin, titre) {
   const qte = (l, ...k) => l.filter((c) => k.includes(c.k)).reduce((a, c) => a + c.q, 0);
   const lignes = [...RESPS.map((r) => r.v), ""].map((r) => {
     const l = cs.filter((c) => c.par === r);
-    return { r: r || "À assigner", c: r ? respCouleur(r) : "var(--danger)", h: qte(l, "enregistrement"), mix: qte(l, "mix_basique", "mix_pro"), master: qte(l, "master"), prod: qte(l, "prod"), video: l.filter((c) => c.k === "video").reduce((a, c) => a + c.facture, 0),
-      autres: l.filter((c) => !["enregistrement", "mix_basique", "mix_pro", "master", "prod", "video"].includes(c.k)).reduce((a, c) => a + c.facture, 0),
+    return { r: r || "À assigner", c: r ? respCouleur(r) : "var(--danger)", h: qte(l, "enregistrement", "enregistrement_creuses"), mix: qte(l, "mix_basique", "mix_pro"), master: qte(l, "master"), prod: qte(l, "prod"), video: l.filter((c) => c.k === "video").reduce((a, c) => a + c.facture, 0),
+      autres: l.filter((c) => !["enregistrement", "enregistrement_creuses", "mix_basique", "mix_pro", "master", "prod", "video"].includes(c.k)).reduce((a, c) => a + c.facture, 0),
       f: l.reduce((a, c) => a + c.facture, 0), e: l.reduce((a, c) => a + c.encaisse, 0) };
   }).filter((x) => x.f || x.r !== "À assigner");
   const totF = lignes.reduce((a, x) => a + x.f, 0), totE = lignes.reduce((a, x) => a + x.e, 0);
@@ -3097,11 +3101,11 @@ function tableRapporte(debut, fin, titre) {
   renderCompta.contribs = cs;
   return `<div class="card side-list">
       <div class="toolbar" style="justify-content:space-between"><p class="section-title" style="margin:0">👥 Ce que chacun a rapporté · ${esc(titre)}</p><button class="btn small" id="cpt-csv-resp">⬇ Détail par responsable (CSV)</button></div>
-      <table class="ad-table cpt-table"><thead><tr><th>Responsable</th><th class="n">Enreg. (h)</th><th class="n">Mix</th><th class="n">Master</th><th class="n">Prod</th><th class="n">Vidéo</th><th class="n">Autres</th><th class="n">Facturé</th><th class="n">Encaissé</th><th style="width:22%">Part du facturé</th></tr></thead>
+      <table class="ad-table cpt-table"><thead><tr><th>Responsable</th><th class="n">Enreg. (h)</th><th class="n">Mix</th><th class="n">Master</th><th class="n">Prod</th><th class="n">Vidéo</th><th class="n">Autres</th><th class="n">Facturé HT</th><th class="n">Encaissé HT</th><th style="width:22%">Part du facturé</th></tr></thead>
       <tbody>${lignes.map((x) => `<tr><td><span class="pill r" style="--rc:${x.c}">${esc(x.r)}</span></td><td class="n">${nb(x.h)}</td><td class="n">${nb(x.mix)}</td><td class="n">${nb(x.master)}</td><td class="n">${nb(x.prod)}</td><td class="n">${x.video ? chf(x.video, false) : "·"}</td><td class="n">${x.autres ? chf(x.autres, false) : "·"}</td><td class="n"><b>${chf(x.f, false)}</b></td><td class="n">${chf(x.e, false)}</td>
         <td><div style="display:flex;align-items:center;gap:6px"><div class="cpt-part" style="width:${totF ? Math.max(x.f ? 2 : 0, x.f / totF * 100) : 0}%;background:${x.c}"></div><small>${totF ? Math.round(x.f / totF * 100) : 0}%</small></div></td></tr>`).join("")}</tbody>
       <tfoot><tr><td>Total</td><td class="n">${nb(lignes.reduce((a, x) => a + x.h, 0))}</td><td class="n">${nb(lignes.reduce((a, x) => a + x.mix, 0))}</td><td class="n">${nb(lignes.reduce((a, x) => a + x.master, 0))}</td><td class="n">${nb(lignes.reduce((a, x) => a + x.prod, 0))}</td><td class="n">${chf(lignes.reduce((a, x) => a + x.video, 0), false)}</td><td class="n">${chf(lignes.reduce((a, x) => a + x.autres, 0), false)}</td><td class="n">${chf(totF, false)}</td><td class="n">${chf(totE, false)}</td><td></td></tr></tfoot></table>
-      <p class="lg-note">Chaque prestation compte pour la personne indiquée dans « Fait par » (sinon le responsable de la demande). Demandes sans prestations : leur prix compte pour leur responsable (« Autres »). Encaissé = part de la prestation déjà payée par le client.</p>
+      <p class="lg-note">Chaque prestation compte pour la personne indiquée dans « Fait par » (sinon le responsable de la demande). Demandes sans prestations : leur prix compte pour leur responsable (« Autres »). Encaissé = part de la prestation déjà payée par le client. Montants hors TVA : la TVA s'ajoute seulement au prix final payé par le client.</p>
     </div>`;
 }
 function exporterRapporte() {
@@ -3180,7 +3184,7 @@ function formRemb() {
     <div class="field large"><label for="rb-choix">Prestations qui remboursent</label><select id="rb-choix"><option value="choix" ${!d.id || Array.isArray(d.choix) ? "selected" : ""}>Au choix : je coche les prestations</option><option value="auto" ${d.id && !Array.isArray(d.choix) ? "selected" : ""}>Automatique : tout le revenu depuis une date</option></select></div>
     <div class="field rb-auto"><label for="rb-date">Revenus comptés à partir du</label><input type="date" id="rb-date" placeholder="jj/mm/aaaa" value="${d.date_debut || today()}"></div>
     <div class="field rb-auto"><label for="rb-part">Part du revenu remboursée (%)</label><input type="text" id="rb-part" inputmode="decimal" value="${d.part ?? 100}"></div>
-    <div class="field rb-auto"><label for="rb-base">Revenu pris en compte</label><select id="rb-base"><option value="encaisse" ${d.base !== "facture" ? "selected" : ""}>Encaissé (payé par le client)</option><option value="facture" ${d.base === "facture" ? "selected" : ""}>Facturé</option></select></div>
+    <div class="field rb-auto"><label for="rb-base">Revenu pris en compte</label><select id="rb-base"><option value="encaisse" ${d.base !== "facture" ? "selected" : ""}>Encaissé (payé par le client, hors TVA)</option><option value="facture" ${d.base === "facture" ? "selected" : ""}>Facturé</option></select></div>
     <div class="field large"><label for="rb-mode">Répartition</label><select id="rb-mode"><option value="commun" ${d.mode !== "egal" ? "selected" : ""}>Commune : tout le revenu des responsables compte</option><option value="egal" ${d.mode === "egal" ? "selected" : ""}>Parts égales : chacun rembourse sa part avec son revenu</option></select></div>
     <div class="field large"><label>Responsables concernés</label><div class="rb-resps">${RESPS.map((r) => `<label><input type="checkbox" name="rb-r" value="${r.v}" ${resps.includes(r.v) ? "checked" : ""}> ${r.v}</label>`).join("")}</div></div>
     <div class="field tout"><label for="rb-note">Note</label><input type="text" id="rb-note" value="${esc(d.note || "")}" placeholder="Ex. : 24 h × 50.- convenues, heures offertes à TIF"></div>
@@ -3207,7 +3211,7 @@ function renderRemb() {
       ${d.note ? `<div class="lg-note" style="margin:0">${esc(d.note)}</div>` : ""}
       <div><div class="pay-sum"><span><b>${chf(x.rembourse)}</b> remboursés sur ${chf(x.montant)} · ${pct(x)} %</span><span>Reste : <b class="${x.reste ? "" : "green"}">${x.reste ? chf(x.reste) : "Soldé ✓"}</b></span></div>
         <div class="bar big"><i style="width:${pct(x)}%;background:var(--ok)"></i></div></div>
-      <table class="ad-table"><thead><tr><th>Responsable</th>${d.mode === "egal" ? `<th class="n">Sa part</th>` : ""}<th class="n">Revenu compté</th><th class="n">Remboursé (sessions)</th><th class="n">Versé à la main</th>${d.mode === "egal" ? `<th class="n">Reste</th>` : `<th style="width:24%">Contribution</th>`}</tr></thead>
+      <table class="ad-table"><thead><tr><th>Responsable</th>${d.mode === "egal" ? `<th class="n">Sa part</th>` : ""}<th class="n">Revenu compté (HT)</th><th class="n">Remboursé (sessions)</th><th class="n">Versé à la main</th>${d.mode === "egal" ? `<th class="n">Reste</th>` : `<th style="width:24%">Contribution</th>`}</tr></thead>
       <tbody>${x.resps.map((r) => { const p = x.parResp[r], fait = p.auto + p.manuel; return `<tr><td><span class="pill r" style="--rc:${respCouleur(r)}">${esc(r)}</span></td>${d.mode === "egal" ? `<td class="n">${chf(p.du, false)}</td>` : ""}<td class="n">${chf(deuxDec(p.revenu), false)}</td><td class="n">${chf(deuxDec(p.auto), false)}</td><td class="n">${p.manuel ? chf(deuxDec(p.manuel), false) : "·"}</td>
         ${d.mode === "egal" ? `<td class="n ${p.du - fait > 0.005 ? "neg" : ""}">${p.du - fait > 0.005 ? chf(deuxDec(p.du - fait), false) : "✓"}</td>` : `<td><div style="display:flex;align-items:center;gap:6px"><div class="cpt-part" style="width:${x.rembourse ? Math.max(fait ? 2 : 0, fait / x.rembourse * 100) : 0}%;background:${respCouleur(r)}"></div><small>${x.rembourse ? Math.round(fait / x.rembourse * 100) : 0}%</small></div></td>`}</tr>`; }).join("")}</tbody></table>
       ${x.choix ? selectionRemb(x) : `<details><summary style="cursor:pointer;font-weight:600">Sessions qui ont remboursé (${x.lignes.length})</summary>
@@ -3219,7 +3223,7 @@ function renderRemb() {
         <div class="rb-vers"><input type="text" id="rbv-m-${d.id}" inputmode="decimal" placeholder="Montant (CHF)"><input type="date" id="rbv-d-${d.id}" value="${today()}"><select id="rbv-p-${d.id}"><option value="">Tous</option>${x.resps.map((r) => `<option>${r}</option>`).join("")}</select><input type="text" id="rbv-n-${d.id}" placeholder="Note (facultatif)"><button class="btn small" data-rb-vers="${d.id}">+ Versement</button></div>
       </div>
     </div>`; }).join("") : `<div class="card" style="padding:16px"><div class="none">Aucune dette enregistrée. Exemple : « Heures offertes à TIF », 24 h × 50.- = 1'200.-, remboursées par le revenu des sessions des responsables.</div></div>`}
-    <p class="lg-note">Chaque session (prestations « Fait par ») rembourse la dette la plus ancienne en premier, à partir de sa date de départ, selon la part du revenu choisie. Les versements à la main (ex. un responsable qui paie directement) s'ajoutent.</p>`;
+    <p class="lg-note">Chaque session (prestations « Fait par ») rembourse la dette la plus ancienne en premier, à partir de sa date de départ, selon la part du revenu choisie. Les versements à la main (ex. un responsable qui paie directement) s'ajoutent. Tous les montants sont hors TVA.</p>`;
 }
 function selectionRemb(x) {
   const d = x.d, choisis = new Map(x.choix.map((ch) => [ch.cle, ch]));
@@ -3228,8 +3232,8 @@ function selectionRemb(x) {
     .sort((a, b) => (choisis.has(b.cle) - choisis.has(a.cle)) || b.date.localeCompare(a.date));
   const totalChoisi = x.lignes.reduce((a, l) => a + l.pris, 0);
   return `<details ${rbFermes.has(d.id) ? "" : "open"} data-rb-det="${d.id}"><summary style="cursor:pointer;font-weight:600">Prestations qui remboursent : ${x.choix.length} cochée${x.choix.length > 1 ? "s" : ""} · ${chf(deuxDec(totalChoisi))}${x.manquants ? ` · ⚠ ${x.manquants} introuvable${x.manquants > 1 ? "s" : ""} (prestation modifiée ou supprimée)` : ""}</summary>
-    <p class="lg-note" style="margin:6px 0">Coche les prestations qui servent à rembourser. Le montant compté peut être réduit (ex. seulement une partie d'une prestation).</p>
-    <table class="ad-table rb-sel"><thead><tr><th></th><th>Date</th><th>Client</th><th>Prestation</th><th>Fait par</th><th class="n">Montant</th><th class="n">Compté</th></tr></thead>
+    <p class="lg-note" style="margin:6px 0">Coche les prestations qui servent à rembourser. Montants hors TVA (la TVA ne s'ajoute qu'au prix final payé par le client). Le montant compté peut être réduit (ex. seulement une partie d'une prestation).</p>
+    <table class="ad-table rb-sel"><thead><tr><th></th><th>Date</th><th>Client</th><th>Prestation</th><th>Fait par</th><th class="n">Montant HT</th><th class="n">Compté</th></tr></thead>
     <tbody>${cands.length ? cands.map((c) => {
       const ch = choisis.get(c.cle), ailleurs = (autres.get(c.cle) || 0) - (ch ? Math.min(num(ch.m) ?? c.facture, c.facture) : 0);
       return `<tr class="${ch ? "" : "off"}"><td><input type="checkbox" data-rb-ck="${d.id}|${c.cle}" ${ch ? "checked" : ""} aria-label="Compter cette prestation"></td><td>${fmtDate(c.date)}</td><td translate="no">${esc(c.i.client || c.i.titre)}</td><td>${esc(c.l)}${c.q && c.k !== "nd" ? ` · ${String(c.q).replace(".", ",")}${c.u === "h" ? " h" : "×"}` : ""}${ailleurs > 0.005 ? ` <small style="color:var(--warn)">· déjà ${chf(deuxDec(ailleurs))} dans une autre dette</small>` : ""}</td><td>${esc(c.par || "À assigner")}</td><td class="n">${chf(c.facture, false)}</td>
