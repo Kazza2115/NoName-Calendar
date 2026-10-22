@@ -622,6 +622,10 @@ try {
   .rb-form { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px 12px; padding: 16px; }
   .rb-form .field { margin: 0; } .rb-form .large { grid-column: span 2; } .rb-form .tout { grid-column: 1 / -1; }
   .rb-resps { display: flex; gap: 12px; flex-wrap: wrap; } .rb-resps label { display: inline-flex; gap: 5px; align-items: center; margin: 0; color: var(--text); font-size: 15px; }
+  .rb-form.mode-choix .rb-auto { display: none; }
+  .rb-sel td { vertical-align: middle; } .rb-sel tr.off td { color: var(--muted); }
+  .rb-sel input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--accent); }
+  .rb-sel input[type=text] { width: 96px; padding: 4px 6px; text-align: right; }
   .rb-vers { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
   .rb-vers input, .rb-vers select { width: auto; flex: 1 1 110px; min-width: 0; }
   @media (max-width: 680px) { .rb-form { grid-template-columns: 1fr 1fr; } }
@@ -913,11 +917,12 @@ try {
       <div class="update-row"><select id="e-presta-sel" aria-label="Prestation"></select><button class="btn small" id="e-presta-btn" type="button">+ Prestation</button></div>
     </div>
     <div class="grid2">
-      <div class="field" style="margin:0"><label for="e-prix">Prix total (CHF)</label><input type="text" id="e-prix" inputmode="decimal" placeholder="Ex. : 600"></div>
+      <div class="field" style="margin:0"><label for="e-prix">Prix hors TVA (CHF)</label><input type="text" id="e-prix" inputmode="decimal" placeholder="Ex. : 600"></div>
       <div class="field" style="margin:0"><label for="e-paye">Déjà payé (CHF)</label><input type="text" id="e-paye" inputmode="decimal" placeholder="0"></div>
     </div>
     <div class="bar big" id="e-bar"><i></i></div>
     <div class="pay-sum"><span id="e-pay-etat"></span><span>Reste à payer : <b id="e-reste">—</b></span></div>
+    <div class="lg-note" id="e-ttc" style="margin:0 0 6px"></div>
     <div class="pay-liste" id="e-pay-liste"></div>
     <div class="pay-add">
       <input type="text" id="e-pay-add" inputmode="decimal" placeholder="Montant reçu (CHF)">
@@ -986,7 +991,7 @@ const EN = {
   "Contact": "Contact", "Statut": "Status", "Responsable *": "Owner *", "Responsable": "Owner", "Choisir…": "Choose…", "Choisir un responsable…": "Choose an owner…", "Ajouter": "Add",
   "Demandes actives": "Active requests", "Sessions sous 7 jours": "Sessions within 7 days", "Reste à encaisser": "Left to collect",
   "Toutes": "All", "Actives": "Active", "💰 À encaisser": "💰 To collect",
-  "Nouvelle": "New", "En cours": "In progress", "En attente": "On hold", "Confirmée": "Confirmed", "Terminée": "Finished", "Annulée": "Cancelled", "Session confirmée": "Confirmed session", "💰 Prestations, prix & paiement": "💰 Services, price & payment", "+ Prestation": "+ Service", "Fait par…": "Done by…", "Calculé à partir des prestations": "Calculated from the services", "Nom de la prestation": "Service name", "Enregistrement": "Recording", "Mix basique": "Basic mix", "Mix Pro": "Pro mix", "Master": "Master", "Prod sur mesure": "Custom production", "Autre (prix libre, remise…)": "Other (free price, discount…)", "Non détaillé": "Not itemised", "Tarifs des prestations (CHF)": "Service rates (CHF)", "🔁 Remboursements": "🔁 Reimbursements", "🔁 Remboursements à NoName": "🔁 Reimbursements to NoName", "⬇ Remboursements (CSV)": "⬇ Reimbursements (CSV)", "+ Nouvelle dette": "+ New debt", "Total dû à NoName": "Total owed to NoName", "Déjà remboursé": "Already reimbursed", "Reste à rembourser": "Left to reimburse", "Nouvelle dette envers NoName": "New debt to NoName", "Modifier la dette": "Edit debt", "Libellé *": "Label *", "Session / client concerné (facultatif)": "Related session / client (optional)", "Tarif (CHF / h)": "Rate (CHF / h)", "Montant dû (CHF) *": "Amount owed (CHF) *", "Revenus comptés à partir du": "Revenue counted from", "Part du revenu remboursée (%)": "Share of revenue used (%)", "Revenu pris en compte": "Revenue taken into account", "Encaissé (payé par le client)": "Collected (paid by the client)", "Répartition": "Split", "Commune : tout le revenu des responsables compte": "Shared: all owners' revenue counts", "Parts égales : chacun rembourse sa part avec son revenu": "Equal shares: each repays their share with their revenue", "Responsables concernés": "Owners concerned", "Note": "Note", "Annuler": "Cancel", "✏ Modifier": "✏ Edit", "Sa part": "Their share", "Revenu compté": "Revenue counted", "Remboursé (sessions)": "Reimbursed (sessions)", "Versé à la main": "Paid manually", "Contribution": "Contribution", "Fait par": "Done by", "Compté": "Counted", "+ Versement": "+ Payment", "Tous": "All", "Note (facultatif)": "Note (optional)", "Montant (CHF)": "Amount (CHF)", "Soldé ✓": "Settled ✓", "Supprimer cette dette et ses versements ?": "Delete this debt and its payments?", "Retirer ce versement ?": "Remove this payment?", "⬇ Détail par responsable (CSV)": "⬇ Detail by owner (CSV)", "Enreg. (h)": "Rec. (h)", "Mix": "Mix", "Prod": "Prod", "Autres": "Other", "Part du facturé": "Share of invoiced", "Quantité": "Quantity", "Prix unitaire": "Unit price", "E-mail du client": "Client e-mail", "Lien CRM": "CRM link", "Adresse du client (pour la facture)": "Client address (for the invoice)", "🧾 Générer la facture": "🧾 Generate invoice", "🖨 Imprimer / PDF": "🖨 Print / PDF", "✉ Envoyer par e-mail": "✉ Send by e-mail", "🧾 Factures": "🧾 Invoices", "Coordonnées sur les factures": "Details shown on invoices", "Nom de l'entreprise": "Company name", "Rue": "Street", "N°": "No.", "NPA": "Postcode", "Ville": "City", "E-mail": "E-mail", "Téléphone": "Phone", "N° IDE / TVA (ex. CHE-123.456.789 TVA)": "UID / VAT no. (e.g. CHE-123.456.789 VAT)", "IBAN (pour la QR-facture)": "IBAN (for the QR-bill)", "Taux de TVA en % (0 si non assujetti)": "VAT rate in % (0 if not registered)", "Délai de paiement (jours)": "Payment term (days)", "Texte en bas de facture (facultatif)": "Invoice footer text (optional)", "⬇ Factures (CSV)": "⬇ Invoices (CSV)", "Aucune facture pour l'instant.": "No invoices yet.", "Par": "By", "Ouvrir": "Open", "Facture": "Invoice", "Ouvrir dans le CRM": "Open in the CRM", "Enregistre d'abord la demande, puis génère la facture.": "Save the request first, then generate the invoice.", "Indique d'abord le prix total.": "Enter the total price first.", "Adresse e-mail invalide, ex. nom@exemple.ch": "Invalid e-mail address, e.g. name@example.ch", "Le lien CRM doit commencer par https://": "The CRM link must start with https://", "✓ IBAN valide": "✓ Valid IBAN", "⚠ IBAN invalide": "⚠ Invalid IBAN", "Pour un PDF : Imprimer → « Enregistrer en PDF ».": "For a PDF: Print → “Save as PDF”.", "Le NPA doit avoir 4 chiffres": "The postcode must have 4 digits", "Annulées": "Cancelled",
+  "Nouvelle": "New", "En cours": "In progress", "En attente": "On hold", "Confirmée": "Confirmed", "Terminée": "Finished", "Annulée": "Cancelled", "Session confirmée": "Confirmed session", "💰 Prestations, prix & paiement": "💰 Services, price & payment", "+ Prestation": "+ Service", "Fait par…": "Done by…", "Calculé à partir des prestations": "Calculated from the services", "Nom de la prestation": "Service name", "Enregistrement": "Recording", "Mix basique": "Basic mix", "Mix Pro": "Pro mix", "Master": "Master", "Prod sur mesure": "Custom production", "Autre (prix libre, remise…)": "Other (free price, discount…)", "Non détaillé": "Not itemised", "Tarifs des prestations (CHF)": "Service rates (CHF)", "🔁 Remboursements": "🔁 Reimbursements", "🔁 Remboursements à NoName": "🔁 Reimbursements to NoName", "⬇ Remboursements (CSV)": "⬇ Reimbursements (CSV)", "+ Nouvelle dette": "+ New debt", "Total dû à NoName": "Total owed to NoName", "Déjà remboursé": "Already reimbursed", "Reste à rembourser": "Left to reimburse", "Nouvelle dette envers NoName": "New debt to NoName", "Modifier la dette": "Edit debt", "Libellé *": "Label *", "Session / client concerné (facultatif)": "Related session / client (optional)", "Tarif (CHF / h)": "Rate (CHF / h)", "Montant dû (CHF) *": "Amount owed (CHF) *", "Revenus comptés à partir du": "Revenue counted from", "Part du revenu remboursée (%)": "Share of revenue used (%)", "Revenu pris en compte": "Revenue taken into account", "Encaissé (payé par le client)": "Collected (paid by the client)", "Répartition": "Split", "Commune : tout le revenu des responsables compte": "Shared: all owners' revenue counts", "Parts égales : chacun rembourse sa part avec son revenu": "Equal shares: each repays their share with their revenue", "Responsables concernés": "Owners concerned", "Note": "Note", "Annuler": "Cancel", "✏ Modifier": "✏ Edit", "Sa part": "Their share", "Revenu compté": "Revenue counted", "Remboursé (sessions)": "Reimbursed (sessions)", "Versé à la main": "Paid manually", "Contribution": "Contribution", "Fait par": "Done by", "Compté": "Counted", "+ Versement": "+ Payment", "Tous": "All", "Note (facultatif)": "Note (optional)", "Montant (CHF)": "Amount (CHF)", "Soldé ✓": "Settled ✓", "Supprimer cette dette et ses versements ?": "Delete this debt and its payments?", "Retirer ce versement ?": "Remove this payment?", "⬇ Détail par responsable (CSV)": "⬇ Detail by owner (CSV)", "Enreg. (h)": "Rec. (h)", "Mix": "Mix", "Prod": "Prod", "Autres": "Other", "Part du facturé": "Share of invoiced", "Quantité": "Quantity", "Prix unitaire": "Unit price", "E-mail du client": "Client e-mail", "Lien CRM": "CRM link", "Adresse du client (pour la facture)": "Client address (for the invoice)", "🧾 Générer la facture": "🧾 Generate invoice", "🖨 Imprimer / PDF": "🖨 Print / PDF", "✉ Envoyer par e-mail": "✉ Send by e-mail", "🧾 Factures": "🧾 Invoices", "Coordonnées sur les factures": "Details shown on invoices", "Nom de l'entreprise": "Company name", "Rue": "Street", "N°": "No.", "NPA": "Postcode", "Ville": "City", "E-mail": "E-mail", "Téléphone": "Phone", "N° IDE / TVA (ex. CHE-123.456.789 TVA)": "UID / VAT no. (e.g. CHE-123.456.789 VAT)", "IBAN (pour la QR-facture)": "IBAN (for the QR-bill)", "TVA ajoutée sur les factures (%)": "VAT added on invoices (%)", "À payer par le client": "To be paid by the client", "Prix hors TVA (CHF)": "Price excl. VAT (CHF)", "Vidéo": "Video", "Prestations qui remboursent": "Services that reimburse", "Au choix : je coche les prestations": "Hand-picked: I tick the services", "Automatique : tout le revenu depuis une date": "Automatic: all revenue since a date", "Compté": "Counted", "Délai de paiement (jours)": "Payment term (days)", "Texte en bas de facture (facultatif)": "Invoice footer text (optional)", "⬇ Factures (CSV)": "⬇ Invoices (CSV)", "Aucune facture pour l'instant.": "No invoices yet.", "Par": "By", "Ouvrir": "Open", "Facture": "Invoice", "Ouvrir dans le CRM": "Open in the CRM", "Enregistre d'abord la demande, puis génère la facture.": "Save the request first, then generate the invoice.", "Indique d'abord le prix total.": "Enter the total price first.", "Adresse e-mail invalide, ex. nom@exemple.ch": "Invalid e-mail address, e.g. name@example.ch", "Le lien CRM doit commencer par https://": "The CRM link must start with https://", "✓ IBAN valide": "✓ Valid IBAN", "⚠ IBAN invalide": "⚠ Invalid IBAN", "Pour un PDF : Imprimer → « Enregistrer en PDF ».": "For a PDF: Print → “Save as PDF”.", "Le NPA doit avoir 4 chiffres": "The postcode must have 4 digits", "Annulées": "Cancelled",
   "Rechercher un client, une demande…": "Search a client, a request…", "Tous les responsables": "All owners", "⚠ Non assignées": "⚠ Unassigned", "⚠ À assigner": "⚠ Unassigned", "À assigner": "Unassigned", "à assigner": "unassigned",
   "Tri : prochaine session": "Sort: next session", "Tri : dernière modification": "Sort: last change", "Tri : dernier contact": "Sort: last contact", "Tri : client A → Z": "Sort: client A → Z", "Tri : reste à payer": "Sort: amount due", "Tri : date de fin (récentes d'abord)": "Sort: end date (newest first)",
   "Trier": "Sort", "Filtrer par responsable": "Filter by owner",
@@ -1183,9 +1188,11 @@ const num = (v) => {
 };
 const chf = (n, unite = true) => (n || 0).toLocaleString("fr-CH", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }) + (unite ? " CHF" : "");
 const ETATS_PAY = { aucun: "Pas de prix", impaye: "Non payé", partiel: "Acompte", paye: "Payé" };
+// Le prix saisi est hors TVA : le client doit le prix + TVA (comme sur la facture)
 function paiement(i) {
-  const prix = num(i.prix), paye = num(i.paye) || 0;
-  if (prix === null || Number.isNaN(prix)) return { etat: "aucun", prix: null, paye, reste: 0, pct: 0 };
+  const ht = num(i.prix), paye = num(i.paye) || 0;
+  if (ht === null || Number.isNaN(ht)) return { etat: "aucun", prix: null, paye, reste: 0, pct: 0 };
+  const prix = avecTVA(ht);
   const reste = Math.max(0, Math.round((prix - paye) * 100) / 100);
   const etat = paye >= prix ? "paye" : paye > 0 ? "partiel" : "impaye";
   return { etat, prix, paye, reste, pct: prix ? Math.min(100, (paye / prix) * 100) : 100 };
@@ -1287,7 +1294,9 @@ function majCrm() { const u = urlSure($("e-crm").value); $("e-crm-go").classList
 
 let reglages = {}, factures = [];
 const REG_KEY = "noname-reglages", FAC_KEY = "noname-factures";
-const REG_DEFAUT = { nom: "NONAME AGENCY SA", delai: 30, tva: 0 };
+const REG_DEFAUT = { nom: "NONAME AGENCY SA", delai: 30, tva: 8.1 };
+const tauxTVA = () => { const t = num(reglages.tva ?? REG_DEFAUT.tva); return Number.isNaN(t) || t === null ? 0 : t; };
+const avecTVA = (ht) => deuxDec(ht + deuxDec(ht * tauxTVA() / 100));
 async function chargerFacturation() {
   if (!sb) {
     try { reglages = JSON.parse(localStorage.getItem(REG_KEY)) || { ...REG_DEFAUT }; factures = JSON.parse(localStorage.getItem(FAC_KEY)) || []; } catch { reglages = { ...REG_DEFAUT }; }
@@ -1324,10 +1333,11 @@ function adresseStructuree(txt) {
 function contenuFacture(i) {
   const r = { ...REG_DEFAUT, ...reglages };
   const date = today(), e = new Date(parse(date)); e.setDate(e.getDate() + (parseInt(r.delai, 10) || 30));
-  const total = deuxDec(num(i.prix)), paye = deuxDec(Math.min(num(i.paye) || 0, total));
+  // Le prix de la demande est hors taxe : la TVA est ajoutée sur la facture
+  const ht = deuxDec(num(i.prix)), tva = num(r.tva) || 0, tvaMt = deuxDec(ht * tva / 100), total = deuxDec(ht + tvaMt), paye = deuxDec(Math.min(num(i.paye) || 0, total));
   return {
     emetteur: { nom: r.nom || "", rue: r.rue || "", numero: r.numero || "", npa: r.npa || "", ville: r.ville || "", email: r.email || "", tel: r.tel || "", ide: r.ide || "", iban: (r.iban || "").replace(/\s/g, "").toUpperCase() },
-    tva: num(r.tva) || 0, note: r.note || "", delai: parseInt(r.delai, 10) || 30,
+    tva, ht, tvaMt, note: r.note || "", delai: parseInt(r.delai, 10) || 30,
     client: { nom: i.client || i.titre || "", adresse: i.adresse || "", email: i.email || "" },
     objet: i.titre || i.type || "Prestation studio", type: i.type && i.type !== "Autre" ? i.type : "",
     sessions: sessionsDe(i).map((d) => ({ d, h: plageDe(i, d) || "" })),
@@ -1363,7 +1373,8 @@ function factureHtml(f) {
   const ligneAdr = [[e.rue, e.numero].filter(Boolean).join(" "), [e.npa, e.ville].filter(Boolean).join(" ")].filter(Boolean).join(" · ");
   const dest = [c.client.nom, c.client.adresse].filter(Boolean).join("\n");
   const sess = c.sessions.length ? c.sessions.map((s) => `${jourSemaine(s.d)} ${fmtDate(s.d)}${s.h ? " · " + s.h : ""}`).join("<br>") : "";
-  const tvaMt = c.tva ? deuxDec(c.total - c.total / (1 + c.tva / 100)) : 0;
+  const htAjout = c.ht !== undefined;   // factures récentes : TVA ajoutée au prix ; anciennes : TVA incluse
+  const tvaMt = htAjout ? c.tvaMt : c.tva ? deuxDec(c.total - c.total / (1 + c.tva / 100)) : 0;
   const payload = qrPayload(f.numero, c);
   const deb = adresseStructuree(c.client.adresse);
   const payablePar = (cls) => deb ? `<h4>Payable par</h4><p>${h(c.client.nom)}<br>${h([deb.rue, deb.numero].filter(Boolean).join(" "))}<br>${h(deb.npa + " " + deb.ville)}</p>` : `<h4>Payable par (nom/adresse)</h4><div class="vide ${cls}"></div>`;
@@ -1386,8 +1397,8 @@ function factureHtml(f) {
     : `<table class="fa-t"><thead><tr><th>Description</th><th class="n">Montant</th></tr></thead>
       <tbody><tr><td><b>${h(c.objet)}</b>${c.type && c.type !== c.objet ? " · " + h(c.type) : ""}${sess ? `<small>Session${c.sessions.length > 1 ? "s" : ""} studio :<br>${sess}</small>` : ""}</td><td class="n">${chf(c.total)}</td></tr></tbody></table>`}
     <table class="fa-tot">
-      <tr><td>Total${c.tva ? " TTC" : ""}</td><td>${chf(c.total)}</td></tr>
-      ${c.tva ? `<tr><td>dont TVA ${String(c.tva).replace(".", ",")} %</td><td>${chf(tvaMt)}</td></tr>` : ""}
+      ${htAjout && c.tva ? `<tr><td>Total HT</td><td>${chf(c.ht)}</td></tr><tr><td>TVA ${String(c.tva).replace(".", ",")} %</td><td>${chf(tvaMt)}</td></tr><tr><td><b>Total TTC</b></td><td><b>${chf(c.total)}</b></td></tr>`
+        : `<tr><td>Total${c.tva ? " TTC" : ""}</td><td>${chf(c.total)}</td></tr>${c.tva ? `<tr><td>dont TVA ${String(c.tva).replace(".", ",")} %</td><td>${chf(tvaMt)}</td></tr>` : ""}`}
       ${c.paye ? `<tr><td>Déjà payé (acomptes)</td><td>− ${chf(c.paye)}</td></tr>` : ""}
       <tr class="gros"><td>Montant à payer</td><td>${chf(c.reste)}</td></tr>
     </table>
@@ -1449,7 +1460,7 @@ async function genererFacture() {
 const CHAMPS_REG = [
   ["nom", "Nom de l'entreprise"], ["rue", "Rue"], ["numero", "N°"], ["npa", "NPA"], ["ville", "Ville"],
   ["email", "E-mail"], ["tel", "Téléphone"], ["ide", "N° IDE / TVA (ex. CHE-123.456.789 TVA)"], ["iban", "IBAN (pour la QR-facture)"],
-  ["tva", "Taux de TVA en % (0 si non assujetti)"], ["delai", "Délai de paiement (jours)"], ["note", "Texte en bas de facture (facultatif)"],
+  ["tva", "TVA ajoutée sur les factures (%)"], ["delai", "Délai de paiement (jours)"], ["note", "Texte en bas de facture (facultatif)"],
 ];
 function renderFacturesAdmin() {
   const r = { ...REG_DEFAUT, ...reglages };
@@ -2201,6 +2212,8 @@ function majPaybox() {
   $("e-bar").firstElementChild.style.width = p.pct + "%";
   $("e-pay-etat").innerHTML = `<span class="pay-etat" style="margin:0">${ETATS_PAY[p.etat]}</span>`;
   $("e-reste").textContent = p.etat === "aucun" ? "—" : chf(p.reste);
+  const ht = num($("e-prix").value);
+  $("e-ttc").innerHTML = ht > 0 && tauxTVA() ? `${tr("À payer par le client")} : <b>${chf(avecTVA(ht))}</b> = ${chf(ht)} + TVA ${String(tauxTVA()).replace(".", ",")} % (${chf(deuxDec(avecTVA(ht) - ht))})` : "";
 }
 function renderPaiementsFiche() {
   const box = $("e-pay-liste"); if (!box) return;
@@ -2596,11 +2609,15 @@ $("e-fact-liste").onclick = (e) => { const l = e.target.closest("[data-fact]"); 
 $("fa-print").onclick = imprimerFacture;
 $("fa-close").onclick = fermerFacture;
 $("facture").addEventListener("click", (e) => { if (e.target.id === "facture") fermerFacture(); });
+$("ad-body").addEventListener("toggle", (e) => { const id = e.target.dataset?.rbDet; if (id) e.target.open ? rbFermes.delete(id) : rbFermes.add(id); }, true);
 $("ad-body").addEventListener("submit", (e) => { if (e.target.id === "reg-form") { e.preventDefault(); enregistrerReglages(); } if (e.target.id === "rb-form") { e.preventDefault(); enregistrerRemb(); } });
 $("ad-body").addEventListener("input", (e) => {
   if (e.target.id === "rb-h" || e.target.id === "rb-t") { const h = num($("rb-h").value), t = num($("rb-t").value); if (h > 0 && t > 0) $("rb-m").value = deuxDec(h * t); }
 });
 $("ad-body").addEventListener("change", (e) => {
+  if (e.target.id === "rb-choix") { $("rb-form").classList.toggle("mode-choix", e.target.value === "choix"); return; }
+  const ck = e.target.dataset.rbCk; if (ck) { const [id, ...cle] = ck.split("|"); return cocherRemb(id, cle.join("|"), e.target.checked); }
+  const cm = e.target.dataset.rbCm; if (cm) { const [id, ...cle] = cm.split("|"); return montantRemb(id, cle.join("|"), e.target.value); }
   if (e.target.id !== "rb-dem") return;
   const i = items.find((x) => x.id === e.target.value); if (!i) return;
   const s = sessionsDe(i); if (s.length) $("rb-date").value = s[s.length - 1];
@@ -2989,7 +3006,7 @@ function renderCompta() {
       <table class="ad-table cpt-table" style="margin-top:10px"><thead><tr><th>${cpt.vue === "mois" ? "Mois" : "Semaine"}</th><th class="n">Sessions</th><th class="n">Heures</th><th class="n">Facturé</th><th class="n">Encaissé</th><th class="n">Écart</th></tr></thead>
       <tbody>${per.map((p, k) => { const d = data[k], ec = d.encaisse - d.facture; return `<tr><td style="text-transform:capitalize">${esc(p.long)}</td><td class="n">${d.sessions || "·"}</td><td class="n">${d.heures ? d.heures.toLocaleString(LOC(), { maximumFractionDigits: 1 }) : "·"}</td><td class="n">${d.facture ? chf(d.facture, false) : "·"}</td><td class="n">${d.encaisse ? chf(d.encaisse, false) : "·"}</td><td class="n ${ec < 0 ? "neg" : ""}">${d.facture || d.encaisse ? (ec > 0 ? "+" : "") + chf(ec, false) : "·"}</td></tr>`; }).join("")}</tbody>
       <tfoot><tr><td>Total</td><td class="n">${tot.sessions}</td><td class="n">${tot.heures.toLocaleString(LOC(), { maximumFractionDigits: 1 })}</td><td class="n">${chf(tot.facture, false)}</td><td class="n">${chf(tot.encaisse, false)}</td><td class="n ${tot.encaisse - tot.facture < 0 ? "neg" : ""}">${chf(tot.encaisse - tot.facture)}</td></tr></tfoot></table>
-      <p class="lg-note">Facturé = prix des demandes (hors annulées), rattachées à leur 1re session, sinon à leur date de fin, sinon à leur création. Encaissé = paiements du registre, à leur date de paiement.</p>
+      <p class="lg-note">Facturé = prix hors TVA des demandes (hors annulées), rattachées à leur 1re session, sinon à leur date de fin, sinon à leur création. Encaissé = paiements du registre (TVA comprise), à leur date de paiement.</p>
     </div>
     ${tableRapporte(per[0].debut, per[per.length - 1].fin, titre)}
     <div class="ad-grid">
@@ -3015,6 +3032,7 @@ const TARIFS_DEFAUT = [
   { k: "mix_pro", l: "Mix Pro", pu: 200, u: "" },
   { k: "master", l: "Master", pu: 80, u: "" },
   { k: "prod", l: "Prod sur mesure", pu: 250, u: "" },
+  { k: "video", l: "Vidéo", pu: 0, u: "" },
   { k: "autre", l: "Autre (prix libre, remise…)", pu: 0, u: "" },
 ];
 const tarifs = () => TARIFS_DEFAUT.map((t) => { const v = reglages.tarifs?.[t.k]; return v === undefined || v === null || v === "" ? t : { ...t, pu: num(v) }; });
@@ -3056,12 +3074,12 @@ function contributions() {
   const out = [];
   for (const i of items) {
     if (i.statut === "annulee") continue;
-    const prix = num(i.prix) || 0, ratio = prix > 0 ? Math.min((num(i.paye) || 0) / prix, 1) : 0;
+    const prix = num(i.prix) || 0, ratio = prix > 0 ? Math.min((num(i.paye) || 0) / avecTVA(prix), 1) : 0;
     const lignes = (i.prestations || []).length ? i.prestations : prix > 0 ? [{ k: "nd", l: "Non détaillé", q: 1, u: "", pu: prix, par: i.resp }] : [];
-    for (const l of lignes) {
-      const f = totalLigne(l); if (!f) continue;
-      out.push({ i, date: dateRef(i), par: respConnu(l.par) ? l.par : respConnu(i.resp) ? i.resp : "", k: l.k, l: l.l, q: num(l.q) || 0, u: l.u, facture: f, encaisse: deuxDec(f * ratio) });
-    }
+    lignes.forEach((l, n) => {
+      const f = totalLigne(l); if (!f) return;
+      out.push({ i, n, cle: `${i.id}:${l.k === "nd" ? "nd" : n}`, date: dateRef(i), par: respConnu(l.par) ? l.par : respConnu(i.resp) ? i.resp : "", k: l.k, l: l.l, q: num(l.q) || 0, u: l.u, facture: f, encaisse: deuxDec(f * ratio) });
+    });
   }
   return out.sort((a, b) => a.date.localeCompare(b.date));
 }
@@ -3070,8 +3088,8 @@ function tableRapporte(debut, fin, titre) {
   const qte = (l, ...k) => l.filter((c) => k.includes(c.k)).reduce((a, c) => a + c.q, 0);
   const lignes = [...RESPS.map((r) => r.v), ""].map((r) => {
     const l = cs.filter((c) => c.par === r);
-    return { r: r || "À assigner", c: r ? respCouleur(r) : "var(--danger)", h: qte(l, "enregistrement"), mix: qte(l, "mix_basique", "mix_pro"), master: qte(l, "master"), prod: qte(l, "prod"),
-      autres: l.filter((c) => !["enregistrement", "mix_basique", "mix_pro", "master", "prod"].includes(c.k)).reduce((a, c) => a + c.facture, 0),
+    return { r: r || "À assigner", c: r ? respCouleur(r) : "var(--danger)", h: qte(l, "enregistrement"), mix: qte(l, "mix_basique", "mix_pro"), master: qte(l, "master"), prod: qte(l, "prod"), video: l.filter((c) => c.k === "video").reduce((a, c) => a + c.facture, 0),
+      autres: l.filter((c) => !["enregistrement", "mix_basique", "mix_pro", "master", "prod", "video"].includes(c.k)).reduce((a, c) => a + c.facture, 0),
       f: l.reduce((a, c) => a + c.facture, 0), e: l.reduce((a, c) => a + c.encaisse, 0) };
   }).filter((x) => x.f || x.r !== "À assigner");
   const totF = lignes.reduce((a, x) => a + x.f, 0), totE = lignes.reduce((a, x) => a + x.e, 0);
@@ -3079,10 +3097,10 @@ function tableRapporte(debut, fin, titre) {
   renderCompta.contribs = cs;
   return `<div class="card side-list">
       <div class="toolbar" style="justify-content:space-between"><p class="section-title" style="margin:0">👥 Ce que chacun a rapporté · ${esc(titre)}</p><button class="btn small" id="cpt-csv-resp">⬇ Détail par responsable (CSV)</button></div>
-      <table class="ad-table cpt-table"><thead><tr><th>Responsable</th><th class="n">Enreg. (h)</th><th class="n">Mix</th><th class="n">Master</th><th class="n">Prod</th><th class="n">Autres</th><th class="n">Facturé</th><th class="n">Encaissé</th><th style="width:22%">Part du facturé</th></tr></thead>
-      <tbody>${lignes.map((x) => `<tr><td><span class="pill r" style="--rc:${x.c}">${esc(x.r)}</span></td><td class="n">${nb(x.h)}</td><td class="n">${nb(x.mix)}</td><td class="n">${nb(x.master)}</td><td class="n">${nb(x.prod)}</td><td class="n">${x.autres ? chf(x.autres, false) : "·"}</td><td class="n"><b>${chf(x.f, false)}</b></td><td class="n">${chf(x.e, false)}</td>
+      <table class="ad-table cpt-table"><thead><tr><th>Responsable</th><th class="n">Enreg. (h)</th><th class="n">Mix</th><th class="n">Master</th><th class="n">Prod</th><th class="n">Vidéo</th><th class="n">Autres</th><th class="n">Facturé</th><th class="n">Encaissé</th><th style="width:22%">Part du facturé</th></tr></thead>
+      <tbody>${lignes.map((x) => `<tr><td><span class="pill r" style="--rc:${x.c}">${esc(x.r)}</span></td><td class="n">${nb(x.h)}</td><td class="n">${nb(x.mix)}</td><td class="n">${nb(x.master)}</td><td class="n">${nb(x.prod)}</td><td class="n">${x.video ? chf(x.video, false) : "·"}</td><td class="n">${x.autres ? chf(x.autres, false) : "·"}</td><td class="n"><b>${chf(x.f, false)}</b></td><td class="n">${chf(x.e, false)}</td>
         <td><div style="display:flex;align-items:center;gap:6px"><div class="cpt-part" style="width:${totF ? Math.max(x.f ? 2 : 0, x.f / totF * 100) : 0}%;background:${x.c}"></div><small>${totF ? Math.round(x.f / totF * 100) : 0}%</small></div></td></tr>`).join("")}</tbody>
-      <tfoot><tr><td>Total</td><td class="n">${nb(lignes.reduce((a, x) => a + x.h, 0))}</td><td class="n">${nb(lignes.reduce((a, x) => a + x.mix, 0))}</td><td class="n">${nb(lignes.reduce((a, x) => a + x.master, 0))}</td><td class="n">${nb(lignes.reduce((a, x) => a + x.prod, 0))}</td><td class="n">${chf(lignes.reduce((a, x) => a + x.autres, 0), false)}</td><td class="n">${chf(totF, false)}</td><td class="n">${chf(totE, false)}</td><td></td></tr></tfoot></table>
+      <tfoot><tr><td>Total</td><td class="n">${nb(lignes.reduce((a, x) => a + x.h, 0))}</td><td class="n">${nb(lignes.reduce((a, x) => a + x.mix, 0))}</td><td class="n">${nb(lignes.reduce((a, x) => a + x.master, 0))}</td><td class="n">${nb(lignes.reduce((a, x) => a + x.prod, 0))}</td><td class="n">${chf(lignes.reduce((a, x) => a + x.video, 0), false)}</td><td class="n">${chf(lignes.reduce((a, x) => a + x.autres, 0), false)}</td><td class="n">${chf(totF, false)}</td><td class="n">${chf(totE, false)}</td><td></td></tr></tfoot></table>
       <p class="lg-note">Chaque prestation compte pour la personne indiquée dans « Fait par » (sinon le responsable de la demande). Demandes sans prestations : leur prix compte pour leur responsable (« Autres »). Encaissé = part de la prestation déjà payée par le client.</p>
     </div>`;
 }
@@ -3094,6 +3112,7 @@ function exporterRapporte() {
 
 // ---------- Remboursements : dettes des responsables envers NoName, remboursées par le revenu de leurs sessions ----------
 let remboursements = [], rbForm = null;
+const rbFermes = new Set();   // listes de prestations repliées (gardé entre deux rendus)
 const RMB_KEY = "noname-remboursements";
 async function chargerRemb() {
   if (!sb) { try { remboursements = JSON.parse(localStorage.getItem(RMB_KEY)) || []; } catch { remboursements = []; } return; }
@@ -3108,13 +3127,31 @@ function calculerRemb() {
       const m = num(v.montant) || 0; manuel += m;
       if (parResp[v.par]) parResp[v.par].manuel += m; else resps.forEach((r) => (parResp[r].manuel += m / resps.length));
     }
-    return { d, resps, montant, parResp, manuel, auto: 0, lignes: [] };
+    return { d, resps, montant, parResp, manuel, auto: 0, lignes: [], choix: Array.isArray(d.choix) ? d.choix : null, manquants: 0 };
   });
   const resteDe = (x, r) => x.d.mode === "egal" ? Math.max(0, x.parResp[r].du - x.parResp[r].manuel - x.parResp[r].auto) : Math.max(0, x.montant - x.manuel - x.auto);
-  for (const c of contributions()) {
-    let dispo = 1;   // part de la contribution pas encore utilisée
+  const cs = contributions(), parCle = new Map(cs.map((c) => [c.cle, c])), utilise = new Map();
+  // 1) Dettes « au choix » : uniquement les prestations cochées, pour le montant indiqué
+  for (const x of dettes.filter((y) => y.choix)) {
+    for (const ch of x.choix) {
+      let c = parCle.get(ch.cle);
+      if (c && ch.l && c.l !== ch.l) c = cs.find((y) => y.i.id === c.i.id && y.l === ch.l) || c;   // lignes réordonnées
+      if (!c) { x.manquants++; continue; }
+      const m = Math.min(num(ch.m) ?? c.facture, c.facture);
+      if (!x.parResp[c.par]) x.parResp[c.par] = { du: 0, revenu: 0, auto: 0, manuel: 0 };
+      const pris = Math.min(m, resteDe(x, c.par));
+      x.parResp[c.par].revenu += m;
+      utilise.set(c.cle, (utilise.get(c.cle) || 0) + m);
+      if (pris <= 0) continue;
+      x.parResp[c.par].auto += pris; x.auto += pris; x.lignes.push({ c, pris });
+    }
+  }
+  // 2) Dettes automatiques : le revenu des sessions depuis la date de départ (hors prestations déjà choisies ailleurs)
+  for (const c of cs) {
+    let dispo = 1 - Math.min(1, (utilise.get(c.cle) || 0) / c.facture);   // part de la contribution pas encore utilisée
     for (const x of dettes) {
       if (dispo <= 0) break;
+      if (x.choix) continue;
       if (c.date < x.d.date_debut || !x.parResp[c.par] || (x.d.demande_id && c.i.id === x.d.demande_id)) continue;
       const base = x.d.base === "facture" ? c.facture : c.encaisse, part = (num(x.d.part) || 100) / 100;
       if (!base) continue;
@@ -3126,22 +3163,24 @@ function calculerRemb() {
       dispo -= pris / (base * part);
     }
   }
-  return dettes.map((x) => ({ ...x, rembourse: Math.min(x.montant, x.auto + x.manuel), reste: Math.max(0, x.montant - x.auto - x.manuel) }));
+  calculerRemb.utilise = utilise;
+  return dettes.map((x) => ({ ...x, resps: [...new Set([...x.resps, ...Object.keys(x.parResp)])], rembourse: Math.min(x.montant, x.auto + x.manuel), reste: Math.max(0, x.montant - x.auto - x.manuel) }));
 }
 function formRemb() {
   const d = rbForm.id ? remboursements.find((x) => x.id === rbForm.id) || {} : {};
   const clients = [...new Map(items.map((i) => [i.id, i])).values()].sort((a, b) => (a.client || "").localeCompare(b.client || ""));
   const resps = d.resps?.length ? d.resps : RESPS.map((r) => r.v);
-  return `<form class="card rb-form" id="rb-form">
+  return `<form class="card rb-form ${!d.id || Array.isArray(d.choix) ? "mode-choix" : ""}" id="rb-form">
     <p class="section-title tout" style="margin:0">${d.id ? "Modifier la dette" : "Nouvelle dette envers NoName"}</p>
     <div class="field large"><label for="rb-lib">Libellé *</label><input type="text" id="rb-lib" value="${esc(d.libelle || "")}" placeholder="Ex. : Heures offertes à TIF"></div>
     <div class="field large"><label for="rb-dem">Session / client concerné (facultatif)</label><select id="rb-dem"><option value="">—</option>${clients.map((i) => `<option value="${i.id}" ${i.id === d.demande_id ? "selected" : ""}>${esc(i.client || i.titre)} · ${esc(i.titre || "")}</option>`).join("")}</select></div>
     <div class="field"><label for="rb-h">Heures</label><input type="text" id="rb-h" inputmode="decimal" value="${d.heures ?? ""}" placeholder="Ex. : 24"></div>
     <div class="field"><label for="rb-t">Tarif (CHF / h)</label><input type="text" id="rb-t" inputmode="decimal" value="${d.taux ?? ""}" placeholder="Ex. : 50"></div>
     <div class="field"><label for="rb-m">Montant dû (CHF) *</label><input type="text" id="rb-m" inputmode="decimal" value="${d.montant ?? ""}"></div>
-    <div class="field"><label for="rb-date">Revenus comptés à partir du</label><input type="date" id="rb-date" placeholder="jj/mm/aaaa" value="${d.date_debut || today()}"></div>
-    <div class="field"><label for="rb-part">Part du revenu remboursée (%)</label><input type="text" id="rb-part" inputmode="decimal" value="${d.part ?? 100}"></div>
-    <div class="field"><label for="rb-base">Revenu pris en compte</label><select id="rb-base"><option value="encaisse" ${d.base !== "facture" ? "selected" : ""}>Encaissé (payé par le client)</option><option value="facture" ${d.base === "facture" ? "selected" : ""}>Facturé</option></select></div>
+    <div class="field large"><label for="rb-choix">Prestations qui remboursent</label><select id="rb-choix"><option value="choix" ${!d.id || Array.isArray(d.choix) ? "selected" : ""}>Au choix : je coche les prestations</option><option value="auto" ${d.id && !Array.isArray(d.choix) ? "selected" : ""}>Automatique : tout le revenu depuis une date</option></select></div>
+    <div class="field rb-auto"><label for="rb-date">Revenus comptés à partir du</label><input type="date" id="rb-date" placeholder="jj/mm/aaaa" value="${d.date_debut || today()}"></div>
+    <div class="field rb-auto"><label for="rb-part">Part du revenu remboursée (%)</label><input type="text" id="rb-part" inputmode="decimal" value="${d.part ?? 100}"></div>
+    <div class="field rb-auto"><label for="rb-base">Revenu pris en compte</label><select id="rb-base"><option value="encaisse" ${d.base !== "facture" ? "selected" : ""}>Encaissé (payé par le client)</option><option value="facture" ${d.base === "facture" ? "selected" : ""}>Facturé</option></select></div>
     <div class="field large"><label for="rb-mode">Répartition</label><select id="rb-mode"><option value="commun" ${d.mode !== "egal" ? "selected" : ""}>Commune : tout le revenu des responsables compte</option><option value="egal" ${d.mode === "egal" ? "selected" : ""}>Parts égales : chacun rembourse sa part avec son revenu</option></select></div>
     <div class="field large"><label>Responsables concernés</label><div class="rb-resps">${RESPS.map((r) => `<label><input type="checkbox" name="rb-r" value="${r.v}" ${resps.includes(r.v) ? "checked" : ""}> ${r.v}</label>`).join("")}</div></div>
     <div class="field tout"><label for="rb-note">Note</label><input type="text" id="rb-note" value="${esc(d.note || "")}" placeholder="Ex. : 24 h × 50.- convenues, heures offertes à TIF"></div>
@@ -3163,7 +3202,7 @@ function renderRemb() {
     </div>
     ${dettes.length ? dettes.map((x) => { const d = x.d; return `<div class="card rb-card">
       <div class="rb-head"><h3>${esc(d.libelle || "Dette")}</h3>${d.client ? `<span class="pill" style="--c:var(--accent)" translate="no">${esc(d.client)}</span>` : ""}
-        <small>${d.heures && d.taux ? `${String(d.heures).replace(".", ",")} h × ${chf(num(d.taux))} · ` : ""}revenus ${d.base === "facture" ? "facturés" : "encaissés"} depuis le ${fmtDate(d.date_debut)} · ${num(d.part)} % · ${d.mode === "egal" ? "parts égales" : "répartition commune"}</small>
+        <small>${d.heures && d.taux ? `${String(d.heures).replace(".", ",")} h × ${chf(num(d.taux))} · ` : ""}${x.choix ? "prestations choisies" : `revenus ${d.base === "facture" ? "facturés" : "encaissés"} depuis le ${fmtDate(d.date_debut)} · ${num(d.part)} %`} · ${d.mode === "egal" ? "parts égales" : "répartition commune"}</small>
         <span style="flex:1"></span><button class="btn small" data-rb-edit="${d.id}">✏ Modifier</button><button class="btn small danger" data-rb-del="${d.id}">Supprimer</button></div>
       ${d.note ? `<div class="lg-note" style="margin:0">${esc(d.note)}</div>` : ""}
       <div><div class="pay-sum"><span><b>${chf(x.rembourse)}</b> remboursés sur ${chf(x.montant)} · ${pct(x)} %</span><span>Reste : <b class="${x.reste ? "" : "green"}">${x.reste ? chf(x.reste) : "Soldé ✓"}</b></span></div>
@@ -3171,9 +3210,9 @@ function renderRemb() {
       <table class="ad-table"><thead><tr><th>Responsable</th>${d.mode === "egal" ? `<th class="n">Sa part</th>` : ""}<th class="n">Revenu compté</th><th class="n">Remboursé (sessions)</th><th class="n">Versé à la main</th>${d.mode === "egal" ? `<th class="n">Reste</th>` : `<th style="width:24%">Contribution</th>`}</tr></thead>
       <tbody>${x.resps.map((r) => { const p = x.parResp[r], fait = p.auto + p.manuel; return `<tr><td><span class="pill r" style="--rc:${respCouleur(r)}">${esc(r)}</span></td>${d.mode === "egal" ? `<td class="n">${chf(p.du, false)}</td>` : ""}<td class="n">${chf(deuxDec(p.revenu), false)}</td><td class="n">${chf(deuxDec(p.auto), false)}</td><td class="n">${p.manuel ? chf(deuxDec(p.manuel), false) : "·"}</td>
         ${d.mode === "egal" ? `<td class="n ${p.du - fait > 0.005 ? "neg" : ""}">${p.du - fait > 0.005 ? chf(deuxDec(p.du - fait), false) : "✓"}</td>` : `<td><div style="display:flex;align-items:center;gap:6px"><div class="cpt-part" style="width:${x.rembourse ? Math.max(fait ? 2 : 0, fait / x.rembourse * 100) : 0}%;background:${respCouleur(r)}"></div><small>${x.rembourse ? Math.round(fait / x.rembourse * 100) : 0}%</small></div></td>`}</tr>`; }).join("")}</tbody></table>
-      <details><summary style="cursor:pointer;font-weight:600">Sessions qui ont remboursé (${x.lignes.length})</summary>
+      ${x.choix ? selectionRemb(x) : `<details><summary style="cursor:pointer;font-weight:600">Sessions qui ont remboursé (${x.lignes.length})</summary>
         ${x.lignes.length ? `<table class="ad-table" style="margin-top:6px"><thead><tr><th>Date</th><th>Client</th><th>Prestation</th><th>Fait par</th><th class="n">Compté</th></tr></thead><tbody>${x.lignes.map(({ c, pris }) => `<tr data-id="${c.i.id}" style="cursor:pointer"><td>${fmtDate(c.date)}</td><td translate="no">${esc(c.i.client || c.i.titre)}</td><td>${esc(c.l)}${c.q && c.k !== "nd" ? ` · ${String(c.q).replace(".", ",")}${c.u === "h" ? " h" : "×"}` : ""}</td><td>${esc(c.par)}</td><td class="n">${chf(deuxDec(pris), false)}</td></tr>`).join("")}</tbody></table>` : `<div class="none" style="margin-top:6px">Aucune session comptée pour l'instant (sessions à partir du ${fmtDate(d.date_debut)}).</div>`}
-      </details>
+      </details>`}
       <div>
         <p class="section-title" style="margin:0 0 6px">Versements à la main (${(d.versements || []).length})</p>
         ${(d.versements || []).map((v, n) => `<div class="pay-l" style="margin-bottom:4px"><b>${chf(num(v.montant))}</b><span>${fmtDate(v.date)}${v.par ? " · " + esc(v.par) : ""}${v.note ? " · " + esc(v.note) : ""}</span><small></small><button type="button" data-rb-vdel="${d.id}|${n}" title="Retirer ce versement">✕</button></div>`).join("")}
@@ -3182,12 +3221,41 @@ function renderRemb() {
     </div>`; }).join("") : `<div class="card" style="padding:16px"><div class="none">Aucune dette enregistrée. Exemple : « Heures offertes à TIF », 24 h × 50.- = 1'200.-, remboursées par le revenu des sessions des responsables.</div></div>`}
     <p class="lg-note">Chaque session (prestations « Fait par ») rembourse la dette la plus ancienne en premier, à partir de sa date de départ, selon la part du revenu choisie. Les versements à la main (ex. un responsable qui paie directement) s'ajoutent.</p>`;
 }
+function selectionRemb(x) {
+  const d = x.d, choisis = new Map(x.choix.map((ch) => [ch.cle, ch]));
+  const autres = calculerRemb.utilise || new Map();
+  const cands = contributions().filter((c) => c.i.id !== d.demande_id && (x.resps.includes(c.par) || choisis.has(c.cle)))
+    .sort((a, b) => (choisis.has(b.cle) - choisis.has(a.cle)) || b.date.localeCompare(a.date));
+  const totalChoisi = x.lignes.reduce((a, l) => a + l.pris, 0);
+  return `<details ${rbFermes.has(d.id) ? "" : "open"} data-rb-det="${d.id}"><summary style="cursor:pointer;font-weight:600">Prestations qui remboursent : ${x.choix.length} cochée${x.choix.length > 1 ? "s" : ""} · ${chf(deuxDec(totalChoisi))}${x.manquants ? ` · ⚠ ${x.manquants} introuvable${x.manquants > 1 ? "s" : ""} (prestation modifiée ou supprimée)` : ""}</summary>
+    <p class="lg-note" style="margin:6px 0">Coche les prestations qui servent à rembourser. Le montant compté peut être réduit (ex. seulement une partie d'une prestation).</p>
+    <table class="ad-table rb-sel"><thead><tr><th></th><th>Date</th><th>Client</th><th>Prestation</th><th>Fait par</th><th class="n">Montant</th><th class="n">Compté</th></tr></thead>
+    <tbody>${cands.length ? cands.map((c) => {
+      const ch = choisis.get(c.cle), ailleurs = (autres.get(c.cle) || 0) - (ch ? Math.min(num(ch.m) ?? c.facture, c.facture) : 0);
+      return `<tr class="${ch ? "" : "off"}"><td><input type="checkbox" data-rb-ck="${d.id}|${c.cle}" ${ch ? "checked" : ""} aria-label="Compter cette prestation"></td><td>${fmtDate(c.date)}</td><td translate="no">${esc(c.i.client || c.i.titre)}</td><td>${esc(c.l)}${c.q && c.k !== "nd" ? ` · ${String(c.q).replace(".", ",")}${c.u === "h" ? " h" : "×"}` : ""}${ailleurs > 0.005 ? ` <small style="color:var(--warn)">· déjà ${chf(deuxDec(ailleurs))} dans une autre dette</small>` : ""}</td><td>${esc(c.par || "À assigner")}</td><td class="n">${chf(c.facture, false)}</td>
+        <td class="n">${ch ? `<input type="text" inputmode="decimal" data-rb-cm="${d.id}|${c.cle}" value="${num(ch.m) ?? c.facture}">` : "·"}</td></tr>`; }).join("") : `<tr><td colspan="7" class="none">Aucune prestation des responsables concernés. Ajoute des prestations dans les fiches.</td></tr>`}</tbody></table>
+  </details>`;
+}
+async function cocherRemb(id, cle, oui) {
+  const d = remboursements.find((x) => x.id === id); if (!d) return;
+  const c = contributions().find((y) => y.cle === cle);
+  const choix = (d.choix || []).filter((ch) => ch.cle !== cle);
+  if (oui && c) choix.push({ cle, l: c.l, c: c.i.client || "", m: c.facture });
+  await ecrireRemb(id, { choix });
+}
+async function montantRemb(id, cle, val) {
+  const d = remboursements.find((x) => x.id === id); if (!d) return;
+  const m = num(val);
+  if (m === null || Number.isNaN(m)) { toast("Montant invalide, ex. 200"); renderRemb(); return; }
+  await ecrireRemb(id, { choix: (d.choix || []).map((ch) => (ch.cle === cle ? { ...ch, m } : ch)) });
+}
 function lireFormRemb() {
   const v = (id) => $(id).value.trim();
   const h = num(v("rb-h")), t = num(v("rb-t")), m = num(v("rb-m")), part = num(v("rb-part"));
   const dem = items.find((i) => i.id === v("rb-dem"));
   return { libelle: v("rb-lib"), demande_id: dem?.id || null, client: dem?.client || "", heures: Number.isNaN(h) ? null : h, taux: Number.isNaN(t) ? null : t, montant: m, date_debut: v("rb-date") || today(), part, base: v("rb-base"), mode: v("rb-mode"),
-    resps: [...document.querySelectorAll('[name="rb-r"]:checked')].map((x) => x.value), note: v("rb-note") };
+    resps: [...document.querySelectorAll('[name="rb-r"]:checked')].map((x) => x.value), note: v("rb-note"),
+    choix: v("rb-choix") === "choix" ? (remboursements.find((x) => x.id === rbForm?.id)?.choix || []) : null };
 }
 async function ecrireRemb(id, patch, msg) {
   patch = { ...patch, modifie_par: userEmail || "" };
