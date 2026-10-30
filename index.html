@@ -3314,13 +3314,15 @@ function selectionRemb(x, lecture = false) {
   </details>`;
 }
 async function cocherRemb(id, cle, oui) {
+  await chargerRemb();
   const d = remboursements.find((x) => x.id === id); if (!d) return;
-  const c = contributions().find((y) => y.cle === cle);
-  const choix = (d.choix || []).filter((ch) => ch.cle !== cle);
+  const cs = contributions(), c = cs.find((y) => y.cle === cle), existe = new Set(cs.map((y) => y.cle));
+  const choix = (d.choix || []).filter((ch) => ch.cle !== cle && existe.has(ch.cle));   // retire aussi les lignes qui n'existent plus
   if (oui && c) choix.push({ cle, l: c.l, c: c.i.client || "", m: c.facture });
   await ecrireRemb(id, { choix });
 }
 async function montantRemb(id, cle, val) {
+  await chargerRemb();
   const d = remboursements.find((x) => x.id === id); if (!d) return;
   const m = num(val);
   if (m === null || Number.isNaN(m)) { toast("Montant invalide, ex. 200"); renderRemb(); return; }
@@ -3332,7 +3334,7 @@ function lireFormRemb() {
   const dem = items.find((i) => i.id === v("rb-dem"));
   return { libelle: v("rb-lib"), demande_id: dem?.id || null, client: dem?.client || "", heures: Number.isNaN(h) ? null : h, taux: Number.isNaN(t) ? null : t, montant: m, date_debut: v("rb-date") || today(), part, base: v("rb-base"), mode: v("rb-mode"),
     resps: [...document.querySelectorAll('[name="rb-r"]:checked')].map((x) => x.value), note: v("rb-note"), base_rb: v("rb-avec"),
-    choix: v("rb-choix") === "choix" ? (remboursements.find((x) => x.id === rbForm?.id)?.choix || []) : null };
+    choix: v("rb-choix") === "choix" ? (remboursements.find((x) => x.id === rbForm?.id)?.choix || []).filter((ch) => contributions().some((c) => c.cle === ch.cle)) : null };
 }
 async function ecrireRemb(id, patch, msg) {
   patch = { ...patch, modifie_par: userEmail || "" };
@@ -3350,6 +3352,7 @@ async function ecrireRemb(id, patch, msg) {
   return true;
 }
 async function enregistrerRemb() {
+  if (rbForm?.id) await chargerRemb();
   const d = lireFormRemb();
   if (!d.libelle) { toast("Indique un libellé, ex. Heures offertes à TIF"); $("rb-lib").focus(); return; }
   if (!(d.montant > 0)) { toast("Indique le montant dû (ou les heures et le tarif)"); $("rb-m").focus(); return; }
@@ -3365,6 +3368,7 @@ async function supprimerRemb(id) {
   renderRemb();
 }
 async function ajouterVersement(id) {
+  await chargerRemb();
   const d = remboursements.find((x) => x.id === id); if (!d) return;
   const m = num($("rbv-m-" + id).value);
   if (!(m > 0)) { toast("Indique le montant versé, ex. 200"); $("rbv-m-" + id).focus(); return; }
@@ -3372,6 +3376,7 @@ async function ajouterVersement(id) {
   await ecrireRemb(id, { versements: [...(d.versements || []), v] }, `${chf(m)} ✓`);
 }
 async function retirerVersement(id, n) {
+  await chargerRemb();
   const d = remboursements.find((x) => x.id === id); if (!d || !confirm(tr("Retirer ce versement ?"))) return;
   await ecrireRemb(id, { versements: (d.versements || []).filter((_, k) => k !== n) });
 }
