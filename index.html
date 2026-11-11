@@ -3244,7 +3244,8 @@ function calculerRemb() {
     for (const x of dettes) {
       if (dispo <= 0) break;
       if (x.choix) continue;
-      if (c.date < x.d.date_debut || !x.parResp[c.par] || (x.d.demande_id && c.i.id === x.d.demande_id)) continue;
+      const derniere = sessionsDe(c.i).slice(-1)[0] || c.date;   // compte dès qu'une session tombe après la date de départ
+      if (derniere < x.d.date_debut || !x.parResp[c.par] || (x.d.demande_id && c.i.id === x.d.demande_id)) continue;
       const base = x.d.base === "facture" ? c.facture : c.encaisse, avecPart = x.d.base_rb === "part", part = (num(x.d.part) || 100) / 100 * (avecPart ? tauxLigne(c) : 1);
       if (!base) continue;
       x.parResp[c.par].revenu += base * dispo;
@@ -3574,6 +3575,7 @@ function controles() {
     if (prix > 0 && paye - ttc > 0.01) add("⚠", "Payé plus que le montant dû", `${nom(i)} : payé ${chf(paye)} pour ${chf(ttc)}${i.sans_tva ? " (sans TVA)" : " TVA comprise"}.`, i);
     if (i.statut === "terminee" && prix > 0 && ttc - paye > 0.01) add("⚠", "Terminée mais pas entièrement payée", `${nom(i)} : reste ${chf(deuxDec(ttc - paye))}.`, i);
     if (sess.length && sess[sess.length - 1] < t && !["terminee", "annulee"].includes(i.statut)) add("ℹ", "Sessions passées, demande pas clôturée", `${nom(i)} : dernière session le ${fmtDate(sess[sess.length - 1])}, statut « ${statutLabel(i.statut)} ».`, i);
+    if (i.date_contact && sess.some((d) => d < i.date_contact)) add("⚠", "Session avant le premier contact", `${nom(i)} : session le ${fmtDate(sess.find((d) => d < i.date_contact))}, contact le ${fmtDate(i.date_contact)} — date inversée ?`, i, "avant-contact");
     const sansH = sess.filter((d) => !horaireDe(i, d));
     if (sansH.length) add("ℹ", "Session sans horaire", `${nom(i)} : ${sansH.map(fmtDate).join(", ")} — heures de studio non comptées.`, i);
     const hSess = sess.reduce((a, d) => a + dureeMin(i, d), 0) / 60, hPresta = ls.filter(estEnreg).reduce((a, l) => a + (num(l.q) || 0), 0);
