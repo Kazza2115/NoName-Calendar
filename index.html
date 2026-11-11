@@ -3437,10 +3437,18 @@ const reglParts = () => ({ ...PARTS_DEFAUT, ...Object.fromEntries(Object.entries
 const estEnreg = (l) => (l.k || "").startsWith("enregistrement") || (l.k === "autre" && /enregistr/i.test(l.l || ""));
 const estMixMaster = (l) => ["mix_basique", "mix_pro", "master", "master_pref"].includes(l.k) || (l.k === "autre" && /\bmix|master/i.test(l.l || ""));
 function formuleDe(i) {
+  // 30 % seulement si la session ne contient QUE de l'enregistrement (≤ 2 h) ; tout le reste = 40 %.
+  // Les lignes vidéo (non partagées) et les remises (montant négatif) ne changent pas la formule.
   const ls = i.prestations || [], p = reglParts();
-  const h = ls.length ? ls.filter(estEnreg).reduce((a, l) => a + (num(l.q) || 0), 0) : sessionsDe(i).reduce((a, d) => a + dureeMin(i, d), 0) / 60;
-  const mm = ls.some(estMixMaster), projet = ls.some((l) => (l.k || "").startsWith("projet_")), complet = mm || projet || h > p.heures;
-  const pourquoi = projet ? "projet" : mm ? "mix / master" : h > p.heures ? `${String(deuxDec(h)).replace(".", ",")} h d'enregistrement` : `${String(deuxDec(h)).replace(".", ",")} h, sans mix ni master`;
+  const musique = ls.filter((l) => l.k !== "video" && totalLigne(l) > 0);
+  const h = musique.filter(estEnreg).reduce((a, l) => a + (num(l.q) || 0), 0);
+  const fmtH = (x) => `${String(deuxDec(x)).replace(".", ",")} h`;
+  const mm = musique.some(estMixMaster), projet = musique.some((l) => (l.k || "").startsWith("projet_"));
+  const seulEnreg = musique.length > 0 && musique.every(estEnreg);
+  const complet = !seulEnreg || h > p.heures;
+  const pourquoi = !musique.length ? "prestations pas encore détaillées"
+    : seulEnreg ? (h > p.heures ? `enregistrement ${fmtH(h)} (plus de ${p.heures} h)` : `enregistrement seul, ${fmtH(h)}`)
+    : projet ? "projet" : musique.length > 1 ? `${musique.length} prestations` : mm ? "mix / master" : `${musique[0].l || "autre prestation"}`;
   return { complet, taux: complet ? p.complet : p.simple, h, mm, detaille: ls.length > 0, pourquoi };
 }
 let versementsParts = [];
@@ -3523,12 +3531,12 @@ function renderParts() {
   const somme = (k) => totaux.reduce((a, x) => a + x[k], 0);
   $("pt-body").innerHTML = `
     <div class="pt-regles">
-      <span><b>${p.simple} %</b> formule simple <small>(enregistrement ≤ ${p.heures} h, sans mix ni master)</small></span>
-      <span><b>${p.complet} %</b> avec mix, master ou plus de ${p.heures} h</span>
+      <span><b>${p.simple} %</b> uniquement un enregistrement seul de ${p.heures} h maximum</span>
+      <span><b>${p.complet} %</b> dans tous les autres cas (plusieurs prestations, projet, mix, coaching…)</span>
       <span><b>${p.prod} %</b> prod sur mesure et beatmaking</span>
       <span>Le reste va à NoName · montants <b>hors TVA</b> · la vidéo et les montants qui remboursent une dette ne sont pas partagés</span>
     </div>
-    <div class="pt-court"><span class="chip">${p.simple} % simple</span><span class="chip">${p.complet} % mix / master / + ${p.heures} h</span><span class="chip">${p.prod} % prod / beat</span><span class="chip">HT</span></div>
+    <div class="pt-court"><span class="chip">${p.simple} % enregistrement seul ≤ ${p.heures} h</span><span class="chip">${p.complet} % tout le reste</span><span class="chip">${p.prod} % prod / beat</span><span class="chip">HT</span></div>
     <div class="cl-sum" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
       ${totaux.map((x) => `<div class="card kpi" style="border-top:4px solid ${x.r === "À assigner" ? "var(--danger)" : respCouleur(x.r)}">
         ${nomPart(x.r)}
